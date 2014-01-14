@@ -1,6 +1,6 @@
-package powercraft.modules;
+package powercraft_new.modules;
 
-import powercraft.api.PowerCraft;
+import powercraft_new.api.PowerCraft;
 
 /**
  * The main class for powercraft core
