@@ -4,6 +4,8 @@ import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetHandler;
@@ -26,6 +28,7 @@ public class PCtr_PacketSetEntitySpeed extends PC_PacketServerToClient {
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
 	protected PC_Packet doAndReply(INetHandler iNetHandler) {
 		PC_ClientUtils.mc().theWorld.getEntityByID(entity).getEntityData().setTag("PowerCraft", compound);
 		return null;

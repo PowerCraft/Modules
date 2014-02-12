@@ -4,13 +4,13 @@ import java.util.HashMap;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Utils;
 import powercraft.api.block.PC_TileEntityScriptable;
 import powercraft.api.network.PC_PacketHandler;
-import powercraft.api.script.miniscript.PC_Miniscript;
 import powercraft.transport.block.PCtr_PacketSetEntitySpeed;
 
 public class PCtr_TileEntityScriptableBelt extends PC_TileEntityScriptable {
@@ -112,7 +112,7 @@ public class PCtr_TileEntityScriptableBelt extends PC_TileEntityScriptable {
 		if(entity instanceof EntityItem){
 			ItemStack is = ((EntityItem) entity).getEntityItem();
 			ext[EXT_IN_TYPE] = TYPE_ITEMSTACK;
-			//ext[EXT_IN_ID] = PC_Miniscript.getItemWrapper(is.getItem());
+			ext[EXT_IN_ID] = Item.getIdFromItem(is.getItem());
 			ext[EXT_IN_ITEMDAMAGE] = is.getItemDamage();
 			ext[EXT_IN_ITEMSTACKSIZE] = is.stackSize;
 		}else{
