@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
 import powercraft.api.network.PC_PacketHandler;
-import powercraft.transport.block.PCtr_BlockScriptableBelt;
+import powercraft.transport.block.PCtr_BlockBeltScriptable;
 import powercraft.transport.block.PCtr_PacketSetEntitySpeed;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.InstanceFactory;

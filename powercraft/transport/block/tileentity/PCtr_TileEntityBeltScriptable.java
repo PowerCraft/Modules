@@ -21,7 +21,7 @@ import powercraft.transport.block.PCtr_PacketSetEntitySpeed;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PCtr_TileEntityScriptableBelt extends PC_TileEntityScriptable implements PC_IGresGuiOpenHandler {
+public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable implements PC_IGresGuiOpenHandler {
 	
 	private static HashMap<String, Integer> replacements = new HashMap<String, Integer>();
 	
@@ -63,7 +63,7 @@ public class PCtr_TileEntityScriptableBelt extends PC_TileEntityScriptable imple
 		replacements.put("west", DIR_WEST);
 	}
 	
-	public PCtr_TileEntityScriptableBelt(){
+	public PCtr_TileEntityBeltScriptable(){
 		super(16);
 		setSource("mov [frontcount], 1");
 		PC_Reflection.setValue(PC_TileEntity.class, this, 1, String.class, "");
@@ -142,7 +142,7 @@ public class PCtr_TileEntityScriptableBelt extends PC_TileEntityScriptable imple
 	@Override
 	@SideOnly(Side.CLIENT)
 	public PC_IGresGui openClientGui(EntityPlayer player) {
-		return new PCtr_GuiScriptableBelt(this);
+		return new PCtr_GuiBeltScriptable(this);
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
 import powercraft.api.network.PC_PacketHandler;
-import powercraft.transport.block.PCtr_BlockScriptableBelt;
+import powercraft.transport.block.PCtr_BlockBeltScriptable;
 import powercraft.transport.block.PCtr_PacketSetEntitySpeed;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.InstanceFactory;
@@ -18,7 +18,7 @@ public class PCtr_Transoprt extends PC_Module {
 	
 	public static final PCtr_Transoprt INSTANCE = new PCtr_Transoprt();
 	
-	public static final PCtr_BlockScriptableBelt ScriptableBelt = new PCtr_BlockScriptableBelt();
+	public static final PCtr_BlockBeltScriptable ScriptableBelt = new PCtr_BlockBeltScriptable();
 	
 	@InstanceFactory
 	public static PCtr_Transoprt factory(){

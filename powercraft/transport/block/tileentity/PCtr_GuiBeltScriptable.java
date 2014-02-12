@@ -10,11 +10,11 @@ import powercraft.api.gres.events.PC_GresEvent;
 import powercraft.api.gres.events.PC_GresKeyEvent;
 import powercraft.api.gres.events.PC_IGresEventListener;
 
-public class PCtr_GuiScriptableBelt implements PC_IGresGui, PC_IGresEventListener {
+public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListener {
 
-	private PCtr_TileEntityScriptableBelt te;
+	private PCtr_TileEntityBeltScriptable te;
 	
-	public PCtr_GuiScriptableBelt(PCtr_TileEntityScriptableBelt te) {
+	public PCtr_GuiBeltScriptable(PCtr_TileEntityBeltScriptable te) {
 		this.te = te;
 	}
 
