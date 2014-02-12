@@ -112,7 +112,7 @@ public class PCtr_TileEntityScriptableBelt extends PC_TileEntityScriptable {
 		if(entity instanceof EntityItem){
 			ItemStack is = ((EntityItem) entity).getEntityItem();
 			ext[EXT_IN_TYPE] = TYPE_ITEMSTACK;
-			ext[EXT_IN_ID] = PC_Miniscript.getItemWrapper(is.getItem());
+			//ext[EXT_IN_ID] = PC_Miniscript.getItemWrapper(is.getItem());
 			ext[EXT_IN_ITEMDAMAGE] = is.getItemDamage();
 			ext[EXT_IN_ITEMSTACKSIZE] = is.stackSize;
 		}else{
