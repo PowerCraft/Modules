@@ -4,16 +4,24 @@ import java.util.HashMap;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Utils;
+import powercraft.api.block.PC_TileEntity;
 import powercraft.api.block.PC_TileEntityScriptable;
+import powercraft.api.gres.PC_GresBaseWithInventory;
+import powercraft.api.gres.PC_IGresGui;
+import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.network.PC_PacketHandler;
+import powercraft.api.reflect.PC_Reflection;
 import powercraft.transport.block.PCtr_PacketSetEntitySpeed;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class PCtr_TileEntityScriptableBelt extends PC_TileEntityScriptable {
+public class PCtr_TileEntityScriptableBelt extends PC_TileEntityScriptable implements PC_IGresGuiOpenHandler {
 	
 	private static HashMap<String, Integer> replacements = new HashMap<String, Integer>();
 	
@@ -58,6 +66,8 @@ public class PCtr_TileEntityScriptableBelt extends PC_TileEntityScriptable {
 	public PCtr_TileEntityScriptableBelt(){
 		super(16);
 		setSource("mov [frontcount], 1");
+		PC_Reflection.setValue(PC_TileEntity.class, this, 1, String.class, "");
+		PC_Reflection.setValue(PC_TileEntity.class, this, 2, String.class, PC_Utils.getMD5("test"));
 	}
 	
 	private void moveEntity(Entity entity){
@@ -127,6 +137,17 @@ public class PCtr_TileEntityScriptableBelt extends PC_TileEntityScriptable {
 	
 	protected HashMap<String, Integer> getReplacements(){
 		return replacements;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public PC_IGresGui openClientGui(EntityPlayer player) {
+		return new PCtr_GuiScriptableBelt(this);
+	}
+
+	@Override
+	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
+		return null;
 	}
 	
 }
