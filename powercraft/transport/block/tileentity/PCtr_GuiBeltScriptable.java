@@ -25,7 +25,7 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 		PC_GresWindow win = new PC_GresWindow("Belt");
 		win.setLayout(new PC_GresLayoutVertical());
 		PC_GresMultilineHighlightingTextEdit textEdit = new PC_GresMultilineHighlightingTextEdit();
-		textEdit.setText(";MiniScript powered Belt");
+		textEdit.setText(";A MiniScript powered Belt\n;Compiler and Executer are experimental\n;and can contain bugs");
 		win.add(textEdit);
 		gui.add(win);
 		gui.addEventListener(this);
