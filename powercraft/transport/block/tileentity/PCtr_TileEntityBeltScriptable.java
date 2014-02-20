@@ -10,13 +10,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Utils;
-import powercraft.api.block.PC_TileEntity;
 import powercraft.api.block.PC_TileEntityScriptable;
 import powercraft.api.gres.PC_GresBaseWithInventory;
 import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.network.PC_PacketHandler;
-import powercraft.api.reflect.PC_Reflection;
 import powercraft.transport.block.PCtr_PacketSetEntitySpeed;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -65,9 +63,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 	
 	public PCtr_TileEntityBeltScriptable(){
 		super(16);
-		setSource("mov [frontcount], 1");
-		PC_Reflection.setValue(PC_TileEntity.class, this, 1, String.class, "");
-		PC_Reflection.setValue(PC_TileEntity.class, this, 2, String.class, PC_Utils.getMD5("test"));
+		setSource(";A MiniScript powered Belt");
 	}
 	
 	private void moveEntity(Entity entity){
@@ -141,13 +137,37 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public PC_IGresGui openClientGui(EntityPlayer player) {
-		return new PCtr_GuiBeltScriptable(this);
+	public PC_IGresGui openClientGui(EntityPlayer player, NBTTagCompound nbtTagCompound) {
+		return new PCtr_GuiBeltScriptable(this, nbtTagCompound.getString("source"));
 	}
 
 	@Override
 	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
 		return null;
+	}
+	
+	@Override
+	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
+		NBTTagCompound nbtTagCompound = new NBTTagCompound();
+		nbtTagCompound.setString("source", getSource());
+		return nbtTagCompound;
+	}
+
+	public void sendSaveMessage(String text) {
+		NBTTagCompound tagCompound = new NBTTagCompound();
+		tagCompound.setInteger("type", 1);
+		tagCompound.setString("source", text);
+		sendMessage(tagCompound);
+	}
+
+	@Override
+	public void onMessage(EntityPlayer player, NBTTagCompound tagCompound) {
+		switch(tagCompound.getInteger("type")){
+		case 1:
+			String text = tagCompound.getString("source");
+			setSource(text);
+			break;
+		}
 	}
 	
 }

@@ -4,14 +4,15 @@ import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetHandler;
 import powercraft.api.PC_ClientUtils;
 import powercraft.api.network.PC_Packet;
 import powercraft.api.network.PC_PacketServerToClient;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCtr_PacketSetEntitySpeed extends PC_PacketServerToClient {
 
@@ -30,7 +31,9 @@ public class PCtr_PacketSetEntitySpeed extends PC_PacketServerToClient {
 	@Override
 	@SideOnly(Side.CLIENT)
 	protected PC_Packet doAndReply(INetHandler iNetHandler) {
-		PC_ClientUtils.mc().theWorld.getEntityByID(entity).getEntityData().setTag("PowerCraft", compound);
+		Entity entity = PC_ClientUtils.mc().theWorld.getEntityByID(this.entity);
+		if(entity!=null)
+			entity.getEntityData().setTag("PowerCraft", compound);
 		return null;
 	}
 
