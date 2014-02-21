@@ -1,6 +1,10 @@
 package powercraft.transport.block.tileentity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import javax.tools.Diagnostic;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -8,9 +12,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import powercraft.api.PC_Direction;
+import powercraft.api.PC_FakeDiagnostic;
 import powercraft.api.PC_Utils;
 import powercraft.api.block.PC_TileEntityScriptable;
+import powercraft.api.gres.PC_Gres;
 import powercraft.api.gres.PC_GresBaseWithInventory;
 import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
@@ -160,12 +167,55 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		sendMessage(tagCompound);
 	}
 
+	public void sendErrorMessage(){
+		if(diagnostic!=null){
+			List<Diagnostic<? extends Void>> diagnostics = diagnostic.getDiagnostics();
+			NBTTagList list = new NBTTagList();
+			for(Diagnostic<? extends Void> dgc:diagnostics){
+				list.appendTag(PC_FakeDiagnostic.toCompound(dgc));
+			}
+			NBTTagCompound tagCompound = new NBTTagCompound();
+			tagCompound.setInteger("type", 2);
+			tagCompound.setTag("diagnostics", list);
+			sendMessage(tagCompound);
+		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	private void handleDiagnostic(NBTTagList list){
+		PCtr_GuiBeltScriptable gui = PC_Gres.getCurrentClientGui(PCtr_GuiBeltScriptable.class);
+		if(gui!=null){
+			List<Diagnostic<? extends Void>> diagnostics = new ArrayList<Diagnostic<? extends Void>>();
+			for(int i=0; i<list.tagCount(); i++){
+				NBTTagCompound compound =list.getCompoundTagAt(i);
+				diagnostics.add(PC_FakeDiagnostic.fromCompound(compound));
+			}
+			gui.setErrors(diagnostics);
+		}
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void onClientMessage(EntityPlayer player, NBTTagCompound tagCompound) {
+		switch(tagCompound.getInteger("type")){
+		case 2:
+			handleDiagnostic((NBTTagList)tagCompound.getTag("diagnostics"));
+			break;
+		default:
+			onMessage(player, tagCompound);
+			break;
+		}
+	}
+
 	@Override
 	public void onMessage(EntityPlayer player, NBTTagCompound tagCompound) {
 		switch(tagCompound.getInteger("type")){
 		case 1:
 			String text = tagCompound.getString("source");
 			setSource(text);
+			sendErrorMessage();
+			break;
+		case 2:
 			break;
 		}
 	}

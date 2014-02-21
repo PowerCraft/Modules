@@ -1,7 +1,12 @@
 package powercraft.transport.block.tileentity;
 
+import java.util.List;
+
+import javax.tools.Diagnostic;
+
 import org.lwjgl.input.Keyboard;
 
+import powercraft.api.gres.PC_GresAlign.Fill;
 import powercraft.api.gres.PC_GresButton;
 import powercraft.api.gres.PC_GresComponent;
 import powercraft.api.gres.PC_GresGroupContainer;
@@ -9,7 +14,6 @@ import powercraft.api.gres.PC_GresGuiHandler;
 import powercraft.api.gres.PC_GresMultilineHighlightingTextEdit;
 import powercraft.api.gres.PC_GresWindow;
 import powercraft.api.gres.PC_IGresGui;
-import powercraft.api.gres.PC_GresAlign.Fill;
 import powercraft.api.gres.autoadd.PC_AutoAdd;
 import powercraft.api.gres.autoadd.PC_AutoComplete;
 import powercraft.api.gres.doc.PC_GresHighlighting;
@@ -44,7 +48,6 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 		PC_GresHighlighting highlighting = PC_MiniScriptHighlighting.makeHighlighting();
 		PC_AutoAdd autoAdd = PC_MiniScriptHighlighting.makeAutoAdd();
 		PC_AutoComplete autoComplete = PC_MiniScriptHighlighting.makeAutoComplete(te.getReplacements().keySet());
-		
 		PC_GresWindow win = new PC_GresWindow("Belt");
 		win.setLayout(new PC_GresLayoutVertical());
 		textEdit = new PC_GresMultilineHighlightingTextEdit(fontTexture, highlighting, autoAdd, autoComplete, source);
@@ -78,9 +81,14 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 					component.getGuiHandler().close();
 				}else if(mbe.getComponent()==save){
 					te.sendSaveMessage(textEdit.getText());
+					textEdit.removeErrors();
 				}
 			}
 		}
+	}
+
+	public void setErrors(List<Diagnostic<? extends Void>> diagnostics) {
+		textEdit.setErrors(diagnostics);
 	}
 	
 }
