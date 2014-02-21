@@ -36,26 +36,31 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 	private PC_GresMultilineHighlightingTextEdit textEdit;
 	private PC_GresButton save;
 	private PC_GresButton cancel;
+	private List<Diagnostic<? extends Void>> diagnostics;
 	
-	public PCtr_GuiBeltScriptable(PCtr_TileEntityBeltScriptable te, String source) {
+	public PCtr_GuiBeltScriptable(PCtr_TileEntityBeltScriptable te, String source, List<Diagnostic<? extends Void>> diagnostics) {
 		this.te = te;
 		this.source = source;
+		this.diagnostics = diagnostics;
 	}
 
 	@Override
 	public void initGui(PC_GresGuiHandler gui) {
 		PC_FontTexture fontTexture = PC_Fonts.create(PC_FontRenderer.getFont("Consolas", 0, 24), null);
-		PC_GresHighlighting highlighting = PC_MiniScriptHighlighting.makeHighlighting();
+		PC_GresHighlighting highlighting = PC_MiniScriptHighlighting.makeHighlighting(te.getReplacements().keySet());
 		PC_AutoAdd autoAdd = PC_MiniScriptHighlighting.makeAutoAdd();
 		PC_AutoComplete autoComplete = PC_MiniScriptHighlighting.makeAutoComplete(te.getReplacements().keySet());
 		PC_GresWindow win = new PC_GresWindow("Belt");
 		win.setLayout(new PC_GresLayoutVertical());
 		textEdit = new PC_GresMultilineHighlightingTextEdit(fontTexture, highlighting, autoAdd, autoComplete, source);
+		if(diagnostics!=null){
+			textEdit.setErrors(diagnostics);
+		}
 		win.add(textEdit);
 		PC_GresGroupContainer gc = new PC_GresGroupContainer();
 		gc.setFill(Fill.HORIZONTAL);
 		gc.setLayout(new PC_GresLayoutHorizontal());
-		save = new PC_GresButton("Save");
+		save = new PC_GresButton("Save & Compile");
 		save.addEventListener(this);
 		gc.add(save);
 		cancel = new PC_GresButton("Cancel");
@@ -82,12 +87,14 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 				}else if(mbe.getComponent()==save){
 					te.sendSaveMessage(textEdit.getText());
 					textEdit.removeErrors();
+					diagnostics = null;
 				}
 			}
 		}
 	}
 
 	public void setErrors(List<Diagnostic<? extends Void>> diagnostics) {
+		this.diagnostics = diagnostics;
 		textEdit.setErrors(diagnostics);
 	}
 	

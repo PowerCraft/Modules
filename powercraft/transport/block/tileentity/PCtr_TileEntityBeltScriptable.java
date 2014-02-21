@@ -66,6 +66,8 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		replacements.put("east", DIR_EAST);
 		replacements.put("south", DIR_SOUTH);
 		replacements.put("west", DIR_WEST);
+		replacements.put("test.test.a", DIR_WEST);
+		replacements.put("test.b", DIR_WEST);
 	}
 	
 	public PCtr_TileEntityBeltScriptable(){
@@ -145,7 +147,18 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 	@Override
 	@SideOnly(Side.CLIENT)
 	public PC_IGresGui openClientGui(EntityPlayer player, NBTTagCompound nbtTagCompound) {
-		return new PCtr_GuiBeltScriptable(this, nbtTagCompound.getString("source"));
+		List<Diagnostic<? extends Void>> diagnostics;
+		if(nbtTagCompound.hasKey("diagnostics")){
+			diagnostics = new ArrayList<Diagnostic<? extends Void>>();
+			NBTTagList list = (NBTTagList)nbtTagCompound.getTag("diagnostics");
+			for(int i=0; i<list.tagCount(); i++){
+				NBTTagCompound compound =list.getCompoundTagAt(i);
+				diagnostics.add(PC_FakeDiagnostic.fromCompound(compound));
+			}
+		}else{
+			diagnostics = null;
+		}
+		return new PCtr_GuiBeltScriptable(this, nbtTagCompound.getString("source"), diagnostics);
 	}
 
 	@Override
@@ -157,6 +170,14 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		nbtTagCompound.setString("source", getSource());
+		if(diagnostic!=null){
+			List<Diagnostic<? extends Void>> diagnostics = diagnostic.getDiagnostics();
+			NBTTagList list = new NBTTagList();
+			for(Diagnostic<? extends Void> dgc:diagnostics){
+				list.appendTag(PC_FakeDiagnostic.toCompound(dgc));
+			}
+			nbtTagCompound.setTag("diagnostics", list);
+		}
 		return nbtTagCompound;
 	}
 
