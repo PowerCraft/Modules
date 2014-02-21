@@ -1,6 +1,8 @@
 package powercraft.transport.block.tileentity;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.tools.Diagnostic;
 
@@ -16,6 +18,7 @@ import powercraft.api.gres.PC_GresWindow;
 import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.autoadd.PC_AutoAdd;
 import powercraft.api.gres.autoadd.PC_AutoComplete;
+import powercraft.api.gres.autoadd.PC_StringWithInfo;
 import powercraft.api.gres.doc.PC_GresHighlighting;
 import powercraft.api.gres.events.PC_GresEvent;
 import powercraft.api.gres.events.PC_GresKeyEvent;
@@ -49,7 +52,11 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 		PC_FontTexture fontTexture = PC_Fonts.create(PC_FontRenderer.getFont("Consolas", 0, 24), null);
 		PC_GresHighlighting highlighting = PC_MiniScriptHighlighting.makeHighlighting(te.getReplacements().keySet());
 		PC_AutoAdd autoAdd = PC_MiniScriptHighlighting.makeAutoAdd();
-		PC_AutoComplete autoComplete = PC_MiniScriptHighlighting.makeAutoComplete(te.getReplacements().keySet());
+		List<PC_StringWithInfo> list = new ArrayList<PC_StringWithInfo>();
+		for(Entry<String, Integer> e:te.getReplacements().entrySet()){
+			list.add(new PC_StringWithInfo(e.getKey(), "Const: "+e.getValue()));
+		}
+		PC_AutoComplete autoComplete = PC_MiniScriptHighlighting.makeAutoComplete(list);
 		PC_GresWindow win = new PC_GresWindow("Belt");
 		win.setLayout(new PC_GresLayoutVertical());
 		textEdit = new PC_GresMultilineHighlightingTextEdit(fontTexture, highlighting, autoAdd, autoComplete, source);
