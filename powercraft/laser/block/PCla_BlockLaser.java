@@ -7,14 +7,16 @@ import powercraft.api.PC_Direction;
 import powercraft.api.PC_IconRegistry;
 import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_TileEntity;
+import powercraft.api.redstone.PC_RedstoneConnectable;
 import powercraft.laser.tileEntity.PCla_TileEntityLaser;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PCla_BlockLaser extends PC_BlockTileEntity {
+public class PCla_BlockLaser extends PC_BlockTileEntity implements PC_RedstoneConnectable {
 
 	@SideOnly(Side.CLIENT)
-	private IIcon[] icons = new IIcon[2];
+	public static IIcon[] icons = new IIcon[3];
+	public static int renderID = 0;
 
 	public PCla_BlockLaser() {
 		super(Material.wood);
@@ -39,7 +41,7 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public int getRenderType() {
-		return 0;
+		return renderID;
 	}
 
 	@Override
@@ -47,6 +49,7 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 	public void registerIcons(PC_IconRegistry iconRegistry) {
 		icons[0] = iconRegistry.registerIcon("side");
 		icons[1] = iconRegistry.registerIcon("front");
+		icons[2] = iconRegistry.registerIcon("beam");
 	}
 
 	@SideOnly(Side.CLIENT)
