@@ -65,6 +65,7 @@ public class PCla_BlockLaser extends PC_BlockTileEntity implements PC_RedstoneCo
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	// Draw the thing here!!!
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, int modelId, RenderBlocks renderer) {
 		Tessellator tessellator = Tessellator.instance;
@@ -87,6 +88,7 @@ public class PCla_BlockLaser extends PC_BlockTileEntity implements PC_RedstoneCo
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	// And here!!!
 	public void renderInventoryBlock(int metadata, int modelId,
 			RenderBlocks renderer) {
