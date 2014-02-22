@@ -8,6 +8,10 @@ import powercraft.api.block.PC_AbstractBlockBase;
 import powercraft.api.renderer.PC_ISimpleBlockRenderingHandler;
 import powercraft.api.renderer.PC_ModelHelper;
 
+// UNUSED!!! 
+//use PC_Block.renderWorldBlock(IBlockAccess world, int x, int y, int z, int modelId, RenderBlocks renderer);
+// and public void renderInventoryBlock(int metadata, int modelId, RenderBlocks renderer)
+@Deprecated
 public class PCla_BlockLaserRender extends PC_ISimpleBlockRenderingHandler {
 
 	@Override

@@ -5,6 +5,8 @@ import powercraft.laser.block.PCla_BlockLaserRender;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 
+//UNUSED!!!
+@Deprecated
 public class PCla_ClientProxy extends PCla_CommonProxy {
 
 	@Override

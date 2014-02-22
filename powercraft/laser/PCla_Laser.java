@@ -3,12 +3,10 @@ package powercraft.laser;
 import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
-import powercraft.api.network.proxy.PC_ICustomProxy;
 import powercraft.laser.block.PCla_BlockLaser;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.InstanceFactory;
-import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 
 @Mod(modid = PCla_Laser.NAME, name = PCla_Laser.NAME, version = PCla_Laser.VERSION, dependencies = PCla_Laser.DEPENDENCIES)
@@ -23,9 +21,9 @@ public class PCla_Laser extends PC_Module {
 
 	public static final PCla_BlockLaser laser = new PCla_BlockLaser();
 
-	public static final String proxyLoc = "powercraft.laser.PCla_";
-	@SidedProxy(clientSide = proxyLoc + "ClientProxy", serverSide = proxyLoc + "CommonProxy")
-	public static PC_ICustomProxy proxy;
+	//public static final String proxyLoc = "powercraft.laser.PCla_";
+	//@SidedProxy(clientSide = proxyLoc + "ClientProxy", serverSide = proxyLoc + "CommonProxy")
+	//public static PC_ICustomProxy proxy;
 
 	@InstanceFactory
 	public static PCla_Laser factory() {
@@ -45,7 +43,7 @@ public class PCla_Laser extends PC_Module {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		// init events
-		proxy.registerRenderStuff();
+		//proxy.registerRenderStuff();
 	}
 
 }

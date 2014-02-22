@@ -15,6 +15,7 @@ import powercraft.api.gres.PC_GresGroupContainer;
 import powercraft.api.gres.PC_GresGuiHandler;
 import powercraft.api.gres.PC_GresMultilineHighlightingTextEdit;
 import powercraft.api.gres.PC_GresWindow;
+import powercraft.api.gres.PC_GresWindowSideTab;
 import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.autoadd.PC_AutoAdd;
 import powercraft.api.gres.autoadd.PC_AutoComplete;
@@ -58,6 +59,7 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 		}
 		PC_AutoComplete autoComplete = PC_MiniScriptHighlighting.makeAutoComplete(list);
 		PC_GresWindow win = new PC_GresWindow("Belt");
+		win.addSideTab(PC_GresWindowSideTab.createRedstoneSideTab(te));
 		win.setLayout(new PC_GresLayoutVertical());
 		textEdit = new PC_GresMultilineHighlightingTextEdit(fontTexture, highlighting, autoAdd, autoComplete, source);
 		if(diagnostics!=null){
