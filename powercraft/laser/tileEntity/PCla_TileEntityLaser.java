@@ -1,13 +1,14 @@
 package powercraft.laser.tileEntity;
 
 import java.util.Vector;
+
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Vec3I;
 import powercraft.api.block.PC_TileEntity;
 
 public class PCla_TileEntityLaser extends PC_TileEntity {
 
-	public Vector<PC_Vec3I> validLaserPos = new Vector<>(20);
+	public Vector<PC_Vec3I> validLaserPos = new Vector<PC_Vec3I>(20);// Please use Java 1.6!!
 	public PC_Direction orientation;
 
 	public PCla_TileEntityLaser() {
