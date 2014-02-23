@@ -22,6 +22,10 @@ public class PCla_BlockLaser extends PC_BlockTileEntity implements PC_RedstoneCo
 
 	@SideOnly(Side.CLIENT)
 	public static IIcon[] icons = new IIcon[3];
+	
+	private final double laserT = 0.4f;
+	private final double minLaserP = 0.5 - 0.5*laserT;
+	private final double maxLaserP = 0.5 + 0.5*laserT;//Used in Rendering
 
 	public PCla_BlockLaser() {
 		super(Material.wood);
@@ -75,19 +79,22 @@ public class PCla_BlockLaser extends PC_BlockTileEntity implements PC_RedstoneCo
 		for (PC_Vec3I posToDraw : tileEntity.validLaserPos)
 			switch (tileEntity.orientation) {
 			case EAST:
-				PC_ModelHelper.drawBox(new PC_Vec3(posToDraw.x - x, 0.2, 0.2), new PC_Vec3(
-						posToDraw.x - x + 1, 0.8, 0.8), tessellator, PCla_BlockLaser.icons[2]);
+				PC_ModelHelper.drawBox(new PC_Vec3(posToDraw.x - x, minLaserP, minLaserP), new PC_Vec3(
+						posToDraw.x - x + 1, maxLaserP, maxLaserP), tessellator, PCla_BlockLaser.icons[2]);
 				break;
 			case NORTH:
+				PC_ModelHelper.drawBox(new PC_Vec3(minLaserP, minLaserP, posToDraw.z - z), new PC_Vec3(
+						maxLaserP, maxLaserP, posToDraw.z - z + 1), tessellator, PCla_BlockLaser.icons[2]);
 				break;
 			case SOUTH:
+				PC_ModelHelper.drawBox(new PC_Vec3(minLaserP, minLaserP, posToDraw.z - z), new PC_Vec3(
+						maxLaserP, maxLaserP, posToDraw.z - z + 1), tessellator, PCla_BlockLaser.icons[2]);
 				break;
 			case UNKNOWN:
 				break;
 			case WEST:
-				PC_ModelHelper.drawBox(new PC_Vec3(posToDraw.x - x - 1, 0.2, 0.2), new PC_Vec3(
-						posToDraw.x - x, 0.8, 0.8), tessellator, PCla_BlockLaser.icons[2]);
-				System.out.println("render");
+				PC_ModelHelper.drawBox(new PC_Vec3(posToDraw.x - x, 0.2, 0.2), new PC_Vec3(
+						posToDraw.x - x + 1, 0.8, 0.8), tessellator, PCla_BlockLaser.icons[2]);
 				break;
 			default:
 				break;
