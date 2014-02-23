@@ -1,5 +1,6 @@
 package powercraft.energy.multiblock;
 
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
@@ -23,6 +24,14 @@ public class PCeg_MultiblockObjectEnergyConduit extends PC_MultiblockObjectCondu
 		
 	}
 	
+	@Override
+	public int canConnectToBlock(World world, int x, int y, int z, PC_Direction side, Block block, int oldConnectionInfo) {
+		if(PC_EnergyGrid.hasGrid(world, x, y, z, side)){
+			return 2;
+		}
+		return 0;
+	}
+
 	@Override
 	public void checkConnections() {
 		int oldConnections = connections;

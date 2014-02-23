@@ -3,6 +3,7 @@ package powercraft.energy;
 import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
+import powercraft.energy.block.PCeg_BlockSolarPanel;
 import powercraft.energy.multiblock.PCeg_MultiblockItemEnergyConduit;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.InstanceFactory;
@@ -17,6 +18,8 @@ public class PCeg_Energy extends PC_Module {
 	public static final PCeg_Energy INSTANCE = new PCeg_Energy();
 	
 	public static final PCeg_MultiblockItemEnergyConduit energyConduit = new PCeg_MultiblockItemEnergyConduit();
+	
+	public static final PCeg_BlockSolarPanel solarPanel = new PCeg_BlockSolarPanel();
 	
 	@InstanceFactory
 	public static PCeg_Energy factory() {
