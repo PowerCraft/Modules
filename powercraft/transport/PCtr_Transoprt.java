@@ -31,8 +31,7 @@ public class PCtr_Transoprt extends PC_Module {
 	
 	@Override
 	public ItemStack getCreativeTabItemStack() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ItemStack(ScriptableBelt);
 	}
 
 }

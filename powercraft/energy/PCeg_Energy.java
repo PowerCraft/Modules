@@ -29,8 +29,7 @@ public class PCeg_Energy extends PC_Module {
 	
 	@Override
 	public ItemStack getCreativeTabItemStack() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ItemStack(energyConduit);
 	}
 
 }
