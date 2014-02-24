@@ -5,7 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import powercraft.api.PC_Direction;
-import powercraft.api.block.PC_Field.Flag;
+import powercraft.api.PC_Field.Flag;
 import powercraft.api.energy.PC_EnergyGrid;
 import powercraft.api.energy.PC_IEnergyGridConduit;
 import powercraft.api.energy.PC_IEnergyGridTile;
@@ -33,12 +33,17 @@ public class PCeg_MultiblockObjectEnergyConduit extends PC_MultiblockObjectCondu
 	}
 
 	@Override
-	public void checkConnections() {
-		int oldConnections = connections;
-		super.checkConnections();
-		if (!isClient() && oldConnections != connections) {
-			removeFormGrid();
-			getGridIfNull();
+	public void reconnect(){
+		if (!isClient()) {
+			PC_EnergyGrid g = grid;
+			if(g==null){
+				getGridIfNull();
+			}else{
+				g.disableSplitting();
+				removeFormGrid();
+				getGridIfNull();
+				g.enableSplitting();
+			}
 		}
 	}
 
@@ -55,14 +60,6 @@ public class PCeg_MultiblockObjectEnergyConduit extends PC_MultiblockObjectCondu
 	@Override
 	public IIcon getConnectionConduitIcon(int connectionInfo) {
 		return PCeg_Energy.energyConduit.connections[connectionInfo-2];
-	}
-
-	@Override
-	public void updateObject() {
-		super.updateObject();
-		if(!isClient()){
-			getGridIfNull();
-		}
 	}
 	
 	@Override
@@ -91,25 +88,7 @@ public class PCeg_MultiblockObjectEnergyConduit extends PC_MultiblockObjectCondu
 	}
 	
 	@Override
-	public boolean onAdded() {
-		super.onAdded();
-		getGridIfNull();
-		return true;
-	}
-
-	@Override
-	public void onRemoved() {
-		super.onRemoved();
-		removeFormGrid();
-	}
-
-	@Override
-	public void onChunkUnload() {
-		super.onChunkUnload();
-		removeFormGrid();
-	}
-	
-	private void getGridIfNull() {
+	public void getGridIfNull() {
 		if(grid == null && !isClient()){
 			World world = getWorld();
 			int x = multiblock.xCoord;
@@ -128,13 +107,13 @@ public class PCeg_MultiblockObjectEnergyConduit extends PC_MultiblockObjectCondu
 				}
 			}
 			if(grid==null){
-				grid = new PC_EnergyGrid();
-				grid.addTile(this, null);
+				grid = new PC_EnergyGrid(this);
 			}
 		}
 	}
 	
-	private void removeFormGrid() {
+	@Override
+	public void removeFormGrid() {
 		if (grid != null && !isClient()) {
 			PC_EnergyGrid.remove((PC_IEnergyGridTile)this);
 		}

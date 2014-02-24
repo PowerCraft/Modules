@@ -1,15 +1,13 @@
-package powercraft.energy.block.tileentity;
+package powercraft.test.block.tileentity;
 
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.EnumSkyBlock;
 import powercraft.api.PC_Direction;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.api.energy.PC_EnergyGrid;
-import powercraft.api.energy.PC_IEnergyGridProvider;
+import powercraft.api.energy.PC_IEnergyGridConsumer;
 import powercraft.api.energy.PC_IEnergyGridTile;
 import powercraft.api.grid.PC_IGridHolder;
 
-public class PCeg_TileEntitySolarPanel extends PC_TileEntity implements PC_IEnergyGridProvider, PC_IGridHolder {
+public class PCtm_TileEntityEnergyConsumer extends PC_TileEntity implements PC_IEnergyGridConsumer, PC_IGridHolder {
 	
 	private PC_EnergyGrid grid;
 	
@@ -52,36 +50,18 @@ public class PCeg_TileEntitySolarPanel extends PC_TileEntity implements PC_IEner
 	}
 
 	@Override
-	public float getEnergyUseable() {
-		if (!worldObj.provider.hasNoSky) {
-            float power = worldObj.getSavedLightValue(EnumSkyBlock.Sky, xCoord, yCoord, zCoord) - worldObj.skylightSubtracted;
-            float angle = worldObj.getCelestialAngleRadians(1.0F);
+	public float getEnergyRequested() {
+		return 1000;
+	}
 
-            if (angle < (float)Math.PI){
-            	angle += (0.0F - angle) * 0.2F;
-            }else{
-            	angle += (((float)Math.PI * 2F) - angle) * 0.2F;
-            }
+	@Override
+	public void useEnergy(float energy) {
+		System.out.println("Energy:"+energy);
+	}
 
-            power *= MathHelper.cos(angle);
-
-            if (power < 0){
-            	power = 0;
-            }
-
-            return power*10;
-        }
+	@Override
+	public float getMaxPercentToWork() {
 		return 0;
-	}
-
-	@Override
-	public void takeEnergy(float energy) {
-		
-	}
-
-	@Override
-	public boolean dynamic() {
-		return false;
 	}
 
 }
