@@ -1,0 +1,18 @@
+Transport:
+belts-Normal(Speedy, Seperator, Ejection, Redirection, Detection)
+elevators-Up(Down, Splitter)
+
+
+Light:
+Lasers-justLight(harvest, build, traction, range, sensor, damage, color[, area light])
+Mirros
+Prisms
+
+Teleporters:
+[Teleporters]
+
+Ideas:
+-"Zeppelin-like Mod"
+-"realistic Water Mod"
+-"Cameras"
+-"Gas-Mod"
