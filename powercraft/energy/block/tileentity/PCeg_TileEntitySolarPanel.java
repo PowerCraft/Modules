@@ -51,7 +51,7 @@ public class PCeg_TileEntitySolarPanel extends PC_TileEntity implements PC_IEner
             	power = 0;
             }
 
-            return power*10;
+            return power;
         }
 		return 0;
 	}
