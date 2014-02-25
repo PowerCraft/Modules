@@ -9,6 +9,7 @@ import powercraft.api.PC_Field.Flag;
 import powercraft.api.energy.PC_EnergyGrid;
 import powercraft.api.energy.PC_IEnergyGridConduit;
 import powercraft.api.energy.PC_IEnergyGridTile;
+import powercraft.api.grid.PC_GridHelper;
 import powercraft.api.multiblock.conduit.PC_MultiblockObjectConduit;
 import powercraft.energy.PCeg_Energy;
 
@@ -26,7 +27,7 @@ public class PCeg_MultiblockObjectEnergyConduit extends PC_MultiblockObjectCondu
 	
 	@Override
 	public int canConnectToBlock(World world, int x, int y, int z, PC_Direction side, Block block, int oldConnectionInfo) {
-		if(PC_EnergyGrid.hasGrid(world, x, y, z, side)){
+		if(PC_GridHelper.hasGrid(world, x, y, z, side, PC_IEnergyGridTile.class)){
 			return 2;
 		}
 		return 0;
@@ -89,34 +90,16 @@ public class PCeg_MultiblockObjectEnergyConduit extends PC_MultiblockObjectCondu
 	
 	@Override
 	public void getGridIfNull() {
-		if(grid == null && !isClient()){
-			World world = getWorld();
-			int x = multiblock.xCoord;
-			int y = multiblock.yCoord;
-			int z = multiblock.zCoord;
-			for(PC_Direction dir:PC_Direction.VALID_DIRECTIONS){
-				if(!notingOnSide(dir)){
-					PC_IEnergyGridTile tile = PC_EnergyGrid.getGridTile(world, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ, dir.getOpposite());
-					if(tile!=null && tile.getGrid()!=null){
-						if(grid==null){
-							tile.getGrid().addTile(this, tile);
-						}else{
-							PC_EnergyGrid.connect(tile, this);
-						}
-					}
-				}
-			}
-			if(grid==null){
-				grid = new PC_EnergyGrid(this);
-			}
-		}
+		World world = getWorld();
+		int x = multiblock.xCoord;
+		int y = multiblock.yCoord;
+		int z = multiblock.zCoord;
+		PC_GridHelper.getGridIfNull(world, x, y, z, 0x3F, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
 	}
 	
 	@Override
 	public void removeFormGrid() {
-		if (grid != null && !isClient()) {
-			PC_EnergyGrid.remove((PC_IEnergyGridTile)this);
-		}
+		PC_GridHelper.removeFormGrid(getWorld(), (PC_IEnergyGridTile)this);
 	}
 	
 }

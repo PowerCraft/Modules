@@ -1,10 +1,10 @@
 package powercraft.test.block.tileentity;
 
-import powercraft.api.PC_Direction;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.api.energy.PC_EnergyGrid;
 import powercraft.api.energy.PC_IEnergyGridConsumer;
 import powercraft.api.energy.PC_IEnergyGridTile;
+import powercraft.api.grid.PC_GridHelper;
 import powercraft.api.grid.PC_IGridHolder;
 
 public class PCtm_TileEntityEnergyConsumer extends PC_TileEntity implements PC_IEnergyGridConsumer, PC_IGridHolder {
@@ -13,30 +13,12 @@ public class PCtm_TileEntityEnergyConsumer extends PC_TileEntity implements PC_I
 	
 	@Override
 	public void getGridIfNull() {
-		if(grid == null && !isClient()){
-			for(PC_Direction dir:PC_Direction.VALID_DIRECTIONS){
-				if(dir!=PC_Direction.UP){
-					PC_IEnergyGridTile tile = PC_EnergyGrid.getGridTile(worldObj, xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ, dir.getOpposite());
-					if(tile!=null && tile.getGrid()!=null){
-						if(grid==null){
-							tile.getGrid().addTile(this, tile);
-						}else{
-							PC_EnergyGrid.connect(tile, this);
-						}
-					}
-				}
-			}
-			if(grid==null){
-				grid = new PC_EnergyGrid(this);
-			}
-		}
+		PC_GridHelper.getGridIfNull(worldObj, xCoord, yCoord, zCoord, 0x3F, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
 	}
 	
 	@Override
 	public void removeFormGrid() {
-		if (grid != null && !isClient()) {
-			PC_EnergyGrid.remove((PC_IEnergyGridTile)this);
-		}
+		PC_GridHelper.removeFormGrid(worldObj, (PC_IEnergyGridTile)this);
 	}
 
 	@Override
