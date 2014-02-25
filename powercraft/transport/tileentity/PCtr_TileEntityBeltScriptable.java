@@ -1,4 +1,4 @@
-package powercraft.transport.block.tileentity;
+package powercraft.transport.tileentity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +23,7 @@ import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.network.PC_PacketHandler;
 import powercraft.api.script.PC_FakeDiagnostic;
 import powercraft.transport.block.PCtr_PacketSetEntitySpeed;
+import powercraft.transport.gui.PCtr_GuiBeltScriptable;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -140,7 +141,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity.getEntityId()), worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 16);
 	}
 	
-	protected HashMap<String, Integer> getReplacements(){
+	public HashMap<String, Integer> getReplacements(){
 		return replacements;
 	}
 

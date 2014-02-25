@@ -1,4 +1,4 @@
-package powercraft.transport.block.tileentity;
+package powercraft.transport.gui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +32,7 @@ import powercraft.api.gres.font.PC_Fonts;
 import powercraft.api.gres.layout.PC_GresLayoutHorizontal;
 import powercraft.api.gres.layout.PC_GresLayoutVertical;
 import powercraft.api.script.miniscript.PC_MiniScriptHighlighting;
+import powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable;
 
 public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListener {
 

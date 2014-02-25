@@ -1,4 +1,4 @@
-package powercraft.energy.block.tileentity;
+package powercraft.energy.tileentity;
 
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
@@ -15,12 +15,12 @@ public class PCeg_TileEntitySolarPanel extends PC_TileEntity implements PC_IEner
 	
 	@Override
 	public void getGridIfNull() {
-		PC_GridHelper.getGridIfNull(getWorldObj(), xCoord, yCoord, zCoord, 0x3D, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
+		PC_GridHelper.getGridIfNull(worldObj, xCoord, yCoord, zCoord, 0x3D, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
 	}
 	
 	@Override
 	public void removeFormGrid() {
-		PC_GridHelper.removeFormGrid(getWorldObj(), (PC_IEnergyGridTile)this);
+		PC_GridHelper.removeFormGrid(worldObj, (PC_IEnergyGridTile)this);
 	}
 
 	@Override

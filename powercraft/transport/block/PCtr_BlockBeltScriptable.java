@@ -7,7 +7,7 @@ import powercraft.api.PC_Direction;
 import powercraft.api.PC_IconRegistry;
 import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_TileEntity;
-import powercraft.transport.block.tileentity.PCtr_TileEntityBeltScriptable;
+import powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable;
 
 public class PCtr_BlockBeltScriptable extends PC_BlockTileEntity {
 
