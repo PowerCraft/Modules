@@ -2,3 +2,4 @@ desk.PowerCraft-Machines=All things that have something to do with Machines
 itemGroup.PowerCraft-Machines=PowerCraft-Machines
 tile.PCma_BlockFurnace.name=Furnace
 tile.PCma_BlockRoaster.name=Roaster
+tile.PCma_BlockAutomaticWorkbench.name=Automatic Workbench
