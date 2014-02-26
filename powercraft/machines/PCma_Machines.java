@@ -4,6 +4,7 @@ import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
 import powercraft.machines.block.PCma_BlockFurnace;
+import powercraft.machines.block.PCma_BlockRoaster;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.InstanceFactory;
 
@@ -17,6 +18,7 @@ public class PCma_Machines extends PC_Module {
 	public static final PCma_Machines INSTANCE = new PCma_Machines();
 	
 	public static final PCma_BlockFurnace FURNACE = new PCma_BlockFurnace();
+	public static final PCma_BlockRoaster ROASTER = new PCma_BlockRoaster();
 	
 	@InstanceFactory
 	public static PCma_Machines factory() {
@@ -29,8 +31,7 @@ public class PCma_Machines extends PC_Module {
 	
 	@Override
 	public ItemStack getCreativeTabItemStack() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ItemStack(FURNACE);
 	}
 
 }

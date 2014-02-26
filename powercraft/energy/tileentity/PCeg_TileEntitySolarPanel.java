@@ -2,14 +2,17 @@ package powercraft.energy.tileentity;
 
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
+import powercraft.api.PC_Direction;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.api.energy.PC_EnergyGrid;
 import powercraft.api.energy.PC_IEnergyGridProvider;
 import powercraft.api.energy.PC_IEnergyGridTile;
 import powercraft.api.grid.PC_GridHelper;
 import powercraft.api.grid.PC_IGridHolder;
+import powercraft.api.grid.PC_IGridSided;
+import powercraft.api.grid.PC_IGridTile;
 
-public class PCeg_TileEntitySolarPanel extends PC_TileEntity implements PC_IEnergyGridProvider, PC_IGridHolder {
+public class PCeg_TileEntitySolarPanel extends PC_TileEntity implements PC_IGridSided, PC_IEnergyGridProvider, PC_IGridHolder {
 	
 	private PC_EnergyGrid grid;
 	
@@ -64,6 +67,15 @@ public class PCeg_TileEntitySolarPanel extends PC_TileEntity implements PC_IEner
 	@Override
 	public boolean dynamic() {
 		return false;
+	}
+
+	@Override
+	public <T extends PC_IGridTile<?, T, ?, ?>> T getTile(PC_Direction side, Class<T> tileClass) {
+		if(side==PC_Direction.UP)
+			return null;
+		if(tileClass==PC_IEnergyGridTile.class)
+			return tileClass.cast(this);
+		return null;
 	}
 
 }

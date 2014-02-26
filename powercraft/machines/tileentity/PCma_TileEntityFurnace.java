@@ -220,6 +220,7 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 		return null;
 	}
 	
+	@Override
 	public PC_RedstoneWorkType[] getAllowedRedstoneWorkTypes() {
 		return new PC_RedstoneWorkType[]{null, PC_RedstoneWorkType.EVER, PC_RedstoneWorkType.ON_ON, PC_RedstoneWorkType.ON_OFF};
 	}
