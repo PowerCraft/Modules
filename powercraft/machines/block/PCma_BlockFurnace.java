@@ -27,7 +27,7 @@ public class PCma_BlockFurnace extends PC_BlockTileEntity {
 
 	@Override
 	public IIcon getIcon(PC_Direction side, int metadata) {
-		if(side==PC_Direction.NORTH){
+		if(side==PC_Direction.EAST){
 			return front;
 		}
 		return PCma_BlockFurnace.side;

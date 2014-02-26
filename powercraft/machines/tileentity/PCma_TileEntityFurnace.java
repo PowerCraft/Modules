@@ -4,8 +4,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+import powercraft.api.PC_3DRotation;
+import powercraft.api.PC_3DRotationY;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Field;
+import powercraft.api.PC_Field.Flag;
 import powercraft.api.PC_Utils;
 import powercraft.api.block.PC_TileEntityWithInventory;
 import powercraft.api.energy.PC_EnergyGrid;
@@ -16,17 +19,22 @@ import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.grid.PC_GridHelper;
 import powercraft.api.grid.PC_IGridHolder;
+import powercraft.api.grid.PC_IGridSided;
+import powercraft.api.grid.PC_IGridTile;
 import powercraft.api.redstone.PC_RedstoneWorkType;
 import powercraft.machines.block.PCma_BlockFurnace;
 import powercraft.machines.container.PCma_ContainerFurnace;
 import powercraft.machines.gui.PCma_GuiFurnace;
 
-public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implements PC_IEnergyGridConsumer, PC_IGridHolder, PC_IGresGuiOpenHandler {
+public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implements PC_IEnergyGridConsumer, PC_IGridHolder, PC_IGresGuiOpenHandler, PC_IGridSided {
 
 	private PC_EnergyGrid grid;
 	@PC_Field
 	private float done;
+	@PC_Field(flags={Flag.SYNC})
 	private boolean working;
+	@PC_Field(flags={Flag.SAVE, Flag.SYNC})
+	protected PC_3DRotation rotation;
 	
 	public PCma_TileEntityFurnace() {
 		super("Furnace", 2, new Group(true, 0), new Group(false, 1));
@@ -42,10 +50,26 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 	public PC_EnergyGrid getGrid() {
 		return grid;
 	}
+	
+	@Override
+	public void onAdded(EntityPlayer player) {
+		set3DRotation(new PC_3DRotationY(player));
+		super.onAdded(player);
+	}
 
 	@Override
 	public void getGridIfNull() {
-		PC_GridHelper.getGridIfNull(worldObj, xCoord, yCoord, zCoord, 0x3F, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
+		if(!worldObj.isRemote && grid==null){
+			int connectable = 0;
+			PC_Direction not = rotation.getSidePosition(PC_Direction.NORTH);
+			for(PC_Direction dir:PC_Direction.VALID_DIRECTIONS){
+				connectable<<=1;
+				if(dir!=not){
+					connectable |= 1;
+				}
+			}
+			PC_GridHelper.getGridIfNull(worldObj, xCoord, yCoord, zCoord, connectable, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
+		}
 	}
 
 	@Override
@@ -73,11 +97,12 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 
 	@Override
 	public void useEnergy(float energy) {
-		if(couldWork()){
+		if(couldWork() && energy>0){
 			if(!working){
 				working = true;
 				sendWorking();
 			}
+			sendProgressBarUpdate(1, (int)(energy));
 			done += energy/5.0f;
 			if(done>=100){
 				done = 0;
@@ -93,6 +118,8 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 			if(working){
 				working = false;
 				sendWorking();
+				sendProgressBarUpdate(0, 0);
+				sendProgressBarUpdate(1, 0);
 			}
 			done=0;
 		}
@@ -152,6 +179,48 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 			working = nbtTagCompound.getBoolean("working");
 			renderUpdate();
 		}
+	}
+	
+	@Override
+	public void onBlockPostSet(PC_Direction side, ItemStack stack, EntityPlayer player, float hitX, float hitY, float hitZ) {
+		if(rotation==null)
+			set3DRotation(new PC_3DRotationY(player));
+	}
+
+	@Override
+	public PC_3DRotation get3DRotation() {
+		return rotation;
+	}
+
+	@Override
+	public boolean set3DRotation(PC_3DRotation rotation) {
+		this.rotation = rotation;
+		sync();
+		return true;
+	}
+	
+	@Override
+	public void onLoadedFromNBT() {
+		super.onLoadedFromNBT();
+		renderUpdate();
+	}
+
+	@Override
+	public boolean canRotate() {
+		return true;
+	}
+
+	@Override
+	public <T extends PC_IGridTile<?, T, ?, ?>> T getTile(PC_Direction side, Class<T> tileClass) {
+		if(rotation.getSidePosition(PC_Direction.NORTH)==side)
+			return null;
+		if(tileClass==PC_IEnergyGridTile.class)
+			return tileClass.cast(this);
+		return null;
+	}
+	
+	public PC_RedstoneWorkType[] getAllowedRedstoneWorkTypes() {
+		return new PC_RedstoneWorkType[]{null, PC_RedstoneWorkType.EVER, PC_RedstoneWorkType.ON_ON, PC_RedstoneWorkType.ON_OFF};
 	}
 	
 }

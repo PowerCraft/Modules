@@ -12,6 +12,7 @@ import powercraft.api.gres.PC_GresPlayerInventory;
 import powercraft.api.gres.PC_GresProgressImage;
 import powercraft.api.gres.PC_GresWindow;
 import powercraft.api.gres.PC_GresWindowSideTab;
+import powercraft.api.gres.PC_GresWindowSideTab.EnergyPerTick;
 import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.events.PC_GresEvent;
 import powercraft.api.gres.events.PC_GresKeyEvent;
@@ -25,6 +26,7 @@ import powercraft.machines.tileentity.PCma_TileEntityFurnace;
 public class PCma_GuiFurnace extends PCma_ContainerFurnace implements PC_IGresGui, PC_IGresEventListener {
 
 	private PC_GresProgressImage fire;
+	private EnergyPerTick energy;
 	
 	public PCma_GuiFurnace(EntityPlayer player, PCma_TileEntityFurnace furnace) {
 		super(player, furnace);
@@ -33,6 +35,9 @@ public class PCma_GuiFurnace extends PCma_ContainerFurnace implements PC_IGresGu
 	@Override
 	public void initGui(PC_GresGuiHandler gui) {
 		PC_GresWindow window = new PC_GresWindow("Furnace");
+		energy = new EnergyPerTick();
+		window.addSideTab(PC_GresWindowSideTab.createEnergySideTab(energy));
+		window.addSideTab(PC_GresWindowSideTab.createRedstoneSideTab(furnace));
 		window.addSideTab(PC_GresWindowSideTab.createIOConfigurationSideTab((PC_ISidedInventory)furnace));
 		window.setLayout(new PC_GresLayoutVertical());
 		PC_GresGroupContainer group1 = new PC_GresGroupContainer();
@@ -56,6 +61,8 @@ public class PCma_GuiFurnace extends PCma_ContainerFurnace implements PC_IGresGu
 	public void updateProgressBar(int key, int value) {
 		if(key==0)
 			fire.setProgress(value);
+		if(key==1)
+			energy.setToValue(value);
 	}
 	
 	@Override
