@@ -62,7 +62,7 @@ public class PCma_GuiFurnace extends PCma_ContainerFurnace implements PC_IGresGu
 		if(key==0)
 			fire.setProgress(value);
 		if(key==1)
-			energy.setToValue(value);
+			energy.setToValue(value/100.0f);
 	}
 	
 	@Override

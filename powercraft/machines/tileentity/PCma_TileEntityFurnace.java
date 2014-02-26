@@ -102,15 +102,16 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 				working = true;
 				sendWorking();
 			}
-			sendProgressBarUpdate(1, (int)(energy));
+			sendProgressBarUpdate(1, (int)(energy*100));
 			done += energy/5.0f;
 			if(done>=100){
 				done = 0;
 				ItemStack itemStack = PC_Utils.getSmeltingResult(decrStackSize(0, 1));
 				if(inventoryContents[1]!=null){
 					itemStack.stackSize += inventoryContents[1].stackSize;
+					setInventorySlotContents(1, null);
 				}
-				setInventorySlotContents(1, itemStack);
+				moveOrStore(1, itemStack);
 				detectAndSendChanges();
 			}
 			sendProgressBarUpdate(0, (int)(done));
