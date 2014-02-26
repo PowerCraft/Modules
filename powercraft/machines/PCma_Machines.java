@@ -31,7 +31,7 @@ public class PCma_Machines extends PC_Module {
 	
 	@Override
 	public ItemStack getCreativeTabItemStack() {
-		return new ItemStack(FURNACE);
+		return new ItemStack(ROASTER);
 	}
 
 }

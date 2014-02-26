@@ -1,2 +1,4 @@
 desk.PowerCraft-Machines=All things that have something to do with Machines
-tile.PCtr_BlockFurnace.name=Furnace
+itemGroup.PowerCraft-Machines=PowerCraft-Machines
+tile.PCma_BlockFurnace.name=Furnace
+tile.PCma_BlockRoaster.name=Roaster

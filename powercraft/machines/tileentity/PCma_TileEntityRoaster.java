@@ -61,13 +61,14 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 	public float getEnergyRequested() {
 		if(!isWorking())
 			return 0;
-		float f = getEntities().size()*10+getItems().size()*10;
+		float f = getEntities().size()*10+getItems().size()*10+10;
 		return f>100?100:f;
 	}
 
 	@Override
 	public void useEnergy(float energy) {
 		if(getEnergyRequested()!=0 && energy>0){
+			energy -= 10;
 			if(!working){
 				working = true;
 				sendWorking();
@@ -161,7 +162,6 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 	public void onClientMessage(EntityPlayer player, NBTTagCompound nbtTagCompound) {
 		if(nbtTagCompound.getInteger("type")==0){
 			working = nbtTagCompound.getBoolean("working");
-			renderUpdate();
 		}
 	}
 	
@@ -187,16 +187,16 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 			}
 	
 			for (int c = 0; c < 5; c++) {
-				float y = xCoord + 0.74F + (random.nextFloat() * 0.3F);
-				float x = yCoord + 0.2F + (random.nextFloat() * 0.6F);
+				float y = yCoord + 0.74F + (random.nextFloat() * 0.3F);
+				float x = xCoord + 0.2F + (random.nextFloat() * 0.6F);
 				float z = zCoord + 0.2F + (random.nextFloat() * 0.6F);
 				worldObj.spawnParticle("smoke", x, y, z, 0.0D, 0.0D, 0.0D);
 				worldObj.spawnParticle("flame", x, y, z, 0.0D, 0.0D, 0.0D);
 			}
 	
 			for (int c = 0; c < 5; c++) {
-				float y = xCoord + 1.3F;
-				float x = yCoord + 0.2F + (random.nextFloat() * 0.6F);
+				float y = yCoord + 1.3F;
+				float x = xCoord + 0.2F + (random.nextFloat() * 0.6F);
 				float z = zCoord + 0.2F + (random.nextFloat() * 0.6F);
 				worldObj.spawnParticle("smoke", x, y, z, 0.0D, 0.0D, 0.0D);
 			}
