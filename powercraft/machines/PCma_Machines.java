@@ -3,6 +3,7 @@ package powercraft.machines;
 import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
+import powercraft.machines.block.PCma_BlockAutomaticWorkbench;
 import powercraft.machines.block.PCma_BlockFurnace;
 import powercraft.machines.block.PCma_BlockRoaster;
 import cpw.mods.fml.common.Mod;
@@ -19,6 +20,7 @@ public class PCma_Machines extends PC_Module {
 	
 	public static final PCma_BlockFurnace FURNACE = new PCma_BlockFurnace();
 	public static final PCma_BlockRoaster ROASTER = new PCma_BlockRoaster();
+	public static final PCma_BlockAutomaticWorkbench AUTOMATIC_WORKBENCH = new PCma_BlockAutomaticWorkbench();
 	
 	@InstanceFactory
 	public static PCma_Machines factory() {
