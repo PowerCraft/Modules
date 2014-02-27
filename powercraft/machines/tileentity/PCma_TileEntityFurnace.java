@@ -73,8 +73,8 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 	}
 
 	@Override
-	public void removeFormGrid() {
-		PC_GridHelper.removeFormGrid(worldObj, (PC_IEnergyGridTile)this);
+	public void removeFromGrid() {
+		PC_GridHelper.removeFromGrid(worldObj, (PC_IEnergyGridTile)this);
 	}
 
 	public boolean couldWork(){

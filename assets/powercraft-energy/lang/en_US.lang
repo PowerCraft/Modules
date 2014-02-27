@@ -1,4 +1,5 @@
 desk.PowerCraft-Energy=All things that have something to do with Energy
 itemGroup.PowerCraft-Energy=PowerCraft-Energy
 tile.PCeg_BlockSolarPanel.name=Solar Panel
+tile.PCeg_BlockAccumulator.name=Accumulator
 item.PCeg_MultiblockItemEnergyConduit.name=Energy Conduit

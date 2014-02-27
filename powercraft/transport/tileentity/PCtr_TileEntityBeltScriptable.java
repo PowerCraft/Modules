@@ -136,6 +136,18 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		}
 		invoke();
 		int direction = ext[EXT_IN_OUT_DIR];
+		int sum = ext[EXT_OUT_FRONT_COUNT]+ext[EXT_OUT_RIGHT_COUNT]+ext[EXT_OUT_BACK_COUNT]+ext[EXT_OUT_LEFT_COUNT];
+		if(sum!=0){
+			if(sum==ext[EXT_OUT_RIGHT_COUNT]){
+				direction += 1;
+			}else if(sum==ext[EXT_OUT_BACK_COUNT]){
+				direction += 2;
+			}else if(sum==ext[EXT_OUT_LEFT_COUNT]){
+				direction += 3;
+			}else if(sum!=ext[EXT_OUT_FRONT_COUNT]){
+				
+			}
+		}
 		compound.setInteger("dir", (direction%4+4)%4);
 		moveEntity(entity);
 		PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity.getEntityId()), worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 16);

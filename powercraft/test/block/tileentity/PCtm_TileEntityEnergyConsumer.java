@@ -17,8 +17,8 @@ public class PCtm_TileEntityEnergyConsumer extends PC_TileEntity implements PC_I
 	}
 	
 	@Override
-	public void removeFormGrid() {
-		PC_GridHelper.removeFormGrid(worldObj, (PC_IEnergyGridTile)this);
+	public void removeFromGrid() {
+		PC_GridHelper.removeFromGrid(worldObj, (PC_IEnergyGridTile)this);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
 import powercraft.api.energy.PC_EnergyGrid;
+import powercraft.energy.block.PCeg_BlockAccumulator;
 import powercraft.energy.block.PCeg_BlockSolarPanel;
 import powercraft.energy.multiblock.PCeg_MultiblockItemEnergyConduit;
 import cpw.mods.fml.common.Mod;
@@ -21,6 +22,8 @@ public class PCeg_Energy extends PC_Module {
 	public static final PCeg_MultiblockItemEnergyConduit energyConduit = new PCeg_MultiblockItemEnergyConduit();
 	
 	public static final PCeg_BlockSolarPanel solarPanel = new PCeg_BlockSolarPanel();
+	
+	public static final PCeg_BlockAccumulator accumulator = new PCeg_BlockAccumulator();
 	
 	@InstanceFactory
 	public static PCeg_Energy factory() {

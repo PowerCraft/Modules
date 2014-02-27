@@ -53,8 +53,8 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 	}
 
 	@Override
-	public void removeFormGrid() {
-		PC_GridHelper.removeFormGrid(worldObj, (PC_IEnergyGridTile)this);
+	public void removeFromGrid() {
+		PC_GridHelper.removeFromGrid(worldObj, (PC_IEnergyGridTile)this);
 	}
 
 	@Override

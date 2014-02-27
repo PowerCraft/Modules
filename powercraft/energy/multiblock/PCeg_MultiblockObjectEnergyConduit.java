@@ -41,7 +41,7 @@ public class PCeg_MultiblockObjectEnergyConduit extends PC_MultiblockObjectCondu
 				getGridIfNull();
 			}else{
 				g.disableSplitting();
-				removeFormGrid();
+				removeFromGrid();
 				getGridIfNull();
 				g.enableSplitting();
 			}
@@ -98,8 +98,8 @@ public class PCeg_MultiblockObjectEnergyConduit extends PC_MultiblockObjectCondu
 	}
 	
 	@Override
-	public void removeFormGrid() {
-		PC_GridHelper.removeFormGrid(getWorld(), (PC_IEnergyGridTile)this);
+	public void removeFromGrid() {
+		PC_GridHelper.removeFromGrid(getWorld(), (PC_IEnergyGridTile)this);
 	}
 	
 }

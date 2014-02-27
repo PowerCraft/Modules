@@ -1,8 +1,8 @@
 package powercraft.energy.tileentity;
 
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
 import powercraft.api.PC_Direction;
+import powercraft.api.PC_MathHelper;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.api.energy.PC_EnergyGrid;
 import powercraft.api.energy.PC_IEnergyGridProvider;
@@ -22,8 +22,8 @@ public class PCeg_TileEntitySolarPanel extends PC_TileEntity implements PC_IGrid
 	}
 	
 	@Override
-	public void removeFormGrid() {
-		PC_GridHelper.removeFormGrid(worldObj, (PC_IEnergyGridTile)this);
+	public void removeFromGrid() {
+		PC_GridHelper.removeFromGrid(worldObj, (PC_IEnergyGridTile)this);
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class PCeg_TileEntitySolarPanel extends PC_TileEntity implements PC_IGrid
             	angle += (((float)Math.PI * 2F) - angle) * 0.2F;
             }
 
-            power *= MathHelper.cos(angle);
+            power *= PC_MathHelper.cos(angle);
 
             if (power < 0){
             	power = 0;

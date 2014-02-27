@@ -83,8 +83,8 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 	}
 
 	@Override
-	public void removeFormGrid() {
-		PC_GridHelper.removeFormGrid(worldObj, (PC_IEnergyGridTile)this);
+	public void removeFromGrid() {
+		PC_GridHelper.removeFromGrid(worldObj, (PC_IEnergyGridTile)this);
 	}
 
 	public boolean canCraft(){
