@@ -31,7 +31,7 @@ import powercraft.api.gres.font.PC_FontTexture;
 import powercraft.api.gres.font.PC_Fonts;
 import powercraft.api.gres.layout.PC_GresLayoutHorizontal;
 import powercraft.api.gres.layout.PC_GresLayoutVertical;
-import powercraft.api.script.miniscript.PC_MiniScriptHighlighting;
+import powercraft.api.script.miniscript.PC_MiniscriptHighlighting;
 import powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable;
 
 public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListener {
@@ -52,13 +52,13 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 	@Override
 	public void initGui(PC_GresGuiHandler gui) {
 		PC_FontTexture fontTexture = PC_Fonts.create(PC_FontRenderer.getFont("Consolas", 0, 24), null);
-		PC_GresHighlighting highlighting = PC_MiniScriptHighlighting.makeHighlighting(te.getReplacements().keySet());
-		PC_AutoAdd autoAdd = PC_MiniScriptHighlighting.makeAutoAdd();
+		PC_GresHighlighting highlighting = PC_MiniscriptHighlighting.makeHighlighting(te.getReplacements().keySet());
+		PC_AutoAdd autoAdd = PC_MiniscriptHighlighting.makeAutoAdd();
 		List<PC_StringWithInfo> list = new ArrayList<PC_StringWithInfo>();
 		for(Entry<String, Integer> e:te.getReplacements().entrySet()){
 			list.add(new PC_StringWithInfo(e.getKey(), "Const: "+e.getValue()));
 		}
-		PC_AutoComplete autoComplete = PC_MiniScriptHighlighting.makeAutoComplete(list);
+		PC_AutoComplete autoComplete = PC_MiniscriptHighlighting.makeAutoComplete(list);
 		PC_GresWindow win = new PC_GresWindow("Belt");
 		win.addSideTab(PC_GresWindowSideTab.createRedstoneSideTab(te));
 		win.setLayout(new PC_GresLayoutVertical());

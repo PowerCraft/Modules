@@ -259,8 +259,8 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 	}
 	
 	@Override
-	public void onLoadedFromNBT() {
-		super.onLoadedFromNBT();
+	public void onLoadedFromNBT(Flag flag) {
+		super.onLoadedFromNBT(flag);
 		renderUpdate();
 	}
 

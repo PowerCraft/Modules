@@ -201,8 +201,8 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 	}
 	
 	@Override
-	public void onLoadedFromNBT() {
-		super.onLoadedFromNBT();
+	public void onLoadedFromNBT(Flag flag) {
+		super.onLoadedFromNBT(flag);
 		renderUpdate();
 	}
 
