@@ -11,9 +11,6 @@ import powercraft.api.script.weasel.PC_Weasel;
 import powercraft.api.script.weasel.PC_WeaselClassSave;
 import powercraft.api.script.weasel.PC_WeaselEngine;
 import powercraft.api.script.weasel.PC_WeaselModule;
-import powercraft.machines.block.PCma_BlockAutomaticWorkbench;
-import powercraft.machines.block.PCma_BlockFurnace;
-import powercraft.machines.block.PCma_BlockRoaster;
 import powercraft.weasel.engine.PCws_WeaselClassSave;
 import powercraft.weasel.engine.PCws_WeaselEngine;
 import xscript.runtime.clazz.XClassLoader;
@@ -29,10 +26,6 @@ public class PCws_Weasel extends PC_Module implements PC_WeaselModule {
 	public static final String DEPENDENCIES = "required-after:" + PC_Api.NAME + "@" + PC_Api.VERSION;
 	
 	public static final PCws_Weasel INSTANCE = new PCws_Weasel();
-	
-	public static final PCma_BlockFurnace FURNACE = new PCma_BlockFurnace();
-	public static final PCma_BlockRoaster ROASTER = new PCma_BlockRoaster();
-	public static final PCma_BlockAutomaticWorkbench AUTOMATIC_WORKBENCH = new PCma_BlockAutomaticWorkbench();
 	
 	public static final File rt = PC_Utils.getPowerCraftFile("Weasel", "rt.zip");
 	
