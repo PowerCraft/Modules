@@ -16,7 +16,7 @@ public class PCtr_BlockBeltScriptable extends PC_BlockTileEntity {
 	public PCtr_BlockBeltScriptable() {
 		super(Material.circuits);
 		setCreativeTab(CreativeTabs.tabTransport);
-		maxY = 1.0f/16.0f;
+		this.maxY = 1.0f/16.0f;
 	}
 	
 	@Override
@@ -41,16 +41,16 @@ public class PCtr_BlockBeltScriptable extends PC_BlockTileEntity {
 
 	@Override
 	public void registerIcons(PC_IconRegistry iconRegistry) {
-		icons[0] = iconRegistry.registerIcon("top");
-		icons[1] = iconRegistry.registerIcon("side");
+		this.icons[0] = iconRegistry.registerIcon("top");
+		this.icons[1] = iconRegistry.registerIcon("side");
 	}
 
 	@Override
 	public IIcon getIcon(PC_Direction side, int metadata) {
 		if(side==PC_Direction.UP || side==PC_Direction.DOWN){
-			return icons[0];
+			return this.icons[0];
 		}
-		return icons[1];
+		return this.icons[1];
 	}
 	
 }

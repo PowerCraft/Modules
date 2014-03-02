@@ -3,7 +3,7 @@ package powercraft.traffic;
 import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
-import powercraft.api.entity.PC_Entity;
+import powercraft.api.entity.PC_Entities;
 import powercraft.traffic.entity.PCtf_EntityMiner;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.InstanceFactory;
@@ -23,7 +23,7 @@ public class PCtf_Traffic extends PC_Module {
 	}
 	
 	private PCtf_Traffic() {
-		PC_Entity.register(PCtf_EntityMiner.class, 64, 10, false);
+		PC_Entities.register(PCtf_EntityMiner.class, 64, 10, false);
 	}
 	
 	@Override

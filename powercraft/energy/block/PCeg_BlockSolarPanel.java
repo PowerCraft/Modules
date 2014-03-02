@@ -16,7 +16,7 @@ public class PCeg_BlockSolarPanel extends PC_BlockTileEntity {
 	
 	public PCeg_BlockSolarPanel() {
 		super(Material.ground);
-		maxY = 15.0f/16.0f;
+		this.maxY = 15.0f/16.0f;
 		setCreativeTab(CreativeTabs.tabRedstone);
 	}
 
@@ -35,18 +35,19 @@ public class PCeg_BlockSolarPanel extends PC_BlockTileEntity {
 		return PCeg_TileEntitySolarPanel.class;
 	}
 
+	@SuppressWarnings("hiding")
 	@Override
 	public IIcon getIcon(PC_Direction side, int metadata) {
 		if(side==PC_Direction.UP){
-			return top;
+			return this.top;
 		}
 		return this.side;
 	}
 
 	@Override
 	public void registerIcons(PC_IconRegistry iconRegistry) {
-		top = iconRegistry.registerIcon("top");
-		side = iconRegistry.registerIcon("side");
+		this.top = iconRegistry.registerIcon("top");
+		this.side = iconRegistry.registerIcon("side");
 	}
 	
 }

@@ -17,7 +17,7 @@ public class PCma_BlockRoaster extends PC_BlockTileEntity {
 	
 	public PCma_BlockRoaster() {
 		super(Material.ground);
-		maxY = 12.0f/16.0f;
+		this.maxY = 12.0f/16.0f;
 		setCreativeTab(CreativeTabs.tabDecorations);
 		setTickRandomly(true);
 	}
@@ -37,6 +37,7 @@ public class PCma_BlockRoaster extends PC_BlockTileEntity {
 		return PCma_TileEntityRoaster.class;
 	}
 
+	@SuppressWarnings("hiding")
 	@Override
 	public IIcon getIcon(PC_Direction side, int metadata) {
 		if(side==PC_Direction.UP){

@@ -15,9 +15,10 @@ public class PCma_ContainerAutomaticWorkbench extends PC_GresBaseWithInventory {
 		this.automaticWorkbench = automaticWorkbench;
 	}
 
+	@Override
 	protected PC_Slot createSlot(int i){
 		if(i<9){
-			return new PC_SlotPhantom(inventory, i);
+			return new PC_SlotPhantom(this.inventory, i);
 		}
 		return super.createSlot(i);
 	}

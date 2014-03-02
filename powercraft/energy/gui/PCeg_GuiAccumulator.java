@@ -33,23 +33,23 @@ public class PCeg_GuiAccumulator implements PC_IGresGui, PC_IGresEventListener {
 	public void initGui(PC_GresGuiHandler gui) {
 		PC_GresWindow window = new PC_GresWindow("Accumulator");
 		window.setLayout(new PC_GresLayoutVertical());
-		energy = new EnergyPerTick();
-		window.addSideTab(PC_GresWindowSideTab.createEnergySideTab(energy));
-		window.add(energyLevel = new PC_GresLabel("Energy: 0 E"));
+		this.energy = new EnergyPerTick();
+		window.addSideTab(PC_GresWindowSideTab.createEnergySideTab(this.energy));
+		window.add(this.energyLevel = new PC_GresLabel("Energy: 0 E"));
 		gui.add(window);
 		gui.addEventListener(this);
 	}
 
 	public PCeg_TileEntityAccumulator getAccumulator(){
-		return accumulator;
+		return this.accumulator;
 	}
 	
 	public void setEnergyLevel(float value){
-		energyLevel.setText("Energy: "+new DecimalFormat("#.##").format(value)+" E");
+		this.energyLevel.setText("Energy: "+new DecimalFormat("#.##").format(value)+" E");
 	}
 	
 	public void setEnergyPerTick(float value){
-		energy.setToValue(value);
+		this.energy.setToValue(value);
 	}
 	
 	@Override

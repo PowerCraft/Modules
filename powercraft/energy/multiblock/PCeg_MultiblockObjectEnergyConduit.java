@@ -36,7 +36,7 @@ public class PCeg_MultiblockObjectEnergyConduit extends PC_MultiblockObjectCondu
 	@Override
 	public void reconnect(){
 		if (!isClient()) {
-			PC_EnergyGrid g = grid;
+			PC_EnergyGrid g = this.grid;
 			if(g==null){
 				getGridIfNull();
 			}else{
@@ -70,7 +70,7 @@ public class PCeg_MultiblockObjectEnergyConduit extends PC_MultiblockObjectCondu
 
 	@Override
 	public PC_EnergyGrid getGrid() {
-		return grid;
+		return this.grid;
 	}
 
 	@Override
@@ -80,20 +80,20 @@ public class PCeg_MultiblockObjectEnergyConduit extends PC_MultiblockObjectCondu
 
 	@Override
 	public void setEnergyFlow(float energy) {
-		
+		//
 	}
 
 	@Override
 	public void handleToMuchEnergy(float energy) {
-		
+		//
 	}
 	
 	@Override
 	public void getGridIfNull() {
 		World world = getWorld();
-		int x = multiblock.xCoord;
-		int y = multiblock.yCoord;
-		int z = multiblock.zCoord;
+		int x = this.multiblock.xCoord;
+		int y = this.multiblock.yCoord;
+		int z = this.multiblock.zCoord;
 		PC_GridHelper.getGridIfNull(world, x, y, z, 0x3F, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
 	}
 	

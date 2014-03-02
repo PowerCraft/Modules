@@ -34,6 +34,7 @@ public class PCma_BlockAutomaticWorkbench extends PC_BlockTileEntity {
 		return PCma_TileEntityAutomaticWorkbench.class;
 	}
 
+	@SuppressWarnings("hiding")
 	@Override
 	public IIcon getIcon(PC_Direction side, int metadata) {
 		if(side==PC_Direction.EAST){

@@ -48,7 +48,7 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 	public PCma_TileEntityAutomaticWorkbench() {
 		super("AutomaticWorkbench", 29, new Group(true, PC_InventoryUtils.makeIndexList(10, 28)), new Group(false, 9));
 		// 0-8 => Grid, 9=>Out, 10-27=>In, 28=>Prod
-		workWhen = PC_RedstoneWorkType.EVER;
+		this.workWhen = PC_RedstoneWorkType.EVER;
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 
 	@Override
 	public PC_EnergyGrid getGrid() {
-		return grid;
+		return this.grid;
 	}
 	
 	@Override
@@ -69,66 +69,66 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 
 	@Override
 	public void getGridIfNull() {
-		if(!worldObj.isRemote && grid==null){
+		if(!this.worldObj.isRemote && this.grid==null){
 			int connectable = 0;
-			PC_Direction not = rotation.getSidePosition(PC_Direction.NORTH);
+			PC_Direction not = this.rotation.getSidePosition(PC_Direction.NORTH);
 			for(PC_Direction dir:PC_Direction.VALID_DIRECTIONS){
 				connectable<<=1;
 				if(dir!=not){
 					connectable |= 1;
 				}
 			}
-			PC_GridHelper.getGridIfNull(worldObj, xCoord, yCoord, zCoord, connectable, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
+			PC_GridHelper.getGridIfNull(this.worldObj, this.xCoord, this.yCoord, this.zCoord, connectable, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
 		}
 	}
 
 	@Override
 	public void removeFromGrid() {
-		PC_GridHelper.removeFromGrid(worldObj, (PC_IEnergyGridTile)this);
+		PC_GridHelper.removeFromGrid(this.worldObj, (PC_IEnergyGridTile)this);
 	}
 
 	public boolean canCraft(){
-		if(inventoryContents[28]==null)
+		if(this.inventoryContents[28]==null)
 			return false;
 		HashMap<ItemStack, Integer> counts = new HashMap<ItemStack, Integer>();
-		if(inventoryContents[9]!=null){
-			if(!(inventoryContents[9].isItemEqual(inventoryContents[28]) && ItemStack.areItemStackTagsEqual(inventoryContents[9], inventoryContents[28]))){
+		if(this.inventoryContents[9]!=null){
+			if(!(this.inventoryContents[9].isItemEqual(this.inventoryContents[28]) && ItemStack.areItemStackTagsEqual(this.inventoryContents[9], this.inventoryContents[28]))){
 				return false;
 			}
-			if(inventoryContents[9].stackSize>=inventoryContents[9].getMaxStackSize())
+			if(this.inventoryContents[9].stackSize>=this.inventoryContents[9].getMaxStackSize())
 				return false;
-			if(inventoryContents[9].stackSize>=getSlotStackLimit(9))
+			if(this.inventoryContents[9].stackSize>=getSlotStackLimit(9))
 				return false;
 		}
 		for(int i=0; i<9; i++){
-			ItemStack is = inventoryContents[i];
+			ItemStack is = this.inventoryContents[i];
 			if(is!=null){
 				boolean ok = false;
 				for(Entry<ItemStack, Integer> e:counts.entrySet()){
 					ItemStack o = e.getKey();
 					if(is.isItemEqual(o) && ItemStack.areItemStackTagsEqual(is, o)){
-						e.setValue(e.getValue()+1);
+						e.setValue(Integer.valueOf(e.getValue().intValue()+1));
 						ok = true;
 						break;
 					}
 				}
 				if(!ok){
-					counts.put(is, 1);
+					counts.put(is, Integer.valueOf(1));
 				}
 			}
 		}
 		int[]indices = PC_InventoryUtils.makeIndexList(10, 28);
 		for(Entry<ItemStack, Integer> e:counts.entrySet()){
 			int count = PC_InventoryUtils.getInventoryCountOf(this, e.getKey(), indices);
-			if(count<e.getValue())
+			if(count<e.getValue().intValue())
 				return false;
 		}
 		return true;
 	}
 	
 	public boolean couldWork(){
-		if(workNext || isWorking()){
-			workNext = false;
+		if(this.workNext || isWorking()){
+			this.workNext = false;
 			return canCraft();
 		}
 		return false;
@@ -137,7 +137,7 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 	@Override
 	protected void doWork() {
 		if(!isWorking())
-			workNext = true;
+			this.workNext = true;
 	}
 
 	@Override
@@ -150,13 +150,13 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 	@Override
 	public void useEnergy(float energy) {
 		if(canCraft() && energy>0){
-			working = true;
+			this.working = true;
 			sendProgressBarUpdate(0, (int)(energy*100));
 			for(int i=0; i<9; i++){
-				ItemStack is = inventoryContents[i];
+				ItemStack is = this.inventoryContents[i];
 				if(is!=null){
 					for(int j=10; j<28; j++){
-						ItemStack o = inventoryContents[j];
+						ItemStack o = this.inventoryContents[j];
 						if(o!=null && is.isItemEqual(o) && ItemStack.areItemStackTagsEqual(is, o)){
 							decrStackSize(j, 1);
 							break;
@@ -164,10 +164,10 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 					}
 				}
 			}
-			ItemStack itemStack = inventoryContents[9];
+			ItemStack itemStack = this.inventoryContents[9];
 			setInventorySlotContents(9, null);
 			if(itemStack==null){
-				itemStack = inventoryContents[28].copy();
+				itemStack = this.inventoryContents[28].copy();
 				itemStack.stackSize = 1;
 			}else{
 				itemStack.stackSize++;
@@ -175,18 +175,18 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 			moveOrStore(9, itemStack);
 			detectAndSendChanges();
 		}else{
-			if(working){
+			if(this.working){
 				sendProgressBarUpdate(0, 0);
-				working = false;
+				this.working = false;
 			}
 		}
 	}
 	
 	@Override
 	public void markDirty() {
-		if(marking)
+		if(this.marking)
 			return;
-		marking = true;
+		this.marking = true;
 		Container c = new Container() {
 			@Override
 			public boolean canInteractWith(EntityPlayer var1) {
@@ -195,15 +195,15 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 		};
 		InventoryCrafting inventoryCrafting = new InventoryCrafting(c, 3, 3);
 		for(int i=0; i<9; i++){
-			inventoryCrafting.setInventorySlotContents(i, inventoryContents[i]);
+			inventoryCrafting.setInventorySlotContents(i, this.inventoryContents[i]);
 		}
-		ItemStack itemStack = CraftingManager.getInstance().findMatchingRecipe(inventoryCrafting, worldObj);
+		ItemStack itemStack = CraftingManager.getInstance().findMatchingRecipe(inventoryCrafting, this.worldObj);
 		if(itemStack!=null){
 			itemStack = itemStack.copy();
 			itemStack.stackSize = 0;
 		}
 		setInventorySlotContents(28, itemStack);
-		marking = false;
+		this.marking = false;
 		super.markDirty();
 	}
 
@@ -242,13 +242,13 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 	
 	@Override
 	public void onBlockPostSet(PC_Direction side, ItemStack stack, EntityPlayer player, float hitX, float hitY, float hitZ) {
-		if(rotation==null)
+		if(this.rotation==null)
 			set3DRotation(new PC_3DRotationY(player));
 	}
 
 	@Override
 	public PC_3DRotation get3DRotation() {
-		return rotation;
+		return this.rotation;
 	}
 
 	@Override
@@ -271,7 +271,7 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 
 	@Override
 	public <T extends PC_IGridTile<?, T, ?, ?>> T getTile(PC_Direction side, Class<T> tileClass) {
-		if(rotation.getSidePosition(PC_Direction.NORTH)==side)
+		if(this.rotation.getSidePosition(PC_Direction.NORTH)==side)
 			return null;
 		if(tileClass==PC_IEnergyGridTile.class)
 			return tileClass.cast(this);
@@ -291,7 +291,7 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 	@Override
 	public ItemStack getBackgroundStack(int slotIndex) {
 		if(slotIndex==9)
-			return inventoryContents[28];
+			return this.inventoryContents[28];
 		return null;
 	}
 

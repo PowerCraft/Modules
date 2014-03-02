@@ -34,17 +34,17 @@ public class PCeg_TileEntityAccumulator extends PC_TileEntity implements PC_IEne
 
 	@Override
 	public PC_EnergyGrid getGrid() {
-		return grid;
+		return this.grid;
 	}
 
 	@Override
 	public void getGridIfNull() {
-		PC_GridHelper.getGridIfNull(worldObj, xCoord, yCoord, zCoord, 0x3F, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
+		PC_GridHelper.getGridIfNull(this.worldObj, this.xCoord, this.yCoord, this.zCoord, 0x3F, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
 	}
 
 	@Override
 	public void removeFromGrid() {
-		PC_GridHelper.removeFromGrid(worldObj, (PC_IEnergyGridTile)this);
+		PC_GridHelper.removeFromGrid(this.worldObj, (PC_IEnergyGridTile)this);
 	}
 
 	@Override
@@ -57,28 +57,28 @@ public class PCeg_TileEntityAccumulator extends PC_TileEntity implements PC_IEne
 
 	@Override
 	public float getEnergyLevel() {
-		return level;
+		return this.level;
 	}
 
 	@Override
 	public float getEnergyMaxIn() {
-		return MAX-10<level?MAX-level:10;
+		return MAX-10<this.level?MAX-this.level:10;
 	}
 
 	@Override
 	public float getEnergyMaxOut() {
-		return 10>level?level:10;
+		return 10>this.level?this.level:10;
 	}
 
 	@Override
 	public float addEnergy(float energy) {
-		level+=energy;
+		this.level+=energy;
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		nbtTagCompound.setInteger("type", 0);
 		nbtTagCompound.setFloat("value1", energy);
-		nbtTagCompound.setFloat("value2", level);
+		nbtTagCompound.setFloat("value2", this.level);
 		sendMessage(nbtTagCompound);
-		return level;
+		return this.level;
 	}
 
 	@Override
@@ -104,6 +104,8 @@ public class PCeg_TileEntityAccumulator extends PC_TileEntity implements PC_IEne
 			case 0:
 				gui.setEnergyPerTick(nbtTagCompound.getFloat("value1"));
 				gui.setEnergyLevel(nbtTagCompound.getFloat("value2"));
+				break;
+			default:
 				break;
 			}
 		}

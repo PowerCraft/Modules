@@ -52,30 +52,30 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 	@Override
 	public void initGui(PC_GresGuiHandler gui) {
 		PC_FontTexture fontTexture = PC_Fonts.create(PC_FontRenderer.getFont("Consolas", 0, 24), null);
-		PC_GresHighlighting highlighting = PC_MiniscriptHighlighting.makeHighlighting(te.getReplacements().keySet());
+		PC_GresHighlighting highlighting = PC_MiniscriptHighlighting.makeHighlighting(this.te.getReplacements().keySet());
 		PC_AutoAdd autoAdd = PC_MiniscriptHighlighting.makeAutoAdd();
 		List<PC_StringWithInfo> list = new ArrayList<PC_StringWithInfo>();
-		for(Entry<String, Integer> e:te.getReplacements().entrySet()){
+		for(Entry<String, Integer> e:this.te.getReplacements().entrySet()){
 			list.add(new PC_StringWithInfo(e.getKey(), "Const: "+e.getValue()));
 		}
 		PC_AutoComplete autoComplete = PC_MiniscriptHighlighting.makeAutoComplete(list);
 		PC_GresWindow win = new PC_GresWindow("Belt");
-		win.addSideTab(PC_GresWindowSideTab.createRedstoneSideTab(te));
+		win.addSideTab(PC_GresWindowSideTab.createRedstoneSideTab(this.te));
 		win.setLayout(new PC_GresLayoutVertical());
-		textEdit = new PC_GresMultilineHighlightingTextEdit(fontTexture, highlighting, autoAdd, autoComplete, source);
-		if(diagnostics!=null){
-			textEdit.setErrors(diagnostics);
+		this.textEdit = new PC_GresMultilineHighlightingTextEdit(fontTexture, highlighting, autoAdd, autoComplete, this.source);
+		if(this.diagnostics!=null){
+			this.textEdit.setErrors(this.diagnostics);
 		}
-		win.add(textEdit);
+		win.add(this.textEdit);
 		PC_GresGroupContainer gc = new PC_GresGroupContainer();
 		gc.setFill(Fill.HORIZONTAL);
 		gc.setLayout(new PC_GresLayoutHorizontal());
-		save = new PC_GresButton("Save & Compile");
-		save.addEventListener(this);
-		gc.add(save);
-		cancel = new PC_GresButton("Cancel");
-		cancel.addEventListener(this);
-		gc.add(cancel);
+		this.save = new PC_GresButton("Save & Compile");
+		this.save.addEventListener(this);
+		gc.add(this.save);
+		this.cancel = new PC_GresButton("Cancel");
+		this.cancel.addEventListener(this);
+		gc.add(this.cancel);
 		win.add(gc);
 		gui.add(win);
 		gui.addEventListener(this);
@@ -92,12 +92,12 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 		}else if(event instanceof PC_GresMouseButtonEvent){
 			PC_GresMouseButtonEvent mbe = (PC_GresMouseButtonEvent)event;
 			if(mbe.getEvent()==Event.CLICK){
-				if(mbe.getComponent()==cancel){
+				if(mbe.getComponent()==this.cancel){
 					component.getGuiHandler().close();
-				}else if(mbe.getComponent()==save){
-					te.sendSaveMessage(textEdit.getText());
-					textEdit.removeErrors();
-					diagnostics = null;
+				}else if(mbe.getComponent()==this.save){
+					this.te.sendSaveMessage(this.textEdit.getText());
+					this.textEdit.removeErrors();
+					this.diagnostics = null;
 				}
 			}
 		}
@@ -105,7 +105,7 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 
 	public void setErrors(List<Diagnostic<? extends Void>> diagnostics) {
 		this.diagnostics = diagnostics;
-		textEdit.setErrors(diagnostics);
+		this.textEdit.setErrors(diagnostics);
 	}
 	
 }

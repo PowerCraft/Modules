@@ -19,7 +19,6 @@ import powercraft.api.gres.events.PC_GresKeyEvent;
 import powercraft.api.gres.events.PC_IGresEventListener;
 import powercraft.api.gres.layout.PC_GresLayoutHorizontal;
 import powercraft.api.gres.layout.PC_GresLayoutVertical;
-import powercraft.api.inventory.PC_ISidedInventory;
 import powercraft.machines.container.PCma_ContainerFurnace;
 import powercraft.machines.tileentity.PCma_TileEntityFurnace;
 
@@ -35,10 +34,10 @@ public class PCma_GuiFurnace extends PCma_ContainerFurnace implements PC_IGresGu
 	@Override
 	public void initGui(PC_GresGuiHandler gui) {
 		PC_GresWindow window = new PC_GresWindow("Furnace");
-		energy = new EnergyPerTick();
-		window.addSideTab(PC_GresWindowSideTab.createEnergySideTab(energy));
-		window.addSideTab(PC_GresWindowSideTab.createRedstoneSideTab(furnace));
-		window.addSideTab(PC_GresWindowSideTab.createIOConfigurationSideTab((PC_ISidedInventory)furnace));
+		this.energy = new EnergyPerTick();
+		window.addSideTab(PC_GresWindowSideTab.createEnergySideTab(this.energy));
+		window.addSideTab(PC_GresWindowSideTab.createRedstoneSideTab(this.furnace));
+		window.addSideTab(PC_GresWindowSideTab.createIOConfigurationSideTab(this.furnace));
 		window.setLayout(new PC_GresLayoutVertical());
 		PC_GresGroupContainer group1 = new PC_GresGroupContainer();
 		group1.setLayout(new PC_GresLayoutHorizontal());
@@ -46,11 +45,11 @@ public class PCma_GuiFurnace extends PCma_ContainerFurnace implements PC_IGresGu
 		group2.setLayout(new PC_GresLayoutVertical());
 		PC_GresInventory inv;
 		group2.add(inv = new PC_GresInventory(1, 1));
-		inv.setSlot(0, 0, invSlots[0]);
-		group2.add(fire = new PC_GresProgressImage("FireShadow", "FireOn"));
+		inv.setSlot(0, 0, this.invSlots[0]);
+		group2.add(this.fire = new PC_GresProgressImage("FireShadow", "FireOn"));
 		group1.add(group2);
 		group1.add(inv = new PC_GresInventory(1, 1));
-		inv.setSlot(0, 0, invSlots[1]);
+		inv.setSlot(0, 0, this.invSlots[1]);
 		window.add(group1);
 		window.add(new PC_GresPlayerInventory(this));
 		gui.add(window);
@@ -60,9 +59,9 @@ public class PCma_GuiFurnace extends PCma_ContainerFurnace implements PC_IGresGu
 	@Override
 	public void updateProgressBar(int key, int value) {
 		if(key==0)
-			fire.setProgress(value);
+			this.fire.setProgress(value);
 		if(key==1)
-			energy.setToValue(value/100.0f);
+			this.energy.setToValue(value/100.0f);
 	}
 	
 	@Override

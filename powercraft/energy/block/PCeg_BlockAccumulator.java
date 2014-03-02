@@ -23,6 +23,7 @@ public class PCeg_BlockAccumulator extends PC_BlockTileEntity {
 		return PCeg_TileEntityAccumulator.class;
 	}
 
+	@SuppressWarnings("hiding")
 	@Override
 	public IIcon getIcon(PC_Direction side, int metadata) {
 		return this.side;
@@ -30,7 +31,7 @@ public class PCeg_BlockAccumulator extends PC_BlockTileEntity {
 
 	@Override
 	public void registerIcons(PC_IconRegistry iconRegistry) {
-		side = iconRegistry.registerIcon("side");
+		this.side = iconRegistry.registerIcon("side");
 	}
 	
 }

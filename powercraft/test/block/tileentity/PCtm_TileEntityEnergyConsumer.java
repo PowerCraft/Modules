@@ -19,12 +19,12 @@ public class PCtm_TileEntityEnergyConsumer extends PC_TileEntity implements PC_I
 	
 	@Override
 	public void getGridIfNull() {
-		PC_GridHelper.getGridIfNull(worldObj, xCoord, yCoord, zCoord, 0x3F, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
+		PC_GridHelper.getGridIfNull(this.worldObj, this.xCoord, this.yCoord, this.zCoord, 0x3F, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
 	}
 	
 	@Override
 	public void removeFromGrid() {
-		PC_GridHelper.removeFromGrid(worldObj, (PC_IEnergyGridTile)this);
+		PC_GridHelper.removeFromGrid(this.worldObj, (PC_IEnergyGridTile)this);
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class PCtm_TileEntityEnergyConsumer extends PC_TileEntity implements PC_I
 
 	@Override
 	public PC_EnergyGrid getGrid() {
-		return grid;
+		return this.grid;
 	}
 
 	@Override

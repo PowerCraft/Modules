@@ -18,12 +18,12 @@ public class PCeg_TileEntitySolarPanel extends PC_TileEntity implements PC_IGrid
 	
 	@Override
 	public void getGridIfNull() {
-		PC_GridHelper.getGridIfNull(worldObj, xCoord, yCoord, zCoord, 0x3D, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
+		PC_GridHelper.getGridIfNull(this.worldObj, this.xCoord, this.yCoord, this.zCoord, 0x3D, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
 	}
 	
 	@Override
 	public void removeFromGrid() {
-		PC_GridHelper.removeFromGrid(worldObj, (PC_IEnergyGridTile)this);
+		PC_GridHelper.removeFromGrid(this.worldObj, (PC_IEnergyGridTile)this);
 	}
 
 	@Override
@@ -33,14 +33,14 @@ public class PCeg_TileEntitySolarPanel extends PC_TileEntity implements PC_IGrid
 
 	@Override
 	public PC_EnergyGrid getGrid() {
-		return grid;
+		return this.grid;
 	}
 
 	@Override
 	public float getEnergyUseable() {
-		if (!worldObj.provider.hasNoSky) {
-            float power = worldObj.getSavedLightValue(EnumSkyBlock.Sky, xCoord, yCoord, zCoord) - worldObj.skylightSubtracted;
-            float angle = worldObj.getCelestialAngleRadians(1.0F);
+		if (!this.worldObj.provider.hasNoSky) {
+            float power = this.worldObj.getSavedLightValue(EnumSkyBlock.Sky, this.xCoord, this.yCoord, this.zCoord) - this.worldObj.skylightSubtracted;
+            float angle = this.worldObj.getCelestialAngleRadians(1.0F);
 
             if (angle < (float)Math.PI){
             	angle += (0.0F - angle) * 0.2F;
@@ -61,7 +61,7 @@ public class PCeg_TileEntitySolarPanel extends PC_TileEntity implements PC_IGrid
 
 	@Override
 	public void takeEnergy(float energy) {
-		
+		//
 	}
 
 	@Override

@@ -34,7 +34,7 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 	private boolean working;
 	
 	public PCma_TileEntityRoaster(){
-		workWhen = PC_RedstoneWorkType.EVER;
+		this.workWhen = PC_RedstoneWorkType.EVER;
 	}
 	
 	@Override
@@ -44,17 +44,17 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 
 	@Override
 	public PC_EnergyGrid getGrid() {
-		return grid;
+		return this.grid;
 	}
 
 	@Override
 	public void getGridIfNull() {
-		PC_GridHelper.getGridIfNull(worldObj, xCoord, yCoord, zCoord, 0x3D, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
+		PC_GridHelper.getGridIfNull(this.worldObj, this.xCoord, this.yCoord, this.zCoord, 0x3D, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
 	}
 
 	@Override
 	public void removeFromGrid() {
-		PC_GridHelper.removeFromGrid(worldObj, (PC_IEnergyGridTile)this);
+		PC_GridHelper.removeFromGrid(this.worldObj, (PC_IEnergyGridTile)this);
 	}
 
 	@Override
@@ -67,39 +67,40 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 
 	@Override
 	public void useEnergy(float energy) {
-		if(getEnergyRequested()!=0 && energy>0){
-			energy -= 10;
-			if(!working){
-				working = true;
+		float e = energy;
+		if(getEnergyRequested()!=0 && e>0){
+			e -= 10;
+			if(!this.working){
+				this.working = true;
 				sendWorking();
 			}
 			for (EntityLivingBase entity : getEntities()) {
-				if (energy >= 10) {
+				if (e >= 10) {
 					if (!entity.isImmuneToFire()) {
 						entity.attackEntityFrom(DamageSource.inFire, 3);
 					}
 					if (!entity.isWet()) {
 						entity.setFire(15);
 					}
-					energy -= 10;
+					e -= 10;
 				}else{
 					break;
 				}
 			}
 			for (EntityItem item : getItems()) {
-				if (energy >= 10) {
+				if (e >= 10) {
 					if (item.getEntityItem().stackSize > 0) {
-						EntityItem eitem = new EntityItem(worldObj, item.posX - 0.1F + random.nextFloat() * 0.2F, item.posY, item.posZ - 0.1F
+						EntityItem eitem = new EntityItem(this.worldObj, item.posX - 0.1F + random.nextFloat() * 0.2F, item.posY, item.posZ - 0.1F
 								+ random.nextFloat() * 0.2F, PC_Utils.getSmeltingResult(item.getEntityItem()).splitStack(1));
 						eitem.motionX = item.motionX;
 						eitem.motionY = item.motionY;
 						eitem.motionZ = item.motionZ;
 						eitem.delayBeforeCanPickup = 7;
-						PC_Utils.spawnEntity(worldObj, eitem);
+						PC_Utils.spawnEntity(this.worldObj, eitem);
 						if (--item.getEntityItem().stackSize <= 0) {
 							item.setDead();
 						}
-						energy -= 10;
+						e -= 10;
 					}
 				}else{
 					break;
@@ -107,8 +108,8 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 			}
 			
 		}else{
-			if(working){
-				working = false;
+			if(this.working){
+				this.working = false;
 				sendWorking();
 			}
 		}
@@ -117,8 +118,8 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 	@SuppressWarnings("unchecked")
 	private List<EntityLivingBase> getEntities() {
 
-		List<EntityLivingBase> entities = worldObj.getEntitiesWithinAABB(EntityLivingBase.class,
-				AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 2, zCoord + 1));
+		List<EntityLivingBase> entities = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class,
+				AxisAlignedBB.getBoundingBox(this.xCoord, this.yCoord, this.zCoord, this.xCoord + 1, this.yCoord + 2, this.zCoord + 1));
 		Iterator<EntityLivingBase> iterator = entities.iterator();
 		while (iterator.hasNext()) {
 			EntityLivingBase entity = iterator.next();
@@ -133,8 +134,8 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 	@SuppressWarnings("unchecked")
 	private List<EntityItem> getItems() {
 
-		List<EntityItem> items = worldObj.getEntitiesWithinAABB(EntityItem.class,
-				AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 2, zCoord + 1));
+		List<EntityItem> items = this.worldObj.getEntitiesWithinAABB(EntityItem.class,
+				AxisAlignedBB.getBoundingBox(this.xCoord, this.yCoord, this.zCoord, this.xCoord + 1, this.yCoord + 2, this.zCoord + 1));
 		Iterator<EntityItem> iterator = items.iterator();
 		while (iterator.hasNext()) {
 			EntityItem item = iterator.next();
@@ -154,14 +155,14 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 	public void sendWorking(){
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		nbtTagCompound.setInteger("type", 0);
-		nbtTagCompound.setBoolean("working", working);
+		nbtTagCompound.setBoolean("working", this.working);
 		sendMessage(nbtTagCompound);
 	}
 	
 	@Override
 	public void onClientMessage(EntityPlayer player, NBTTagCompound nbtTagCompound) {
 		if(nbtTagCompound.getInteger("type")==0){
-			working = nbtTagCompound.getBoolean("working");
+			this.working = nbtTagCompound.getBoolean("working");
 		}
 	}
 	
@@ -181,24 +182,24 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 	
 	@Override
 	public void randomDisplayTick() {
-		if(working){
+		if(this.working){
 			if (random.nextInt(24) == 0) {
-				worldObj.playSoundEffect(xCoord + 0.5F, yCoord + 0.5F, zCoord + 0.5F, "fire.fire", 1.0F + random.nextFloat(), random.nextFloat() * 0.7F + 0.3F);
+				this.worldObj.playSoundEffect(this.xCoord + 0.5F, this.yCoord + 0.5F, this.zCoord + 0.5F, "fire.fire", 1.0F + random.nextFloat(), random.nextFloat() * 0.7F + 0.3F);
 			}
 	
 			for (int c = 0; c < 5; c++) {
-				float y = yCoord + 0.74F + (random.nextFloat() * 0.3F);
-				float x = xCoord + 0.2F + (random.nextFloat() * 0.6F);
-				float z = zCoord + 0.2F + (random.nextFloat() * 0.6F);
-				worldObj.spawnParticle("smoke", x, y, z, 0.0D, 0.0D, 0.0D);
-				worldObj.spawnParticle("flame", x, y, z, 0.0D, 0.0D, 0.0D);
+				float y = this.yCoord + 0.74F + (random.nextFloat() * 0.3F);
+				float x = this.xCoord + 0.2F + (random.nextFloat() * 0.6F);
+				float z = this.zCoord + 0.2F + (random.nextFloat() * 0.6F);
+				this.worldObj.spawnParticle("smoke", x, y, z, 0.0D, 0.0D, 0.0D);
+				this.worldObj.spawnParticle("flame", x, y, z, 0.0D, 0.0D, 0.0D);
 			}
 	
 			for (int c = 0; c < 5; c++) {
-				float y = yCoord + 1.3F;
-				float x = xCoord + 0.2F + (random.nextFloat() * 0.6F);
-				float z = zCoord + 0.2F + (random.nextFloat() * 0.6F);
-				worldObj.spawnParticle("smoke", x, y, z, 0.0D, 0.0D, 0.0D);
+				float y = this.yCoord + 1.3F;
+				float x = this.xCoord + 0.2F + (random.nextFloat() * 0.6F);
+				float z = this.zCoord + 0.2F + (random.nextFloat() * 0.6F);
+				this.worldObj.spawnParticle("smoke", x, y, z, 0.0D, 0.0D, 0.0D);
 			}
 		}
 	}

@@ -38,7 +38,7 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 	
 	public PCma_TileEntityFurnace() {
 		super("Furnace", 2, new Group(true, 0), new Group(false, 1));
-		workWhen = PC_RedstoneWorkType.EVER;
+		this.workWhen = PC_RedstoneWorkType.EVER;
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 
 	@Override
 	public PC_EnergyGrid getGrid() {
-		return grid;
+		return this.grid;
 	}
 	
 	@Override
@@ -59,33 +59,33 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 
 	@Override
 	public void getGridIfNull() {
-		if(!worldObj.isRemote && grid==null){
+		if(!this.worldObj.isRemote && this.grid==null){
 			int connectable = 0;
-			PC_Direction not = rotation.getSidePosition(PC_Direction.NORTH);
+			PC_Direction not = this.rotation.getSidePosition(PC_Direction.NORTH);
 			for(PC_Direction dir:PC_Direction.VALID_DIRECTIONS){
 				connectable<<=1;
 				if(dir!=not){
 					connectable |= 1;
 				}
 			}
-			PC_GridHelper.getGridIfNull(worldObj, xCoord, yCoord, zCoord, connectable, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
+			PC_GridHelper.getGridIfNull(this.worldObj, this.xCoord, this.yCoord, this.zCoord, connectable, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
 		}
 	}
 
 	@Override
 	public void removeFromGrid() {
-		PC_GridHelper.removeFromGrid(worldObj, (PC_IEnergyGridTile)this);
+		PC_GridHelper.removeFromGrid(this.worldObj, (PC_IEnergyGridTile)this);
 	}
 
 	public boolean couldWork(){
 		if(!isWorking())
 			return false;
-		ItemStack smeltingResult = PC_Utils.getSmeltingResult(inventoryContents[0]);
+		ItemStack smeltingResult = PC_Utils.getSmeltingResult(this.inventoryContents[0]);
 		if(smeltingResult==null)
 			return false;
-		if(inventoryContents[1]==null)
+		if(this.inventoryContents[1]==null)
 			return true;
-		return inventoryContents[1].isItemEqual(smeltingResult) && inventoryContents[1].getMaxStackSize()>inventoryContents[1].stackSize;
+		return this.inventoryContents[1].isItemEqual(smeltingResult) && this.inventoryContents[1].getMaxStackSize()>this.inventoryContents[1].stackSize;
 	}
 	
 	@Override
@@ -98,44 +98,44 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 	@Override
 	public void useEnergy(float energy) {
 		if(couldWork() && energy>0){
-			if(!working){
-				working = true;
+			if(!this.working){
+				this.working = true;
 				sendWorking();
 			}
 			sendProgressBarUpdate(1, (int)(energy*100));
-			done += energy/5.0f;
-			if(done>=100){
-				done = 0;
+			this.done += energy/5.0f;
+			if(this.done>=100){
+				this.done = 0;
 				ItemStack itemStack = PC_Utils.getSmeltingResult(decrStackSize(0, 1));
-				if(inventoryContents[1]!=null){
-					itemStack.stackSize += inventoryContents[1].stackSize;
+				if(this.inventoryContents[1]!=null){
+					itemStack.stackSize += this.inventoryContents[1].stackSize;
 					setInventorySlotContents(1, null);
 				}
 				moveOrStore(1, itemStack);
 				detectAndSendChanges();
 			}
-			sendProgressBarUpdate(0, (int)(done));
+			sendProgressBarUpdate(0, (int)(this.done));
 		}else{
-			if(working){
-				working = false;
+			if(this.working){
+				this.working = false;
 				sendWorking();
 				sendProgressBarUpdate(0, 0);
 				sendProgressBarUpdate(1, 0);
 			}
-			done=0;
+			this.done=0;
 		}
 	}
 
 	public void sendWorking(){
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		nbtTagCompound.setInteger("type", 0);
-		nbtTagCompound.setBoolean("working", working);
+		nbtTagCompound.setBoolean("working", this.working);
 		sendMessage(nbtTagCompound);
 	}
 	
 	@Override
 	public void sendProgressBarUpdates() {
-		sendProgressBarUpdate(0, (int)(done));
+		sendProgressBarUpdate(0, (int)(this.done));
 	}
 
 	@Override
@@ -166,7 +166,7 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 	@Override
 	public IIcon getIcon(PC_Direction side) {
 		if(side==PC_Direction.NORTH){
-			if(working){
+			if(this.working){
 				return PCma_BlockFurnace.frontOn;
 			}
 			return PCma_BlockFurnace.front;
@@ -177,20 +177,20 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 	@Override
 	public void onClientMessage(EntityPlayer player, NBTTagCompound nbtTagCompound) {
 		if(nbtTagCompound.getInteger("type")==0){
-			working = nbtTagCompound.getBoolean("working");
+			this.working = nbtTagCompound.getBoolean("working");
 			renderUpdate();
 		}
 	}
 	
 	@Override
 	public void onBlockPostSet(PC_Direction side, ItemStack stack, EntityPlayer player, float hitX, float hitY, float hitZ) {
-		if(rotation==null)
+		if(this.rotation==null)
 			set3DRotation(new PC_3DRotationY(player));
 	}
 
 	@Override
 	public PC_3DRotation get3DRotation() {
-		return rotation;
+		return this.rotation;
 	}
 
 	@Override
@@ -213,7 +213,7 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 
 	@Override
 	public <T extends PC_IGridTile<?, T, ?, ?>> T getTile(PC_Direction side, Class<T> tileClass) {
-		if(rotation.getSidePosition(PC_Direction.NORTH)==side)
+		if(this.rotation.getSidePosition(PC_Direction.NORTH)==side)
 			return null;
 		if(tileClass==PC_IEnergyGridTile.class)
 			return tileClass.cast(this);

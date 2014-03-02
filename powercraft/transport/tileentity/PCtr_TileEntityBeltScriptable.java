@@ -27,6 +27,7 @@ import powercraft.transport.gui.PCtr_GuiBeltScriptable;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+@SuppressWarnings("boxing")
 public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable implements PC_IGresGuiOpenHandler {
 	
 	private static HashMap<String, Integer> replacements = new HashMap<String, Integer>();
@@ -76,7 +77,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		setSource(";A MiniScript powered Belt");
 	}
 	
-	private void moveEntity(Entity entity){
+	private static void moveEntity(Entity entity){
 		NBTTagCompound compound = PC_Utils.getNBTTagOf(entity);
 		PC_Direction dir = DIR_TO_PCDIR[(compound.getInteger("dir")%4+4)%4];
 		entity.motionX = dir.offsetX*0.2;
@@ -86,10 +87,10 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 	
 	@Override
 	public void onEntityCollidedWithBlock(Entity entity) {
-		if(!(Math.floor(entity.posX)==xCoord && Math.floor(entity.posY)==yCoord && Math.floor(entity.posZ)==zCoord)){
+		if(!(Math.floor(entity.posX)==this.xCoord && Math.floor(entity.posY)==this.yCoord && Math.floor(entity.posZ)==this.zCoord)){
 			return;
 		}
-		if(worldObj.isRemote){
+		if(this.worldObj.isRemote){
 			moveEntity(entity);
 			return;
 		}
@@ -97,13 +98,13 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		int x = compound.getInteger("lastX");
 		int y = compound.getInteger("lastY");
 		int z = compound.getInteger("lastZ");
-		if(x==xCoord && y==yCoord && z==zCoord){
+		if(x==this.xCoord && y==this.yCoord && z==this.zCoord){
 			moveEntity(entity);
 			return;
 		}
-		compound.setInteger("lastX", xCoord);
-		compound.setInteger("lastY", yCoord);
-		compound.setInteger("lastZ", zCoord);
+		compound.setInteger("lastX", this.xCoord);
+		compound.setInteger("lastY", this.yCoord);
+		compound.setInteger("lastZ", this.zCoord);
 		int[] ext = getExt();
 		ext[EXT_OUT_FRONT_COUNT] = 0;
 		ext[EXT_OUT_RIGHT_COUNT] = 0;
@@ -145,14 +146,15 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 			}else if(sum==ext[EXT_OUT_LEFT_COUNT]){
 				direction += 3;
 			}else if(sum!=ext[EXT_OUT_FRONT_COUNT]){
-				
+				//
 			}
 		}
 		compound.setInteger("dir", (direction%4+4)%4);
 		moveEntity(entity);
-		PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity.getEntityId()), worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 16);
+		PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity.getEntityId()), this.worldObj.getWorldInfo().getVanillaDimension(), this.xCoord, this.yCoord, this.zCoord, 16);
 	}
 	
+	@Override
 	public HashMap<String, Integer> getReplacements(){
 		return replacements;
 	}
@@ -183,8 +185,8 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		nbtTagCompound.setString("source", getSource());
-		if(diagnostic!=null){
-			List<Diagnostic<? extends Void>> diagnostics = diagnostic.getDiagnostics();
+		if(this.diagnostic!=null){
+			List<Diagnostic<? extends Void>> diagnostics = this.diagnostic.getDiagnostics();
 			NBTTagList list = new NBTTagList();
 			for(Diagnostic<? extends Void> dgc:diagnostics){
 				list.appendTag(PC_FakeDiagnostic.toCompound(dgc));
@@ -202,8 +204,8 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 	}
 
 	public void sendErrorMessage(){
-		if(diagnostic!=null){
-			List<Diagnostic<? extends Void>> diagnostics = diagnostic.getDiagnostics();
+		if(this.diagnostic!=null){
+			List<Diagnostic<? extends Void>> diagnostics = this.diagnostic.getDiagnostics();
 			NBTTagList list = new NBTTagList();
 			for(Diagnostic<? extends Void> dgc:diagnostics){
 				list.appendTag(PC_FakeDiagnostic.toCompound(dgc));
@@ -216,7 +218,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 	}
 	
 	@SideOnly(Side.CLIENT)
-	private void handleDiagnostic(NBTTagList list){
+	private static void handleDiagnostic(NBTTagList list){
 		PCtr_GuiBeltScriptable gui = PC_Gres.getCurrentClientGui(PCtr_GuiBeltScriptable.class);
 		if(gui!=null){
 			List<Diagnostic<? extends Void>> diagnostics = new ArrayList<Diagnostic<? extends Void>>();
@@ -250,6 +252,8 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 			sendErrorMessage();
 			break;
 		case 2:
+			break;
+		default:
 			break;
 		}
 	}

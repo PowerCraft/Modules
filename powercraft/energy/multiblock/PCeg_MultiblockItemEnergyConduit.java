@@ -23,18 +23,18 @@ public class PCeg_MultiblockItemEnergyConduit extends PC_MultiblockItemConduit {
 
 	@Override
 	public void loadMultiblockIcons(PC_IconRegistry iconRegistry) {
-		normalConduit = iconRegistry.registerIcon("Nanotube_Normal");
-		cornerConduit = iconRegistry.registerIcon("Nanotube_Corner");
-		connections = new IIcon[4];
-		connections[0] = iconRegistry.registerIcon("Nanotube_Connection");
-		connections[1] = iconRegistry.registerIcon("Nanotube_Connection_Input");
-		connections[2] = iconRegistry.registerIcon("Nanotube_Connection_Output");
-		connections[3] = iconRegistry.registerIcon("Nanotube_Connection_None");
+		this.normalConduit = iconRegistry.registerIcon("Nanotube_Normal");
+		this.cornerConduit = iconRegistry.registerIcon("Nanotube_Corner");
+		this.connections = new IIcon[4];
+		this.connections[0] = iconRegistry.registerIcon("Nanotube_Connection");
+		this.connections[1] = iconRegistry.registerIcon("Nanotube_Connection_Input");
+		this.connections[2] = iconRegistry.registerIcon("Nanotube_Connection_Output");
+		this.connections[3] = iconRegistry.registerIcon("Nanotube_Connection_None");
 	}
 
 	@Override
 	public void registerIcons(PC_IconRegistry iconRegistry) {
-		itemIcon = iconRegistry.registerIcon("Nanotube_Normal");
+		this.itemIcon = iconRegistry.registerIcon("Nanotube_Normal");
 	}
 	
 }
