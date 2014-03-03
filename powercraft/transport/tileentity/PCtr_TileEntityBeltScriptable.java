@@ -30,7 +30,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SuppressWarnings("boxing")
 public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable implements PC_IGresGuiOpenHandler {
 	
-	private static HashMap<String, Integer> replacements = new HashMap<String, Integer>();
+	private static final HashMap<String, Integer> replacements = new HashMap<String, Integer>();
+	private static final String[] entryVectors = new String[]{"itemOver", "redstoneToggeled"};
 	
 	public static final int EXT_OUT_FRONT_COUNT = 0;
 	public static final int EXT_OUT_RIGHT_COUNT = 1;
@@ -77,12 +78,14 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		setSource(";A MiniScript powered Belt");
 	}
 	
-	private static void moveEntity(Entity entity){
+	private void moveEntity(Entity entity){
 		NBTTagCompound compound = PC_Utils.getNBTTagOf(entity);
 		PC_Direction dir = DIR_TO_PCDIR[(compound.getInteger("dir")%4+4)%4];
-		entity.motionX = dir.offsetX*0.2;
-		entity.motionZ = dir.offsetZ*0.2;
-		
+		entity.motionX = dir.offsetX!=0?dir.offsetX*0.2:((Math.floor(entity.posX)+0.5)-entity.posX);
+		entity.motionZ = dir.offsetZ!=0?dir.offsetZ*0.2:((Math.floor(entity.posZ)+0.5)-entity.posZ);
+		if(PC_Utils.isServer()){
+			PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity.getEntityId()), this.worldObj.getWorldInfo().getVanillaDimension(), this.xCoord, this.yCoord, this.zCoord, 16);
+		}
 	}
 	
 	@Override
@@ -90,7 +93,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		if(!(Math.floor(entity.posX)==this.xCoord && Math.floor(entity.posY)==this.yCoord && Math.floor(entity.posZ)==this.zCoord)){
 			return;
 		}
-		if(this.worldObj.isRemote){
+		if(PC_Utils.isClient()){
 			moveEntity(entity);
 			return;
 		}
@@ -135,7 +138,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		}else{
 			return;
 		}
-		invoke();
+		invoke(0); // entry: itemOver
 		int direction = ext[EXT_IN_OUT_DIR];
 		int sum = ext[EXT_OUT_FRONT_COUNT]+ext[EXT_OUT_RIGHT_COUNT]+ext[EXT_OUT_BACK_COUNT]+ext[EXT_OUT_LEFT_COUNT];
 		if(sum!=0){
@@ -151,12 +154,16 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		}
 		compound.setInteger("dir", (direction%4+4)%4);
 		moveEntity(entity);
-		PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity.getEntityId()), this.worldObj.getWorldInfo().getVanillaDimension(), this.xCoord, this.yCoord, this.zCoord, 16);
 	}
 	
 	@Override
 	public HashMap<String, Integer> getReplacements(){
 		return replacements;
+	}
+	
+	@Override
+	protected String[] getEntryVectors() {
+		return entryVectors;
 	}
 
 	@Override
