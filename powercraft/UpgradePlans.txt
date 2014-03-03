@@ -5,7 +5,14 @@ elevators-Up(Down, Splitter)
 
 Light:
 Lasers-justLight(harvest, build, traction, range, sensor, damage, color[, area light])
-Mirros
+Lens for the color and catalysator for the function. They have to fit together to work properly
+Red light: damage
+Green light: agriculture
+Blue light: sensor
+White light: cosmetic
+Yellow-Black light: constructive things
+
+Mirros with ability to change color(via lens), but NOT catalysator
 Prisms
 
 Teleporters:
