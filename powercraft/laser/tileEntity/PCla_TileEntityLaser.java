@@ -21,7 +21,7 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 	public int maxLaserLength = 15;
 
 	public PCla_TileEntityLaser() {
-		super("Laser", 2, new Group(true, 0), new Group(true, 1));
+		super("Laser", 3, new Group(true, 0), new Group(true, new int[] { 1, 2 }));
 		orientation = PC_Direction.NORTH;
 		this.workWhen = PC_RedstoneWorkType.EVER;
 
