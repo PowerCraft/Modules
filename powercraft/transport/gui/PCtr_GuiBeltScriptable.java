@@ -26,7 +26,6 @@ import powercraft.api.gres.events.PC_GresKeyEvent;
 import powercraft.api.gres.events.PC_GresMouseButtonEvent;
 import powercraft.api.gres.events.PC_GresMouseButtonEvent.Event;
 import powercraft.api.gres.events.PC_IGresEventListener;
-import powercraft.api.gres.font.PC_FontRenderer;
 import powercraft.api.gres.font.PC_FontTexture;
 import powercraft.api.gres.font.PC_Fonts;
 import powercraft.api.gres.layout.PC_GresLayoutHorizontal;
@@ -51,7 +50,7 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 
 	@Override
 	public void initGui(PC_GresGuiHandler gui) {
-		PC_FontTexture fontTexture = PC_Fonts.create(PC_FontRenderer.getFont("Consolas", 0, 24), null);
+		PC_FontTexture fontTexture = PC_Fonts.getByName("Consolas", 0, 24);
 		PC_GresHighlighting highlighting = PC_MiniscriptHighlighting.makeHighlighting(this.te.getReplacements().keySet());
 		PC_AutoAdd autoAdd = PC_MiniscriptHighlighting.makeAutoAdd();
 		List<PC_StringWithInfo> list = new ArrayList<PC_StringWithInfo>();
