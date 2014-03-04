@@ -7,6 +7,7 @@ import powercraft.api.gres.PC_GresGroupContainer;
 import powercraft.api.gres.PC_GresGuiHandler;
 import powercraft.api.gres.PC_GresInventory;
 import powercraft.api.gres.PC_GresPlayerInventory;
+import powercraft.api.gres.PC_GresTab;
 import powercraft.api.gres.PC_GresWindow;
 import powercraft.api.gres.PC_GresWindowSideTab;
 import powercraft.api.gres.PC_GresWindowSideTab.EnergyPerTick;
@@ -49,19 +50,34 @@ public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, P
 		window.setLayout(new PC_GresLayoutVertical());
 		PC_GresInventory inv;
 
+		PC_GresTab tabs = new PC_GresTab();
+
+		PC_GresTab itemTab = new PC_GresTab();
+		tabs.add("Items", itemTab);
+		itemTab.setLayout(new PC_GresLayoutHorizontal());
+
+		PC_GresTab presentTab = new PC_GresTab();
+		tabs.add("Presents", presentTab);
+		presentTab.setLayout(new PC_GresLayoutHorizontal());
+
+		PC_GresTab scriptTab = new PC_GresTab();
+		tabs.add("Miniscript", scriptTab);
+		scriptTab.setLayout(new PC_GresLayoutHorizontal());
+
 		PC_GresGroupContainer lensSlot = new PC_GresGroupContainer();
 		lensSlot.setLayout(new PC_GresLayoutHorizontal());
 		lensSlot.add(inv = new PC_GresInventory(1, 1));
 		inv.setSlot(0, 0, this.invSlots[0]);
+		itemTab.add(lensSlot);
 
 		PC_GresGroupContainer catalysator = new PC_GresGroupContainer();
 		catalysator.setLayout(new PC_GresLayoutHorizontal());
 		catalysator.add(inv = new PC_GresInventory(2, 1));
 		inv.setSlot(0, 0, this.invSlots[1]);
 		inv.setSlot(1, 0, this.invSlots[2]);
+		itemTab.add(catalysator);
 
-		window.add(lensSlot);
-		window.add(catalysator);
+		window.add(tabs);
 		window.add(new PC_GresPlayerInventory(this));
 		gui.add(window);
 		gui.addEventListener(this);
