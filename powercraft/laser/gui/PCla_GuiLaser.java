@@ -56,8 +56,9 @@ public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, P
 
 		PC_GresGroupContainer catalysator = new PC_GresGroupContainer();
 		catalysator.setLayout(new PC_GresLayoutHorizontal());
-		catalysator.add(inv = new PC_GresInventory(1, 1));
+		catalysator.add(inv = new PC_GresInventory(2, 1));
 		inv.setSlot(0, 0, this.invSlots[1]);
+		inv.setSlot(1, 0, this.invSlots[2]);
 
 		window.add(lensSlot);
 		window.add(catalysator);
