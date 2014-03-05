@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import powercraft.api.PC_Field.Flag;
 import powercraft.api.script.weasel.PC_WeaselClassSave;
 import powercraft.api.script.weasel.PC_WeaselSourceClass;
 import powercraft.weasel.PCws_Weasel;
@@ -24,7 +27,19 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 	private List<XMessageElement> globalMessageElements;
 	
 	public PCws_WeaselClassSave(){
-		
+		PCws_WeaselSourceClass sc = new PCws_WeaselSourceClass();
+		sc.setSource("/*\n * A XScript powered Core\n */\n\npublic class Main{\n\t\n\tpublic static void main(){\n"+
+		"\t\t// TODO write your program here\n\t}\n\t\n}");
+		this.sourceFiles.put("Main", sc);
+	}
+	
+	@SuppressWarnings("unused")
+	public PCws_WeaselClassSave(NBTTagCompound tagCompound, Flag flag){
+		NBTTagList list = (NBTTagList)tagCompound.getTag("list");
+		for(int i=0; i<list.tagCount(); i++){
+			NBTTagCompound t = list.getCompoundTagAt(i);
+			this.sourceFiles.put(t.getString("FileName"), new PCws_WeaselSourceClass(t));
+		}
 	}
 	
 	@Override
@@ -89,7 +104,10 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 			for(Entry<String, PCws_WeaselSourceClass> e:this.sourceFiles.entrySet()){
 				String className = e.getKey();
 				if(name.startsWith(className) && (name.length() == className.length() || (name.length() > className.length() && name.charAt(className.length())=='.'))){
-					return new XInputStream(e.getValue().getInputStream(), className);
+					if(e.getValue().canUseByteCode()){
+						return new XInputStream(e.getValue().getInputStream(), className);
+					}
+					return null;
 				}
 			}
 			return null;
@@ -106,6 +124,7 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 			}
 		}
 		XCompiler compiler = new XCompiler(PCws_Weasel.getRTClassLoader());
+		compiler.addPredefStaticIndirectImports("weasel.Predef");
 		compiler.getClassProvider().addClassLoader(this);
 		compiler.registerSourceProvider(this);
 		compiler.addTreeChanger(new XTreeMakeEasy());
@@ -135,6 +154,23 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void saveToNBT(NBTTagCompound tag, Flag flag) {
+		NBTTagList list = new NBTTagList();
+		for(Entry<String, PCws_WeaselSourceClass> e:this.sourceFiles.entrySet()){
+			NBTTagCompound t = new NBTTagCompound();
+			e.getValue().saveToNBT(t);
+			t.setString("FileName", e.getKey());
+			list.appendTag(t);
+		}
+		tag.setTag("list", list);
+	}
+
+	@Override
+	public HashMap<String, ? extends PC_WeaselSourceClass> getSources() {
+		return this.sourceFiles;
 	}
 	
 }
