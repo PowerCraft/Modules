@@ -191,7 +191,8 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 	@Override
 	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
-		nbtTagCompound.setString("source", getSource());
+		if(getSource()!=null)
+			nbtTagCompound.setString("source", getSource());
 		if(this.diagnostic!=null){
 			List<Diagnostic<? extends Void>> diagnostics = this.diagnostic.getDiagnostics();
 			NBTTagList list = new NBTTagList();
