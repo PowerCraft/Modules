@@ -16,13 +16,12 @@ import powercraft.api.PC_Vec3;
 import powercraft.api.PC_Vec3I;
 import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_TileEntity;
-import powercraft.api.redstone.PC_RedstoneConnectable;
 import powercraft.api.renderer.PC_ModelHelper;
 import powercraft.laser.tileEntity.PCla_TileEntityLaser;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PCla_BlockLaser extends PC_BlockTileEntity implements PC_RedstoneConnectable {
+public class PCla_BlockLaser extends PC_BlockTileEntity {
 
 	@SideOnly(Side.CLIENT)
 	public static IIcon[] icons = new IIcon[3];
@@ -60,6 +59,11 @@ public class PCla_BlockLaser extends PC_BlockTileEntity implements PC_RedstoneCo
 			break;
 		}
 		((PCla_TileEntityLaser) world.getTileEntity(x, y, z)).orientation = PC_Direction.fromSide(l);
+	}
+
+	@Override
+	public boolean canRedstoneConnect(IBlockAccess world, int x, int y, int z, PC_Direction side, int faceSide) {
+		return true;
 	}
 
 	@Override

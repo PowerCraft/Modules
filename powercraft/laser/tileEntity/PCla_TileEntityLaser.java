@@ -1,18 +1,30 @@
 package powercraft.laser.tileEntity;
 
 import java.util.Vector;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Vec3I;
-import powercraft.api.block.PC_TileEntity;
+import powercraft.api.block.PC_TileEntityWithInventory;
+import powercraft.api.gres.PC_GresBaseWithInventory;
+import powercraft.api.gres.PC_IGresGui;
+import powercraft.api.gres.PC_IGresGuiOpenHandler;
+import powercraft.api.redstone.PC_RedstoneWorkType;
+import powercraft.laser.container.PCla_ContainerLaser;
+import powercraft.laser.gui.PCla_GuiLaser;
 
-public class PCla_TileEntityLaser extends PC_TileEntity {
+public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements PC_IGresGuiOpenHandler {
 
-	public Vector<PC_Vec3I> validLaserPos = new Vector<PC_Vec3I>(20);
+	public Vector<PC_Vec3I> validLaserPos = new Vector<PC_Vec3I>(15);
 	public PC_Direction orientation;
 	public int maxLaserLength = 15;
 
 	public PCla_TileEntityLaser() {
+		super("Laser", 3, new Group(true, 0), new Group(true, new int[] { 1, 2 }));
 		orientation = PC_Direction.NORTH;
+		this.workWhen = PC_RedstoneWorkType.EVER;
+
 	}
 
 	@Override
@@ -54,5 +66,31 @@ public class PCla_TileEntityLaser extends PC_TileEntity {
 		default:
 			break;
 		}
+	}
+
+	@Override
+	public PC_IGresGui openClientGui(EntityPlayer player, NBTTagCompound serverData) {
+		return new PCla_GuiLaser(player, this);
+	}
+
+	@Override
+	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
+		return new PCla_ContainerLaser(player, this);
+	}
+
+	@Override
+	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
+		return null;
+	}
+
+	@Override
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
+		return true;
+	}
+
+	@Override
+	public PC_RedstoneWorkType[] getAllowedRedstoneWorkTypes() {
+		return new PC_RedstoneWorkType[] { null, PC_RedstoneWorkType.EVER, PC_RedstoneWorkType.ON_ON,
+				PC_RedstoneWorkType.ON_OFF };
 	}
 }
