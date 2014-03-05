@@ -18,12 +18,14 @@ public class PCws_WeaselEngine implements PC_WeaselEngine {
 	
 	public PCws_WeaselEngine(PC_WeaselClassSave classes, int memSize){
 		this.virtualMachine = new XVirtualMachine(PCws_Weasel.getRTClassLoader(), memSize);
+		this.virtualMachine.getClassProvider().addClassLoader(PCws_Weasel.getWeaselRTClassLoader());
 		this.virtualMachine.getClassProvider().addClassLoader((PCws_WeaselClassSave)classes);
 	}
 	
 	public PCws_WeaselEngine(PC_WeaselClassSave classes, byte[] data) throws IOException {
 		List<XClassLoader>classLoader = new ArrayList<XClassLoader>();
 		classLoader.add(PCws_Weasel.getRTClassLoader());
+		classLoader.add(PCws_Weasel.getWeaselRTClassLoader());
 		classLoader.add((PCws_WeaselClassSave)classes);
 		this.virtualMachine = new XVirtualMachine(classLoader, new ByteArrayInputStream(data), PCws_Timer.INSTANCE);
 	}

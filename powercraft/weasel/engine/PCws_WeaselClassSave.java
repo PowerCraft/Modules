@@ -28,8 +28,9 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 	
 	public PCws_WeaselClassSave(){
 		PCws_WeaselSourceClass sc = new PCws_WeaselSourceClass();
-		sc.setSource("/*\n * A XScript powered Core\n */\n\npublic class Main{\n\t\n\tpublic static void main(){\n"+
-		"\t\t// TODO write your program here\n\t}\n\t\n}");
+		sc.setSource("/*\n * A Weasel powered Core\n */\n\npublic class Main{\n\t\n\t// This is the entry point."
+				+ "\n\t// It needs the name \"main\" in the Main class\n\t// no params and returns void\n\t// and it has to be static\n\tpublic static "
+				+ "void main(){\n\t\t// TODO write your program here\n\t}\n\t\n}");
 		this.sourceFiles.put("Main", sc);
 	}
 	
@@ -125,6 +126,7 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 		}
 		XCompiler compiler = new XCompiler(PCws_Weasel.getRTClassLoader());
 		compiler.addPredefStaticIndirectImports("weasel.Predef");
+		compiler.getClassProvider().addClassLoader(PCws_Weasel.getWeaselRTClassLoader());
 		compiler.getClassProvider().addClassLoader(this);
 		compiler.registerSourceProvider(this);
 		compiler.addTreeChanger(new XTreeMakeEasy());

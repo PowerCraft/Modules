@@ -56,6 +56,8 @@ public class PCws_GuiCore implements PC_IGresGui, PC_IGresEventListener {
 	
 	HashMap<String, String> sources;
 	
+	private List<String> remove;
+	
 	PC_GresListBox listBox;
 	
 	private PC_GresButton save;
@@ -71,6 +73,7 @@ public class PCws_GuiCore implements PC_IGresGui, PC_IGresEventListener {
 		if(sources.isEmpty()){
 			sources.put("Main", "/* TODO Report this bug!\n * I'm sorry but the source is lost :(\n * Or at least if you save...\n */");
 		}
+		this.remove = new ArrayList<String>(this.sources.keySet());
 	}
 	
 	@Override
@@ -124,7 +127,12 @@ public class PCws_GuiCore implements PC_IGresGui, PC_IGresEventListener {
 						String n = this.tab.getTabName(c);
 						this.sources.put(n, c.getText());
 					}
-					this.te.sendSourcesAndCompile(this.sources);
+					HashMap<String, String> hm = new HashMap<String, String>();
+					for(String s:this.remove){
+						hm.put(s, null);
+					}
+					hm.putAll(this.sources);
+					this.te.sendSourcesAndCompile(hm);
 				}
 			}else if(mbe.getEvent()==Event.DOWN && mbe.isDoubleClick()){
 				if(component==this.listBox){
@@ -140,11 +148,17 @@ public class PCws_GuiCore implements PC_IGresGui, PC_IGresEventListener {
 			PC_GresMouseButtonEventResult mbe = (PC_GresMouseButtonEventResult)event;
 			if(mbe.getEvent()==Event.CLICK && mbe.getEventButton()==1){
 				if(mbe.getComponent()==this.listBox){
+					String selected = this.listBox.getSelected();
 					PC_GresNeedFocusFrame frame = new PC_GresNeedFocusFrame(mbe.getMouse().add(component.getRealLocation()));
-					ListBoxEventListener lbel = new ListBoxEventListener();
+					ListBoxEventListener lbel = new ListBoxEventListener(selected);
 					frame.addEventListener(lbel);
 					frame.setLayout(new PC_GresLayoutVertical());
-					PC_GresListBoxWithoutScroll lb = new PC_GresListBoxWithoutScroll(Arrays.asList(LISTBOXELEMENTS));
+					PC_GresListBoxWithoutScroll lb;
+					if(selected==null){
+						lb = new PC_GresListBoxWithoutScroll(Arrays.asList(new String[]{"new"}));
+					}else{
+						lb = new PC_GresListBoxWithoutScroll(Arrays.asList(LISTBOXELEMENTS));
+					}
 					lb.addEventListener(lbel);
 					frame.add(lb);
 					component.getGuiHandler().add(frame);
@@ -228,7 +242,11 @@ public class PCws_GuiCore implements PC_IGresGui, PC_IGresEventListener {
 	
 	private class ListBoxEventListener implements PC_IGresEventListener{
 
-		public ListBoxEventListener() {}
+		private String selected;
+		
+		public ListBoxEventListener(String selected) {
+			this.selected = selected;
+		}
 
 		@Override
 		public void onEvent(PC_GresEvent event) {
@@ -251,13 +269,13 @@ public class PCws_GuiCore implements PC_IGresGui, PC_IGresEventListener {
 						break;}
 					case 1:{
 						PC_GresDialogInput dialogInput = new PC_GresDialogInput("Rename", PCws_GuiCore.this.listBox.getSelected(), "Rename");
-						dialogInput.addEventListener(new DialogRenameEventListener());
+						dialogInput.addEventListener(new DialogRenameEventListener(this.selected));
 						component.getGuiHandler().add(dialogInput);
 						dialogInput.takeFocus();
 						break;}
 					case 2:{
 						PC_GresDialogYesNo dialogYesNo = new PC_GresDialogYesNo("Delete", "Delete "+PCws_GuiCore.this.listBox.getSelected()+" really?", "Yes");
-						dialogYesNo.addEventListener(new DialogRemoveEventListener());
+						dialogYesNo.addEventListener(new DialogRemoveEventListener(this.selected));
 						component.getGuiHandler().add(dialogYesNo);
 						dialogYesNo.takeFocus();
 						break;}
@@ -288,12 +306,16 @@ public class PCws_GuiCore implements PC_IGresGui, PC_IGresEventListener {
 	
 	private class DialogRenameEventListener implements PC_IGresEventListener{
 
-		DialogRenameEventListener() {}
+		private String selected;
+		
+		DialogRenameEventListener(String selected) {
+			this.selected = selected;
+		}
 		
 		@Override
 		public void onEvent(PC_GresEvent event) {
 			if(event instanceof EventInput){
-				renameClass(((EventInput)event).getInput());
+				renameClass(((EventInput)event).getInput(), this.selected);
 			}else if(event instanceof EventInputChanged){
 				EventInputChanged inputChanged = (EventInputChanged)event;
 				inputChanged.setEnabled(checkName(inputChanged.getInput()));
@@ -304,12 +326,16 @@ public class PCws_GuiCore implements PC_IGresGui, PC_IGresEventListener {
 	
 	private class DialogRemoveEventListener implements PC_IGresEventListener{
 
-		DialogRemoveEventListener() {}
+		private String selected;
+		
+		DialogRemoveEventListener(String selected) {
+			this.selected = selected;
+		}
 		
 		@Override
 		public void onEvent(PC_GresEvent event) {
 			if(event instanceof EventYes){
-				removeClass();
+				removeClass(this.selected);
 			}
 		}
 		
@@ -334,21 +360,25 @@ public class PCws_GuiCore implements PC_IGresGui, PC_IGresEventListener {
 		updateListBox();
 	}
 
-	void renameClass(String name){
-		if(name.equals(this.tab.getVisibleTabName()))
+	void renameClass(String name, String selected){
+		if(name.equals(selected))
 			return;
-		this.sources.put(name, this.sources.remove(this.tab.getVisibleTabName()));
-		PC_GresComponent component = this.tab.getVisibleTab();
-		this.tab.remove(component);
-		this.tab.add(name, component);
-		component.moveToTop();
+		this.sources.put(name, this.sources.remove(selected));
+		PC_GresComponent component = this.tab.getTab(selected);
+		if(component!=null){
+			this.tab.remove(component);
+			this.tab.add(name, component);
+			component.moveToTop();
+		}
 		updateListBox();
 	}
 	
-	void removeClass(){
+	void removeClass(String selected){
 		if(this.sources.size()>1){
-			this.sources.remove(this.tab.getVisibleTabName());
-			this.tab.remove(this.tab.getVisibleTab());
+			this.sources.remove(selected);
+			PC_GresComponent tabComponent = this.tab.getTab(selected);
+			if(tabComponent!=null)
+				this.tab.remove(tabComponent);
 			updateListBox();
 		}
 	}

@@ -30,6 +30,8 @@ public class PCws_Weasel extends PC_Module implements PC_WeaselModule {
 	
 	public static final File rt = PC_Utils.getPowerCraftFile("Weasel", "rt.zip");
 	
+	public static final File weaselrt = PC_Utils.getPowerCraftFile("Weasel", "weasel.zip");
+	
 	public static final PCws_BlockCore CORE = new PCws_BlockCore();
 	
 	@InstanceFactory
@@ -60,6 +62,14 @@ public class PCws_Weasel extends PC_Module implements PC_WeaselModule {
 	public static XClassLoader getRTClassLoader() {
 		try {
 			return new XZipClassLoader(rt);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static XClassLoader getWeaselRTClassLoader() {
+		try {
+			return new XZipClassLoader(weaselrt);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

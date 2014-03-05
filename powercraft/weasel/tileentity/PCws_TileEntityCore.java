@@ -26,8 +26,10 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	private PC_WeaselEngine engine;
 	
 	public PCws_TileEntityCore(){
-		this.classSave = PC_Weasel.createClassSave();
-		this.engine = PC_Weasel.createEngine(this.classSave, 1024);
+		if(!isClient()){
+			this.classSave = PC_Weasel.createClassSave();
+			this.engine = PC_Weasel.createEngine(this.classSave, 1024);
+		}
 	}
 	
 	@Override
@@ -38,22 +40,26 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 
 	@Override
 	public void onLoadedFromNBT(Flag flag) {
-		if(flag==Flag.SAVE)
+		if(flag==Flag.SAVE && !isClient())
 			this.engine = PC_Weasel.createEngine(this.classSave, 1024);
 	}
 
 	@Override
 	public void onMessage(EntityPlayer player, NBTTagCompound nbtTagCompound) {
-		if(nbtTagCompound.getInteger("type")==0){
+		if(nbtTagCompound.getInteger("type")==0 && !isClient()){
 			NBTTagList list = (NBTTagList)nbtTagCompound.getTag("list");
 			for(int i=0; i<list.tagCount(); i++){
 				NBTTagCompound tagCompound = list.getCompoundTagAt(i);
 				String file = tagCompound.getString("FileName");
-				PC_WeaselSourceClass sourceClass = this.classSave.getClass(file);
-				if(sourceClass==null){
-					sourceClass = this.classSave.addClass(file);
+				if(tagCompound.hasKey("source")){
+					PC_WeaselSourceClass sourceClass = this.classSave.getClass(file);
+					if(sourceClass==null){
+						sourceClass = this.classSave.addClass(file);
+					}
+					sourceClass.setSource(tagCompound.getString("source"));
+				}else{
+					this.classSave.removeClass(file);
 				}
-				sourceClass.setSource(tagCompound.getString("source"));
 			}
 			this.classSave.compileMarked();
 			this.engine = PC_Weasel.createEngine(this.classSave, 1024);
@@ -74,7 +80,8 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 		for(Entry<String, String> e:sources.entrySet()){
 			NBTTagCompound tagCompound = new NBTTagCompound();
 			tagCompound.setString("FileName", e.getKey());
-			tagCompound.setString("source", e.getValue());
+			if(e.getValue()!=null)
+				tagCompound.setString("source", e.getValue());
 			list.appendTag(tagCompound);
 		}
 		nbtTagCompound.setTag("list", list);
