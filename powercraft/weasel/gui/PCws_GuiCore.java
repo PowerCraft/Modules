@@ -63,6 +63,7 @@ public class PCws_GuiCore implements PC_IGresGui, PC_IGresEventListener {
 	private PC_GresButton save;
 	private PC_GresButton cancel;
 	
+	private static final String[] LISTBOXELEMENTS1 = {"new"};
 	private static final String[] LISTBOXELEMENTS = {"new", "rename", "delete"};
 	private static final String[] TABELEMENTS1 = {"close"};
 	private static final String[] TABELEMENTSMORE = {"close", "close others", "close all"};
@@ -155,7 +156,7 @@ public class PCws_GuiCore implements PC_IGresGui, PC_IGresEventListener {
 					frame.setLayout(new PC_GresLayoutVertical());
 					PC_GresListBoxWithoutScroll lb;
 					if(selected==null){
-						lb = new PC_GresListBoxWithoutScroll(Arrays.asList(new String[]{"new"}));
+						lb = new PC_GresListBoxWithoutScroll(Arrays.asList(LISTBOXELEMENTS1));
 					}else{
 						lb = new PC_GresListBoxWithoutScroll(Arrays.asList(LISTBOXELEMENTS));
 					}
