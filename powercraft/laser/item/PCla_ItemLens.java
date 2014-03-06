@@ -14,10 +14,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class PCla_ItemLens extends PC_Item {
 
 	@SideOnly(Side.CLIENT)
-	private IIcon[] icons = new IIcon[3];
+	private String[] names = new String[] { "blue", "blueGreen", "green", "pink", "red", "white", "yellow" };
 
 	@SideOnly(Side.CLIENT)
-	private String[] names = new String[] { "red", "green", "blue" };
+	private IIcon[] icons = new IIcon[names.length];
 
 	public PCla_ItemLens() {
 		this.hasSubtypes = true;
@@ -27,11 +27,19 @@ public class PCla_ItemLens extends PC_Item {
 	public PC_Vec4I getColorFromMeta(int meta) {
 		switch (meta) {
 		case 0:
-			return new PC_Vec4I(255, 0, 0, 255);
-		case 1:
-			return new PC_Vec4I(0, 255, 0, 255);
-		case 2:
 			return new PC_Vec4I(0, 0, 255, 255);
+		case 1:
+			return new PC_Vec4I(0, 255, 255, 255);
+		case 2:
+			return new PC_Vec4I(0, 255, 0, 255);
+		case 3:
+			return new PC_Vec4I(255, 0, 255, 255);
+		case 4:
+			return new PC_Vec4I(255, 0, 0, 255);
+		case 5:
+			return new PC_Vec4I(255, 255, 255, 255);
+		case 6:
+			return new PC_Vec4I(255, 255, 0, 255);
 		}
 		return new PC_Vec4I(255, 255, 255, 255);
 	}
@@ -39,9 +47,9 @@ public class PCla_ItemLens extends PC_Item {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(PC_IconRegistry iconRegistry) {
-		icons[0] = iconRegistry.registerIcon("red");
-		icons[1] = iconRegistry.registerIcon("green");
-		icons[2] = iconRegistry.registerIcon("blue");
+		for (int i = 0; i < names.length; i++) {
+			icons[i] = iconRegistry.registerIcon(names[i]);
+		}
 	}
 
 	@Override
@@ -61,7 +69,7 @@ public class PCla_ItemLens extends PC_Item {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void getSubItems(Item item, CreativeTabs creaTab, List itemList) {
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < names.length; i++) {
 			itemList.add(new ItemStack(this, 1, i));
 		}
 	}

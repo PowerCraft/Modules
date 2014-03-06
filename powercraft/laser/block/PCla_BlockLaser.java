@@ -119,8 +119,6 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 		PCla_TileEntityLaser tileEntity = (PCla_TileEntityLaser) world.getTileEntity(x, y, z);
 
 		tessellator.setColorRGBA(colorToDraw.x, colorToDraw.y, colorToDraw.z, 255);
-		System.out.println(colorToDraw);
-		//tessellator.setColorRGBA(64, 64, 64, 255);
 		for (PC_Vec3I posToDraw : tileEntity.validLaserPos)
 			switch (tileEntity.orientation) {
 			case EAST:
