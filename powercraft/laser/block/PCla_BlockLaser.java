@@ -14,6 +14,7 @@ import powercraft.api.PC_Direction;
 import powercraft.api.PC_IconRegistry;
 import powercraft.api.PC_Vec3;
 import powercraft.api.PC_Vec3I;
+import powercraft.api.PC_Vec4I;
 import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.api.renderer.PC_ModelHelper;
@@ -94,6 +95,8 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.addTranslation(x, y, z);
 		tessellator.setColorRGBA(255, 255, 255, 255);
+		PCla_TileEntityLaser tileLaser = (PCla_TileEntityLaser) world.getTileEntity(x, y, z);
+		PC_Vec4I colorToDraw = tileLaser.currColor;
 		/*
 		 * PC_ModelHelper.drawBox(new PC_Vec3(0.8, 0.8, -1), new PC_Vec3(0.2,
 		 * 0.2, 0), tessellator, PCla_BlockLaser.icons[2]);
@@ -115,6 +118,9 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 		PC_ModelHelper.drawBlockAsUsual(tessellator, iconsToDraw);
 		PCla_TileEntityLaser tileEntity = (PCla_TileEntityLaser) world.getTileEntity(x, y, z);
 
+		tessellator.setColorRGBA(colorToDraw.x, colorToDraw.y, colorToDraw.z, 255);
+		System.out.println(colorToDraw);
+		//tessellator.setColorRGBA(64, 64, 64, 255);
 		for (PC_Vec3I posToDraw : tileEntity.validLaserPos)
 			switch (tileEntity.orientation) {
 			case EAST:
@@ -137,6 +143,7 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 				break;
 			}
 		tessellator.addTranslation(-x, -y, -z);
+		tessellator.setColorRGBA(255, 255, 255, 255);
 		return true;
 	}
 

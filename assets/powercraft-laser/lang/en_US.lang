@@ -1,2 +1,5 @@
 itemGroup.PowerCraft-Laser=Powercraft-Laser
 tile.PCla_BlockLaser.name=Laser
+item.PCla_Lens.red.name=Red Lens
+item.PCla_Lens.green.name=Green Lens
+item.PCla_Lens.blue.name=Blue Lens

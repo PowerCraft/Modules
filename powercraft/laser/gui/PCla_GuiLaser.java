@@ -2,6 +2,7 @@ package powercraft.laser.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.input.Keyboard;
+import powercraft.api.PC_RectI;
 import powercraft.api.gres.PC_GresComponent;
 import powercraft.api.gres.PC_GresGroupContainer;
 import powercraft.api.gres.PC_GresGuiHandler;
@@ -40,6 +41,11 @@ public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, P
 	}
 
 	@Override
+	public void onContainerClosed(EntityPlayer player) {
+		laser.doColorCalc();
+	}
+
+	@Override
 	public void initGui(PC_GresGuiHandler gui) {
 		PC_GresWindow window = new PC_GresWindow("Laser");
 		this.energy = new EnergyPerTick();
@@ -52,30 +58,52 @@ public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, P
 
 		PC_GresTab tabs = new PC_GresTab();
 
-		PC_GresTab itemTab = new PC_GresTab();
+		PC_GresGroupContainer itemTab = new PC_GresGroupContainer();
 		tabs.add("Items", itemTab);
 		itemTab.setLayout(new PC_GresLayoutHorizontal());
 
-		PC_GresTab presentTab = new PC_GresTab();
+		PC_GresGroupContainer presentTab = new PC_GresGroupContainer();
 		tabs.add("Presents", presentTab);
 		presentTab.setLayout(new PC_GresLayoutHorizontal());
 
-		PC_GresTab scriptTab = new PC_GresTab();
-		tabs.add("Miniscript", scriptTab);
-		scriptTab.setLayout(new PC_GresLayoutHorizontal());
-
 		PC_GresGroupContainer lensSlot = new PC_GresGroupContainer();
-		lensSlot.setLayout(new PC_GresLayoutHorizontal());
-		lensSlot.add(inv = new PC_GresInventory(1, 1));
+		lensSlot.setLayout(new PC_GresLayoutVertical());
+		lensSlot.add(inv = new PC_GresInventory(1, 4));
 		inv.setSlot(0, 0, this.invSlots[0]);
+		inv.setSlot(0, 1, this.invSlots[1]);
+		inv.setSlot(0, 2, this.invSlots[2]);
+		inv.setSlot(0, 3, this.invSlots[3]);
+		PC_RectI newRect = new PC_RectI(lensSlot.getPadding());
+		newRect.width += 5;
+		newRect.x += 3;
+		newRect.y += 3;
+		newRect.height += 3;
+		lensSlot.setPadding(newRect);
 		itemTab.add(lensSlot);
 
 		PC_GresGroupContainer catalysator = new PC_GresGroupContainer();
 		catalysator.setLayout(new PC_GresLayoutHorizontal());
-		catalysator.add(inv = new PC_GresInventory(2, 1));
-		inv.setSlot(0, 0, this.invSlots[1]);
-		inv.setSlot(1, 0, this.invSlots[2]);
+		catalysator.add(inv = new PC_GresInventory(2, 2));
+		inv.setSlot(0, 0, this.invSlots[4]);
+		inv.setSlot(1, 0, this.invSlots[5]);
+		inv.setSlot(0, 1, this.invSlots[6]);
+		inv.setSlot(1, 1, this.invSlots[7]);
 		itemTab.add(catalysator);
+
+		PC_GresGroupContainer laserSlot = new PC_GresGroupContainer();
+		laserSlot.setLayout(new PC_GresLayoutHorizontal());
+		laserSlot.add(inv = new PC_GresInventory(1, 4));
+		inv.setSlot(0, 0, this.invSlots[8]);
+		inv.setSlot(0, 1, this.invSlots[9]);
+		inv.setSlot(0, 2, this.invSlots[10]);
+		inv.setSlot(0, 3, this.invSlots[11]);
+		newRect = new PC_RectI(laserSlot.getPadding());
+		newRect.width += 3;
+		newRect.x += 5;
+		newRect.y += 3;
+		newRect.height += 3;
+		laserSlot.setPadding(newRect);
+		itemTab.add(laserSlot);
 
 		window.add(tabs);
 		window.add(new PC_GresPlayerInventory(this));
