@@ -26,17 +26,23 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 	public int maxLaserLength = 15;
 
 	public PCla_TileEntityLaser() {
-		super("Laser", 12, new Group(true, PC_InventoryUtils.makeIndexList(0, 4)), new Group(true,
-				PC_InventoryUtils.makeIndexList(4, 8)), new Group(true, PC_InventoryUtils.makeIndexList(8, 12)));
+		super("Laser", 16, new Group(true, PC_InventoryUtils.makeIndexList(0, 4)), new Group(true,
+				PC_InventoryUtils.makeIndexList(4, 12)), new Group(true, PC_InventoryUtils.makeIndexList(12, 16)));
 		orientation = PC_Direction.NORTH;
 		this.workWhen = PC_RedstoneWorkType.EVER;
 		this.currColor = new PC_Vec4I(255, 255, 255, 255);
-
 	}
 
 	@Override
 	public void onTick() {
 		updateBlockList();
+	}
+
+	@Override
+	public void markDirty() {
+		super.markDirty();
+		doColorCalc();
+		this.renderUpdate();
 	}
 
 	public void updateBlockList() {

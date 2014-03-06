@@ -41,11 +41,6 @@ public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, P
 	}
 
 	@Override
-	public void onContainerClosed(EntityPlayer player) {
-		laser.doColorCalc();
-	}
-
-	@Override
 	public void initGui(PC_GresGuiHandler gui) {
 		PC_GresWindow window = new PC_GresWindow("Laser");
 		this.energy = new EnergyPerTick();
@@ -66,6 +61,10 @@ public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, P
 		tabs.add("Presents", presentTab);
 		presentTab.setLayout(new PC_GresLayoutHorizontal());
 
+		PC_GresGroupContainer scriptTab = new PC_GresGroupContainer();
+		tabs.add("Script", scriptTab);
+		presentTab.setLayout(new PC_GresLayoutHorizontal());
+
 		PC_GresGroupContainer lensSlot = new PC_GresGroupContainer();
 		lensSlot.setLayout(new PC_GresLayoutVertical());
 		lensSlot.add(inv = new PC_GresInventory(1, 4));
@@ -83,20 +82,24 @@ public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, P
 
 		PC_GresGroupContainer catalysator = new PC_GresGroupContainer();
 		catalysator.setLayout(new PC_GresLayoutHorizontal());
-		catalysator.add(inv = new PC_GresInventory(2, 2));
+		catalysator.add(inv = new PC_GresInventory(2, 4));
 		inv.setSlot(0, 0, this.invSlots[4]);
 		inv.setSlot(1, 0, this.invSlots[5]);
 		inv.setSlot(0, 1, this.invSlots[6]);
 		inv.setSlot(1, 1, this.invSlots[7]);
+		inv.setSlot(0, 2, this.invSlots[8]);
+		inv.setSlot(1, 2, this.invSlots[9]);
+		inv.setSlot(0, 3, this.invSlots[10]);
+		inv.setSlot(1, 3, this.invSlots[11]);
 		itemTab.add(catalysator);
 
 		PC_GresGroupContainer laserSlot = new PC_GresGroupContainer();
 		laserSlot.setLayout(new PC_GresLayoutHorizontal());
 		laserSlot.add(inv = new PC_GresInventory(1, 4));
-		inv.setSlot(0, 0, this.invSlots[8]);
-		inv.setSlot(0, 1, this.invSlots[9]);
-		inv.setSlot(0, 2, this.invSlots[10]);
-		inv.setSlot(0, 3, this.invSlots[11]);
+		inv.setSlot(0, 0, this.invSlots[12]);
+		inv.setSlot(0, 1, this.invSlots[13]);
+		inv.setSlot(0, 2, this.invSlots[14]);
+		inv.setSlot(0, 3, this.invSlots[15]);
 		newRect = new PC_RectI(laserSlot.getPadding());
 		newRect.width += 3;
 		newRect.x += 5;
