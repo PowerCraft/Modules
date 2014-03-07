@@ -3,32 +3,51 @@ package powercraft.weasel.tileentity;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import powercraft.api.PC_Direction;
 import powercraft.api.PC_Field;
 import powercraft.api.PC_Field.Flag;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.api.gres.PC_GresBaseWithInventory;
 import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
+import powercraft.api.grid.PC_GridHelper;
+import powercraft.api.grid.PC_IGridHolder;
+import powercraft.api.script.weasel.PC_IWeaselEvent;
+import powercraft.api.script.weasel.PC_IWeaselNativeHandler;
 import powercraft.api.script.weasel.PC_Weasel;
 import powercraft.api.script.weasel.PC_WeaselClassSave;
 import powercraft.api.script.weasel.PC_WeaselEngine;
 import powercraft.api.script.weasel.PC_WeaselSourceClass;
+import powercraft.api.script.weasel.grid.PC_IWeaselGridTile;
+import powercraft.api.script.weasel.grid.PC_IWeaselGridTileAddressable;
+import powercraft.api.script.weasel.grid.PC_WeaselGrid;
 import powercraft.weasel.gui.PCws_GuiCore;
 
 
-public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpenHandler {
+public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpenHandler, PC_IGridHolder, PC_IWeaselGridTileAddressable, PC_IWeaselNativeHandler {
+	
+	private PC_WeaselGrid grid;
 	
 	@PC_Field
 	private PC_WeaselClassSave classSave;
 	private PC_WeaselEngine engine;
 	
+	private int address;
+	
+	private boolean occupied;
+	
+	private int[] redstoneValuesIn = new int[6];
+	
+	private int[] redstoneValuesOut = new int[6];
+	
 	public PCws_TileEntityCore(){
 		if(!isClient()){
 			this.classSave = PC_Weasel.createClassSave();
-			this.engine = PC_Weasel.createEngine(this.classSave, 1024);
+			this.engine = PC_Weasel.createEngine(this.classSave, 1024, this);
 		}
 	}
 	
@@ -41,7 +60,7 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	@Override
 	public void onLoadedFromNBT(Flag flag) {
 		if(flag==Flag.SAVE && !isClient())
-			this.engine = PC_Weasel.createEngine(this.classSave, 1024);
+			this.engine = PC_Weasel.createEngine(this.classSave, 1024, this);
 	}
 
 	@Override
@@ -62,7 +81,7 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 				}
 			}
 			this.classSave.compileMarked();
-			this.engine = PC_Weasel.createEngine(this.classSave, 1024);
+			this.engine = PC_Weasel.createEngine(this.classSave, 1024, this);
 			try {
 				this.engine.callMain("Main", "main()void");
 			} catch (RuntimeException e) {
@@ -118,5 +137,143 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 		nbtTagCompound.setTag("list", list);
 		return nbtTagCompound;
 	}
+
+	@Override
+	public void setGrid(PC_WeaselGrid grid) {
+		this.grid = grid;
+	}
+
+	@Override
+	public PC_WeaselGrid getGrid() {
+		return grid;
+	}
+
+	@Override
+	public int getAddress() {
+		return address;
+	}
+
+	@Override
+	public void setAddressOccupied(boolean b) {
+		occupied = b;
+	}
+
+	@Override
+	public void getGridIfNull() {
+		PC_GridHelper.getGridIfNull(worldObj, xCoord, yCoord, zCoord, 0x3F, this, PC_WeaselGrid.factory, PC_IWeaselGridTile.class);
+	}
+
+	@Override
+	public void removeFromGrid() {
+		PC_GridHelper.removeFromGrid(worldObj, (PC_IWeaselGridTile)this);
+	}
+
+	@Override
+	public void onNeighborBlockChange(Block neighbor) {
+		super.onNeighborBlockChange(neighbor);
+		if(!occupied){
+			for(PC_Direction dir:PC_Direction.VALID_DIRECTIONS){
+				int value = redstoneValuesIn[dir.ordinal()];
+				int newValue = worldObj.getIndirectPowerLevelTo(xCoord, yCoord, zCoord, dir.ordinal());
+				if(value!=newValue){
+					redstoneValuesIn[dir.ordinal()] = newValue;
+					sendRedstoneChangeEvent(dir.ordinal(), newValue);
+				}
+			}
+		}
+	}
+	
+	private void sendRedstoneChangeEvent(final int side, final int value){
+		if(!occupied){
+			grid.sendEvent(new PC_IWeaselEvent(){
+	
+				@Override
+				public String getEventName() {
+					return "Redstone Changed";
+				}
+	
+				@Override
+				public String getEntryClass() {
+					return "weasel.devices.Core";
+				}
+	
+				@Override
+				public String getEntryMethod() {
+					return "redstoneChangeInterruptEntryPoint(int, int, int)void";
+				}
+	
+				@Override
+				public long[] getParams() {
+					return new long[]{address, side, value};
+				}
+				
+			});
+		}
+	}
+	
+	@Override
+	public int getRedstonePowerValue(PC_Direction side, int faceSide) {
+		return redstoneValuesOut[side.ordinal()];
+	}
+
+	@Override
+	public void onEvent(PC_IWeaselEvent event) {
+		engine.onEvent(event);
+	}
+
+	@Override
+	public int getTypeUnsafe(int address) {
+		PC_IWeaselGridTileAddressable tile = grid.getTileByAddress(address);
+		return tile==null?0:tile.getType();
+	}
+
+	@Override
+	public boolean isDevicePresent(int address) {
+		return grid.getTileByAddress(address)!=null;
+	}
+
+	@Override
+	public int getRedstoneValueUnsafe(int address, int side) {
+		PC_IWeaselGridTileAddressable tile = grid.getTileByAddress(address);
+		return tile==null?-1:tile.getRedstoneValue(side);
+	}
+
+	@Override
+	public boolean setRedstoneValueUnsafe(int address, int side, int value) {
+		PC_IWeaselGridTileAddressable tile = grid.getTileByAddress(address);
+		if(tile==null){
+			return false;
+		}
+		tile.setRedstoneValue(side, value);
+		return true;
+	}
+
+	@Override
+	public int getType() {
+		return 1;
+	}
+
+	@Override
+	public int getRedstoneValue(int side) {
+		return redstoneValuesIn[side];
+	}
+
+	@Override
+	public void setRedstoneValue(int side, int value) {
+		redstoneValuesOut[side] = value;
+		notifyNeighbors();
+	}
+
+	@Override
+	public boolean canRedstoneConnect(PC_Direction side, int faceSide) {
+		return true;
+	}
+
+	@Override
+	public boolean shouldCheckWeakPower(PC_Direction side) {
+		return false;
+	}
+	
+	
 	
 }

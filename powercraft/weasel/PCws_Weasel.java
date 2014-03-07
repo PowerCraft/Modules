@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
 import powercraft.api.PC_Utils;
+import powercraft.api.script.weasel.PC_IWeaselNativeHandler;
 import powercraft.api.script.weasel.PC_Weasel;
 import powercraft.api.script.weasel.PC_WeaselClassSave;
 import powercraft.api.script.weasel.PC_WeaselEngine;
@@ -55,8 +56,8 @@ public class PCws_Weasel extends PC_Module implements PC_WeaselModule {
 	}
 
 	@Override
-	public PC_WeaselEngine createEngine(PC_WeaselClassSave classSave, int memSize) {
-		return new PCws_WeaselEngine(classSave, memSize);
+	public PC_WeaselEngine createEngine(PC_WeaselClassSave classSave, int memSize, PC_IWeaselNativeHandler handler) {
+		return new PCws_WeaselEngine(classSave, memSize, handler);
 	}
 
 	public static XClassLoader getRTClassLoader() {
@@ -76,9 +77,9 @@ public class PCws_Weasel extends PC_Module implements PC_WeaselModule {
 	}
 
 	@Override
-	public PC_WeaselEngine loadEngine(PC_WeaselClassSave classSave, byte[] data) {
+	public PC_WeaselEngine loadEngine(PC_WeaselClassSave classSave, byte[] data, PC_IWeaselNativeHandler handler) {
 		try {
-			return new PCws_WeaselEngine(classSave, data);
+			return new PCws_WeaselEngine(classSave, data, handler);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
