@@ -6,6 +6,7 @@ import powercraft.api.PC_Module;
 import powercraft.api.network.PC_PacketHandler;
 import powercraft.transport.block.PCtr_BlockBeltScriptable;
 import powercraft.transport.block.PCtr_PacketSetEntitySpeed;
+import powercraft.transport.item.PCtr_ItemSlimeBoots;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.InstanceFactory;
 
@@ -19,6 +20,8 @@ public class PCtr_Transport extends PC_Module {
 	public static final PCtr_Transport INSTANCE = new PCtr_Transport();
 	
 	public static final PCtr_BlockBeltScriptable ScriptableBelt = new PCtr_BlockBeltScriptable();
+	
+	public static final PCtr_ItemSlimeBoots SLIME_BOOTS = new PCtr_ItemSlimeBoots();
 	
 	@InstanceFactory
 	public static PCtr_Transport factory(){

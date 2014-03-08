@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import powercraft.api.PC_MathHelper;
 import powercraft.api.network.PC_Packet;
 import powercraft.api.network.PC_PacketServerToClient;
 import cpw.mods.fml.relauncher.Side;
@@ -19,10 +20,16 @@ public class PCtr_PacketSetEntitySpeed extends PC_PacketServerToClient {
 
 	private int entity;
 	private NBTTagCompound compound;
+	private double posX;
+	private double posY;
+	private double posZ;
 	
-	public PCtr_PacketSetEntitySpeed(NBTTagCompound compound, int entity) {
+	public PCtr_PacketSetEntitySpeed(NBTTagCompound compound, Entity entity) {
 		this.compound = compound;
-		this.entity = entity;
+		this.entity = entity.getEntityId();
+		this.posX = entity.posX;
+		this.posY = entity.posY;
+		this.posZ = entity.posZ;
 	}
 
 	public PCtr_PacketSetEntitySpeed(){
@@ -34,8 +41,12 @@ public class PCtr_PacketSetEntitySpeed extends PC_PacketServerToClient {
 	@SideOnly(Side.CLIENT)
 	protected PC_Packet doAndReply(NetHandlerPlayClient iNetHandler, World world, EntityPlayer player) {
 		Entity entity = world.getEntityByID(this.entity);
-		if(entity!=null)
+		if(entity!=null){
 			entity.getEntityData().setTag("PowerCraft", this.compound);
+			//entity.posX = posX;
+			//entity.posY = posY;
+			//entity.posZ = posZ;
+		}
 		return null;
 	}
 
@@ -46,6 +57,9 @@ public class PCtr_PacketSetEntitySpeed extends PC_PacketServerToClient {
 			byte[] bytes = new byte[buf.readUnsignedShort()];
 			buf.readBytes(bytes);
 			this.compound = CompressedStreamTools.decompress(bytes);
+			posX = buf.readDouble();
+			posY = buf.readDouble();
+			posZ = buf.readDouble();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -58,6 +72,9 @@ public class PCtr_PacketSetEntitySpeed extends PC_PacketServerToClient {
 			buf.writeInt(this.entity);
 			buf.writeShort(bytes.length);
 			buf.writeBytes(bytes);
+			buf.writeDouble(posX);
+			buf.writeDouble(posY);
+			buf.writeDouble(posZ);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

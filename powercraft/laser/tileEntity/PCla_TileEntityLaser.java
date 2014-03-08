@@ -1,6 +1,7 @@
 package powercraft.laser.tileEntity;
 
 import java.util.Vector;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,6 +15,7 @@ import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.inventory.PC_InventoryUtils;
 import powercraft.api.redstone.PC_RedstoneWorkType;
+import powercraft.laser.PCla_Laser;
 import powercraft.laser.container.PCla_ContainerLaser;
 import powercraft.laser.gui.PCla_GuiLaser;
 import powercraft.laser.item.PCla_ItemLens;
@@ -98,7 +100,7 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-		if (itemstack.getItem().getClass().equals(PCla_ItemLens.class)) {
+		if (itemstack.getItem()==PCla_Laser.lens) {
 			if (i >= 0 && i < 4)
 				return true;
 		}
