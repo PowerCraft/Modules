@@ -4,6 +4,9 @@ import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
 import powercraft.laser.block.PCla_BlockLaser;
+import powercraft.laser.item.PCla_ItemCatalysator;
+import powercraft.laser.item.PCla_ItemLaserEmitter;
+import powercraft.laser.item.PCla_ItemLaserUpgrade;
 import powercraft.laser.item.PCla_ItemLens;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.InstanceFactory;
@@ -20,6 +23,9 @@ public class PCla_Laser extends PC_Module {
 	public static final PCla_BlockLaser laser = new PCla_BlockLaser();
 
 	public static final PCla_ItemLens lens = new PCla_ItemLens();
+	public static final PCla_ItemCatalysator catalysator = new PCla_ItemCatalysator();
+	public static final PCla_ItemLaserEmitter laserEmitter = new PCla_ItemLaserEmitter();
+	public static final PCla_ItemLaserUpgrade laserUpgrade = new PCla_ItemLaserUpgrade();
 
 	@InstanceFactory
 	public static PCla_Laser factory() {

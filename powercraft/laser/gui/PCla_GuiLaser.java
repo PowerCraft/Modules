@@ -7,6 +7,7 @@ import powercraft.api.gres.PC_GresComponent;
 import powercraft.api.gres.PC_GresGroupContainer;
 import powercraft.api.gres.PC_GresGuiHandler;
 import powercraft.api.gres.PC_GresInventory;
+import powercraft.api.gres.PC_GresLabel;
 import powercraft.api.gres.PC_GresPlayerInventory;
 import powercraft.api.gres.PC_GresTab;
 import powercraft.api.gres.PC_GresWindow;
@@ -24,6 +25,10 @@ import powercraft.laser.tileEntity.PCla_TileEntityLaser;
 public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, PC_IGresEventListener {
 
 	private EnergyPerTick energy;
+	private PC_GresGroupContainer lensSlot;
+	private PC_GresGroupContainer catalysator;
+	private PC_GresGroupContainer laserSlot;
+	private PC_GresGroupContainer upgradeSlot;
 
 	public PCla_GuiLaser(EntityPlayer player, PCla_TileEntityLaser laser) {
 		super(player, laser);
@@ -55,7 +60,14 @@ public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, P
 
 		PC_GresGroupContainer itemTab = new PC_GresGroupContainer();
 		tabs.add("Items", itemTab);
-		itemTab.setLayout(new PC_GresLayoutHorizontal());
+		itemTab.setLayout(new PC_GresLayoutVertical());
+
+		PC_GresGroupContainer laserItems = new PC_GresGroupContainer();
+		laserItems.setLayout(new PC_GresLayoutHorizontal());
+		itemTab.add(laserItems);
+		PC_GresGroupContainer upgradeItems = new PC_GresGroupContainer();
+		upgradeItems.setLayout(new PC_GresLayoutVertical());
+		itemTab.add(upgradeItems);
 
 		PC_GresGroupContainer presentTab = new PC_GresGroupContainer();
 		tabs.add("Presents", presentTab);
@@ -65,7 +77,7 @@ public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, P
 		tabs.add("Script", scriptTab);
 		presentTab.setLayout(new PC_GresLayoutHorizontal());
 
-		PC_GresGroupContainer lensSlot = new PC_GresGroupContainer();
+		lensSlot = new PC_GresGroupContainer();
 		lensSlot.setLayout(new PC_GresLayoutVertical());
 		lensSlot.add(inv = new PC_GresInventory(1, 4));
 		inv.setSlot(0, 0, this.invSlots[0]);
@@ -78,9 +90,9 @@ public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, P
 		newRect.y += 3;
 		newRect.height += 3;
 		lensSlot.setPadding(newRect);
-		itemTab.add(lensSlot);
+		laserItems.add(lensSlot);
 
-		PC_GresGroupContainer catalysator = new PC_GresGroupContainer();
+		catalysator = new PC_GresGroupContainer();
 		catalysator.setLayout(new PC_GresLayoutHorizontal());
 		catalysator.add(inv = new PC_GresInventory(2, 4));
 		inv.setSlot(0, 0, this.invSlots[4]);
@@ -91,9 +103,9 @@ public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, P
 		inv.setSlot(1, 2, this.invSlots[9]);
 		inv.setSlot(0, 3, this.invSlots[10]);
 		inv.setSlot(1, 3, this.invSlots[11]);
-		itemTab.add(catalysator);
+		laserItems.add(catalysator);
 
-		PC_GresGroupContainer laserSlot = new PC_GresGroupContainer();
+		laserSlot = new PC_GresGroupContainer();
 		laserSlot.setLayout(new PC_GresLayoutHorizontal());
 		laserSlot.add(inv = new PC_GresInventory(1, 4));
 		inv.setSlot(0, 0, this.invSlots[12]);
@@ -106,7 +118,24 @@ public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, P
 		newRect.y += 3;
 		newRect.height += 3;
 		laserSlot.setPadding(newRect);
-		itemTab.add(laserSlot);
+		laserItems.add(laserSlot);
+
+		PC_GresLabel upgradeLabel = new PC_GresLabel("Upgrades");
+		upgradeItems.add(upgradeLabel);
+		upgradeSlot = new PC_GresGroupContainer();
+		upgradeSlot.setLayout(new PC_GresLayoutHorizontal());
+		upgradeSlot.add(inv = new PC_GresInventory(5, 1));
+		inv.setSlot(0, 0, this.invSlots[16]);
+		inv.setSlot(1, 0, this.invSlots[17]);
+		inv.setSlot(2, 0, this.invSlots[18]);
+		inv.setSlot(3, 0, this.invSlots[19]);
+		inv.setSlot(4, 0, this.invSlots[20]);
+		newRect = new PC_RectI(upgradeSlot.getPadding());
+		newRect.width += 3;
+		newRect.x += 3;
+		newRect.height += 3;
+		upgradeSlot.setPadding(newRect);
+		upgradeItems.add(upgradeSlot);
 
 		window.add(tabs);
 		window.add(new PC_GresPlayerInventory(this));
