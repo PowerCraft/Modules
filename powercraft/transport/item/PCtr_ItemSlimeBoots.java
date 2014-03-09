@@ -1,7 +1,21 @@
 package powercraft.transport.item;
 
-import powercraft.api.item.PC_Item;
+import net.minecraft.creativetab.CreativeTabs;
+import powercraft.api.PC_IconRegistry;
+import powercraft.api.item.PC_ItemArmor;
 
-public class PCtr_ItemSlimeBoots extends PC_Item {
+public class PCtr_ItemSlimeBoots extends PC_ItemArmor{
 
+	public PCtr_ItemSlimeBoots(){
+		super(FEET, 0, 1, 1);
+		setCreativeTab(CreativeTabs.tabCombat);
+	}
+
+	@Override
+	public void registerIcons(PC_IconRegistry iconRegistry) {
+		itemIcon = iconRegistry.registerIcon("item");
+	}
+	
+	
+	
 }

@@ -4,14 +4,23 @@ import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPL
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.DIR_EAST;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.DIR_IN;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.DIR_NORTH;
+import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.DIR_OUT;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.DIR_SOUTH;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.DIR_WEST;
+import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.EXT_COUNT;
+import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.EXT_SIZE;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.FRONT_COUNT;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.ITEM_DAMAGE;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.ITEM_ID;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.ITEM_STACKSIZE;
+import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.ITEM_STORE_FAILURE;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.LEFT_COUNT;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.MOB_TYPE;
+import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.REDSTONE_EAST_IN;
+import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.REDSTONE_NORTH;
+import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.REDSTONE_NORTH_IN;
+import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.REDSTONE_SOUTH_IN;
+import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.REDSTONE_WEST_IN;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.RIGHT_COUNT;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.TYPE;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.TYPE_ITEMSTACK;
@@ -35,6 +44,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import powercraft.api.PC_Direction;
+import powercraft.api.PC_Field;
 import powercraft.api.PC_Utils;
 import powercraft.api.block.PC_TileEntityScriptable;
 import powercraft.api.gres.PC_Gres;
@@ -43,70 +53,118 @@ import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.network.PC_PacketHandler;
 import powercraft.api.script.PC_FakeDiagnostic;
+import powercraft.api.script.miniscript.PC_Miniscript;
 import powercraft.transport.PCtr_BeltHelper;
 import powercraft.transport.block.PCtr_PacketSetEntitySpeed;
 import powercraft.transport.gui.PCtr_GuiBeltScriptable;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.*;
-
 @SuppressWarnings("boxing")
 public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable implements PC_IGresGuiOpenHandler {
 	
-	private static final HashMap<String, Integer> replacements = new HashMap<String, Integer>();
-	private static final String[] entryVectors = new String[]{"itemOver", "redstoneToggeled"};
-	
-	private static final PC_Direction[] DIR_TO_PCDIR = {PC_Direction.NORTH, PC_Direction.EAST, PC_Direction.SOUTH, PC_Direction.WEST};
+	private static final HashMap<String, Integer> consts = new HashMap<String, Integer>();
+	private static final HashMap<String, Integer> pointers = new HashMap<String, Integer>();
+	private static final String[] entryVectors = new String[]{"ItemOver"};//new String[]{"ItemOver", "RedstoneToggeled"};
 	
 	protected enum REPLACEMENT{
 		
 		//ext_places
-		FRONT_COUNT("out.front", 0),
-		RIGHT_COUNT("out.right", 1),
-		BACK_COUNT("out.back", 2),
-		LEFT_COUNT("out.left", 3),
-		DIR_OUT("out.dir", 4),
-		DIR_IN("in.dir", 4),
-		TYPE("in.type", 5),
+		FRONT_COUNT("out.front", 0, false),
+		RIGHT_COUNT("out.right", 1, false),
+		BACK_COUNT("out.back", 2, false),
+		LEFT_COUNT("out.left", 3, false),
+		REDSTONE_NORTH("out.redstone.north", 4, false),
+		REDSTONE_EAST("out.redstone.east", 5, false),
+		REDSTONE_SOUTH("out.redstone.south", 6, false),
+		REDSTONE_WEST("out.redstone.west", 7, false),
+		REDSTONE_NORTH_IN("in.redstone.north", 4, false),
+		REDSTONE_EAST_IN("in.redstone.east", 5, false),
+		REDSTONE_SOUTH_IN("in.redstone.south", 6, false),
+		REDSTONE_WEST_IN("in.redstone.west", 7, false),
+		DIR_OUT("out.dir", 8, false),
+		DIR_IN("in.dir", 8, false),
+		TYPE("in.type", 9, false),
 		
 		//ext_places if item
-		ITEM_ID("in.item.id", 6),
-		ITEM_DAMAGE("in.item.damage", 7),
-		ITEM_STACKSIZE("in.item.stacksize", 8),
-		ITEM_STORE_FAILURE("in.item.storefailure", 9),
+		ITEM_ID("in.item.id", 10, false),
+		ITEM_DAMAGE("in.item.damage", 11, false),
+		ITEM_STACKSIZE("in.item.stacksize", 12, false),
+		ITEM_STORE_FAILURE("in.item.storefailure", 13, false),
 		
 		//ext_places if mob
-		MOB_TYPE("in.mob.type", 6),
+		MOB_TYPE("in.mob.type", 10, false),
 		
 		//values
-		TYPE_ITEMSTACK("type.item", 0),
-		TYPE_MOB("type.mob", 1),
-		TYPE_PLAYER("type.player", 2),
+		TYPE_ITEMSTACK("type.item", 0, true),
+		TYPE_MOB("type.mob", 1, true),
+		TYPE_PLAYER("type.player", 2, true),
 		
-		DIR_NORTH("dir.north", 0),
-		DIR_EAST("dir.east", 1),
-		DIR_SOUTH("dir.south", 2),
-		DIR_WEST("dir.west", 3),
+		DIR_NORTH("dir.north", 0, true),
+		DIR_EAST("dir.east", 1, true),
+		DIR_SOUTH("dir.south", 2, true),
+		DIR_WEST("dir.west", 3, true),
+		
+		EXT_SIZE("ext.size", 32, true),
+		EXT_COUNT("ext.count", null),
 		
 		;
 		final String name;
 		final int value;
-		REPLACEMENT(String name, int num){
+		final boolean isConst;
+		REPLACEMENT(String name, int num, boolean isConst){
 			this.name = name;
 			this.value = num;
+			this.isConst = isConst;
+			if(!isConst){
+				if(IO_SIZE.ioSize<num+1){
+					IO_SIZE.ioSize = num+1;
+				}
+			}
 		}
+		
+		REPLACEMENT(String name, Void unused){
+			this.name = name;
+			this.value = IO_SIZE.ioSize;
+			this.isConst = true;
+		}
+		
+		static class IO_SIZE{
+			static int ioSize;
+		}
+		
 	}
 	
 	static{
 		for(REPLACEMENT e:REPLACEMENT.values()){
-			replacements.put(e.name, e.value);
+			if(e.isConst){
+				consts.put(e.name, e.value);
+			}else{
+				pointers.put(e.name, e.value);
+			}
 		}
 	}
 	
+	@PC_Field
+	private int[] redstoneValues = new int[4];
+	
 	public PCtr_TileEntityBeltScriptable(){
-		super(16);
-		setSource(";A MiniScript powered Belt");
+		super(EXT_SIZE.value);
+	}
+	
+	@Override
+	public void onBlockPostSet(PC_Direction side, ItemStack stack, EntityPlayer player, float hitX, float hitY, float hitZ) {
+		setSource(PC_Miniscript.generateDefaultSource("Belt", entryVectors));
+	}
+
+	@Override
+	public boolean canRedstoneConnect(PC_Direction side, int faceSide) {
+		return side.offsetY==0;
+	}
+
+	@Override
+	public int getRedstonePowerValue(PC_Direction side, int faceSide) {
+		return side.offsetY!=0?0:redstoneValues[side.getOpposite().ordinal()-2];
 	}
 
 	@Override
@@ -145,10 +203,13 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		compound.setInteger("lastZ", this.zCoord);
 		compound.setInteger("lastTick", entity.ticksExisted);
 		int[] ext = getExt();
-		ext[FRONT_COUNT.value] = 0;
-		ext[RIGHT_COUNT.value] = 0;
-		ext[BACK_COUNT.value] = 0;
-		ext[LEFT_COUNT.value] = 0;
+		for(int i=0; i<EXT_COUNT.value; i++){
+			ext[i] = 0;
+		}
+		ext[REDSTONE_NORTH_IN.value] = worldObj.getIndirectPowerLevelTo(xCoord, yCoord, zCoord, PC_Direction.NORTH.getOpposite().ordinal());
+		ext[REDSTONE_EAST_IN.value] = worldObj.getIndirectPowerLevelTo(xCoord, yCoord, zCoord, PC_Direction.EAST.getOpposite().ordinal());
+		ext[REDSTONE_SOUTH_IN.value] = worldObj.getIndirectPowerLevelTo(xCoord, yCoord, zCoord, PC_Direction.SOUTH.getOpposite().ordinal());
+		ext[REDSTONE_WEST_IN.value] = worldObj.getIndirectPowerLevelTo(xCoord, yCoord, zCoord, PC_Direction.WEST.getOpposite().ordinal());
 		switch(PC_Utils.getEntityMovement2D(entity)){
 		case EAST:
 			ext[DIR_IN.value] = DIR_EAST.value;
@@ -181,6 +242,15 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 			return;
 		}
 		invoke(0); // entry: itemOver
+		boolean changed = false;
+		for(int i=0; i<4; i++){
+			if(redstoneValues[PC_Direction.fromRotationY(i).ordinal()-2] != ext[REDSTONE_NORTH.value+i]){
+				redstoneValues[PC_Direction.fromRotationY(i).ordinal()-2] = ext[REDSTONE_NORTH.value+i];
+				changed = true;
+			}
+		}
+		if(changed)
+			notifyNeighbors();
 		int direction = ext[DIR_OUT.value];
 		int sum = ext[FRONT_COUNT.value]+ext[RIGHT_COUNT.value]+ext[BACK_COUNT.value]+ext[LEFT_COUNT.value];
 		direction=(direction%4+4)%4;
@@ -195,7 +265,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 				//
 			}
 		}
-		direction=DIR_TO_PCDIR[direction%4].ordinal();
+		direction=PC_Direction.fromRotationY(direction).ordinal();
 		compound.setInteger("dir", direction);
 		PCtr_BeltHelper.handleEntity(entity, worldObj, xCoord, yCoord, zCoord, false, true);
 		if(prevDir!=direction){
@@ -204,8 +274,13 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 	}
 	
 	@Override
-	public HashMap<String, Integer> getReplacements(){
-		return replacements;
+	public HashMap<String, Integer> getConsts(){
+		return consts;
+	}
+	
+	@Override
+	public HashMap<String, Integer> getPointers(){
+		return pointers;
 	}
 	
 	@Override

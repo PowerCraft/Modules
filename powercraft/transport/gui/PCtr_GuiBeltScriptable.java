@@ -52,13 +52,17 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 	@Override
 	public void initGui(PC_GresGuiHandler gui) {
 		PC_FontTexture fontTexture = PC_Fonts.create(PC_FontRenderer.getFont("Consolas", 0, 24), null);
-		PC_GresHighlighting highlighting = PC_MiniscriptHighlighting.makeHighlighting(this.te.getReplacements().keySet());
+		PC_GresHighlighting highlighting = PC_MiniscriptHighlighting.makeHighlighting(this.te.getConsts().keySet(), this.te.getPointers().keySet());
 		PC_AutoAdd autoAdd = PC_MiniscriptHighlighting.makeAutoAdd();
 		List<PC_StringWithInfo> list = new ArrayList<PC_StringWithInfo>();
-		for(Entry<String, Integer> e:this.te.getReplacements().entrySet()){
+		for(Entry<String, Integer> e:this.te.getConsts().entrySet()){
 			list.add(new PC_StringWithInfo(e.getKey(), "Const: "+e.getValue()));
 		}
-		PC_AutoComplete autoComplete = PC_MiniscriptHighlighting.makeAutoComplete(list);
+		List<PC_StringWithInfo> list2 = new ArrayList<PC_StringWithInfo>();
+		for(Entry<String, Integer> e:this.te.getPointers().entrySet()){
+			list2.add(new PC_StringWithInfo(e.getKey(), "Const: "+e.getValue()));
+		}
+		PC_AutoComplete autoComplete = PC_MiniscriptHighlighting.makeAutoComplete(list, list2);
 		PC_GresWindow win = new PC_GresWindow("Belt");
 		win.addSideTab(PC_GresWindowSideTab.createRedstoneSideTab(this.te));
 		win.setLayout(new PC_GresLayoutVertical());

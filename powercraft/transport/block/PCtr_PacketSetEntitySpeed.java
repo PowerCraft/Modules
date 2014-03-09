@@ -10,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import powercraft.api.PC_MathHelper;
 import powercraft.api.network.PC_Packet;
 import powercraft.api.network.PC_PacketServerToClient;
 import cpw.mods.fml.relauncher.Side;
