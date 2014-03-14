@@ -146,7 +146,8 @@ public class PCtr_BeltHelper {
 		}else if (entity instanceof EntityXPOrb) {
 			EntityXPOrb xp = (EntityXPOrb)entity;
 			if(preventPickup){
-				PC_Reflection.setValue(EntityXPOrb.class, xp, 6, int.class, Integer.valueOf(xp.xpColor - 20 + xp.getEntityId() % 100 + 7));
+				PC_Reflection.setValue(EntityXPOrb.class, xp, 6, int.class, Integer.valueOf((xp.xpColor - 20 + xp.getEntityId() % 100) + 7));
+				PC_Reflection.setValue(EntityXPOrb.class, xp, 5, EntityPlayer.class, null);
 			}
 			if (xp.xpOrbAge >= 5000) {
 				if (xp.worldObj.getEntitiesWithinAABBExcludingEntity(

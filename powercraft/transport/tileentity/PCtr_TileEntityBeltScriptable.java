@@ -26,6 +26,8 @@ import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPL
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.TYPE_ITEMSTACK;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.TYPE_MOB;
 import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.TYPE_PLAYER;
+import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.TYPE_XP;
+import static powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable.REPLACEMENT.XP_VALUE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +39,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -95,10 +98,14 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		//ext_places if mob
 		MOB_TYPE("in.mob.type", 10, false),
 		
+		//ext_places if xp
+		XP_VALUE("in.xp.value", 10, false),
+		
 		//values
 		TYPE_ITEMSTACK("type.item", 0, true),
 		TYPE_MOB("type.mob", 1, true),
 		TYPE_PLAYER("type.player", 2, true),
+		TYPE_XP("type.xp", 3, true),
 		
 		DIR_NORTH("dir.north", 0, true),
 		DIR_EAST("dir.east", 1, true),
@@ -239,6 +246,9 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		}else if(entity instanceof EntityCreature || entity instanceof EntitySlime){
 			ext[TYPE.value] = TYPE_MOB.value;
 			ext[MOB_TYPE.value] = EntityList.getEntityID(entity);
+		}else if(entity instanceof EntityXPOrb){
+			ext[TYPE.value] = TYPE_XP.value;
+			ext[XP_VALUE.value] = ((EntityXPOrb)entity).xpValue;
 		}else{
 			return;
 		}
