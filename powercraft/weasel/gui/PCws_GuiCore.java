@@ -35,7 +35,6 @@ import powercraft.api.gres.events.PC_GresMouseButtonEvent;
 import powercraft.api.gres.events.PC_GresMouseButtonEvent.Event;
 import powercraft.api.gres.events.PC_GresMouseButtonEventResult;
 import powercraft.api.gres.events.PC_IGresEventListener;
-import powercraft.api.gres.font.PC_FontRenderer;
 import powercraft.api.gres.font.PC_FontTexture;
 import powercraft.api.gres.font.PC_Fonts;
 import powercraft.api.gres.layout.PC_GresLayoutHorizontal;
@@ -46,7 +45,7 @@ import powercraft.weasel.tileentity.PCws_TileEntityCore;
 
 public class PCws_GuiCore implements PC_IGresGui, PC_IGresEventListener {
 	
-	private PC_FontTexture fontTexture = PC_Fonts.create(PC_FontRenderer.getFont("Consolas", 0, 24), null);
+	private PC_FontTexture fontTexture = PC_Fonts.getFontByName("Consolas", 24, 0);
 	private PC_GresHighlighting highlighting = PC_WeaselHighlighting.makeHighlighting();
 	private PC_AutoAdd autoAdd = PC_WeaselHighlighting.makeAutoAdd();
 	

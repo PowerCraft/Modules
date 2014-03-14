@@ -126,7 +126,7 @@ public class PCtr_BeltHelper {
 		}
 		entity.motionZ = dir.offsetZ!=0?dir.offsetZ*0.2:(z+0.5-entity.posZ)*FAC;
 		entity.velocityChanged = true;
-		entity.onGround = false;
+		//entity.onGround = false;
 	}
 	
 	public static void preventDespawn(Entity entity, boolean preventPickup){

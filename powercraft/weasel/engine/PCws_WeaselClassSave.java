@@ -26,12 +26,14 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 	private HashMap<String, PCws_WeaselSourceClass> sourceFiles = new HashMap<String, PCws_WeaselSourceClass>();
 	private List<XMessageElement> globalMessageElements;
 	
-	public PCws_WeaselClassSave(){
-		PCws_WeaselSourceClass sc = new PCws_WeaselSourceClass();
-		sc.setSource("/*\n * A Weasel powered Core\n */\n\npublic class Main{\n\t\n\t// This is the entry point."
-				+ "\n\t// It needs the name \"main\" in the Main class\n\t// no params and returns void\n\t// and it has to be static\n\tpublic static "
-				+ "void main(){\n\t\t// TODO write your program here\n\t}\n\t\n}");
-		this.sourceFiles.put("Main", sc);
+	public PCws_WeaselClassSave(boolean createDefault){
+		if(createDefault){
+			PCws_WeaselSourceClass sc = new PCws_WeaselSourceClass();
+			sc.setSource("/*\n * A Weasel powered Core\n */\n\npublic class Main{\n\t\n\t// This is the entry point."
+					+ "\n\t// It needs the name \"main\" in the Main class\n\t// no params and returns void\n\t// and it has to be static\n\tpublic static "
+					+ "void main(){\n\t\t// TODO write your program here\n\t}\n\t\n}");
+			this.sourceFiles.put("Main", sc);
+		}
 	}
 	
 	@SuppressWarnings("unused")

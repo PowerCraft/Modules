@@ -51,8 +51,8 @@ public class PCws_Weasel extends PC_Module implements PC_WeaselModule {
 	}
 
 	@Override
-	public PC_WeaselClassSave createClassSave() {
-		return new PCws_WeaselClassSave();
+	public PC_WeaselClassSave createClassSave(boolean createDefault) {
+		return new PCws_WeaselClassSave(createDefault);
 	}
 
 	@Override

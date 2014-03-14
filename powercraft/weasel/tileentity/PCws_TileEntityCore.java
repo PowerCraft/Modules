@@ -46,7 +46,7 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	
 	public PCws_TileEntityCore(){
 		if(!isClient()){
-			this.classSave = PC_Weasel.createClassSave();
+			this.classSave = PC_Weasel.createClassSave(true);
 			this.engine = PC_Weasel.createEngine(this.classSave, 1024, this);
 		}
 	}
