@@ -123,6 +123,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 			}
 		}
 		
+		@SuppressWarnings("unused")
 		REPLACEMENT(String name, Void unused){
 			this.name = name;
 			this.value = IO_SIZE.ioSize;
@@ -164,7 +165,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 
 	@Override
 	public int getRedstonePowerValue(PC_Direction side, int faceSide) {
-		return side.offsetY!=0?0:redstoneValues[side.getOpposite().ordinal()-2];
+		return side.offsetY!=0?0:this.redstoneValues[side.getOpposite().ordinal()-2];
 	}
 
 	@Override
@@ -176,10 +177,10 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		}
 		int diff = PCtr_BeltHelper.combineEntityItems(entity)?2:1;
 		if(isClient()){
-			PCtr_BeltHelper.handleEntity(entity, worldObj, xCoord, yCoord, zCoord, false, true);
+			PCtr_BeltHelper.handleEntity(entity, this.worldObj, this.xCoord, this.yCoord, this.zCoord, false, true);
 			return;
 		}
-		NBTTagCompound compound = PC_Utils.getNBTTagOf(entity);
+		NBTTagCompound compound = PC_Utils.getWritableNBTTagOf(entity);
 		int prevDir = -1;
 		boolean recalc = false;
 		if(compound.hasKey("dir")){
@@ -191,7 +192,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 			if(lastTick==entity.ticksExisted)
 				return;
 			if(x==this.xCoord && y==this.yCoord && z==this.zCoord && (lastTick==entity.ticksExisted-diff || lastTick==entity.ticksExisted-1 || entity.ticksExisted==0)){
-				if(!PCtr_BeltHelper.handleEntity(entity, worldObj, xCoord, yCoord, zCoord, false, true)){
+				if(!PCtr_BeltHelper.handleEntity(entity, this.worldObj, this.xCoord, this.yCoord, this.zCoord, false, true)){
 					compound.setInteger("lastTick", entity.ticksExisted);
 					return;
 				}
@@ -206,10 +207,10 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		for(int i=0; i<EXT_COUNT.value; i++){
 			ext[i] = 0;
 		}
-		ext[REDSTONE_NORTH_IN.value] = worldObj.getIndirectPowerLevelTo(xCoord, yCoord, zCoord, PC_Direction.NORTH.getOpposite().ordinal());
-		ext[REDSTONE_EAST_IN.value] = worldObj.getIndirectPowerLevelTo(xCoord, yCoord, zCoord, PC_Direction.EAST.getOpposite().ordinal());
-		ext[REDSTONE_SOUTH_IN.value] = worldObj.getIndirectPowerLevelTo(xCoord, yCoord, zCoord, PC_Direction.SOUTH.getOpposite().ordinal());
-		ext[REDSTONE_WEST_IN.value] = worldObj.getIndirectPowerLevelTo(xCoord, yCoord, zCoord, PC_Direction.WEST.getOpposite().ordinal());
+		ext[REDSTONE_NORTH_IN.value] = this.worldObj.getIndirectPowerLevelTo(this.xCoord, this.yCoord, this.zCoord, PC_Direction.NORTH.getOpposite().ordinal());
+		ext[REDSTONE_EAST_IN.value] = this.worldObj.getIndirectPowerLevelTo(this.xCoord, this.yCoord, this.zCoord, PC_Direction.EAST.getOpposite().ordinal());
+		ext[REDSTONE_SOUTH_IN.value] = this.worldObj.getIndirectPowerLevelTo(this.xCoord, this.yCoord, this.zCoord, PC_Direction.SOUTH.getOpposite().ordinal());
+		ext[REDSTONE_WEST_IN.value] = this.worldObj.getIndirectPowerLevelTo(this.xCoord, this.yCoord, this.zCoord, PC_Direction.WEST.getOpposite().ordinal());
 		switch(PC_Utils.getEntityMovement2D(entity)){
 		case EAST:
 			ext[DIR_IN.value] = DIR_EAST.value;
@@ -244,8 +245,8 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		invoke(0); // entry: itemOver
 		boolean changed = false;
 		for(int i=0; i<4; i++){
-			if(redstoneValues[PC_Direction.fromRotationY(i).ordinal()-2] != ext[REDSTONE_NORTH.value+i]){
-				redstoneValues[PC_Direction.fromRotationY(i).ordinal()-2] = ext[REDSTONE_NORTH.value+i];
+			if(this.redstoneValues[PC_Direction.fromRotationY(i).ordinal()-2] != ext[REDSTONE_NORTH.value+i]){
+				this.redstoneValues[PC_Direction.fromRotationY(i).ordinal()-2] = ext[REDSTONE_NORTH.value+i];
 				changed = true;
 			}
 		}
@@ -267,7 +268,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		}
 		direction=PC_Direction.fromRotationY(direction).ordinal();
 		compound.setInteger("dir", direction);
-		PCtr_BeltHelper.handleEntity(entity, worldObj, xCoord, yCoord, zCoord, false, true);
+		PCtr_BeltHelper.handleEntity(entity, this.worldObj, this.xCoord, this.yCoord, this.zCoord, false, true);
 		if(prevDir!=direction){
 			PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity), this.worldObj.getWorldInfo().getVanillaDimension(), this.xCoord, this.yCoord, this.zCoord, 16);
 		}

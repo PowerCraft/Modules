@@ -56,9 +56,9 @@ public class PCtr_PacketSetEntitySpeed extends PC_PacketServerToClient {
 			byte[] bytes = new byte[buf.readUnsignedShort()];
 			buf.readBytes(bytes);
 			this.compound = CompressedStreamTools.decompress(bytes);
-			posX = buf.readDouble();
-			posY = buf.readDouble();
-			posZ = buf.readDouble();
+			this.posX = buf.readDouble();
+			this.posY = buf.readDouble();
+			this.posZ = buf.readDouble();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -71,9 +71,9 @@ public class PCtr_PacketSetEntitySpeed extends PC_PacketServerToClient {
 			buf.writeInt(this.entity);
 			buf.writeShort(bytes.length);
 			buf.writeBytes(bytes);
-			buf.writeDouble(posX);
-			buf.writeDouble(posY);
-			buf.writeDouble(posZ);
+			buf.writeDouble(this.posX);
+			buf.writeDouble(this.posY);
+			buf.writeDouble(this.posZ);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

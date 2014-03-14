@@ -41,7 +41,18 @@ public class PCtr_BeltHelper {
 	public static final float STORAGE_BORDER_LONG = 0.8F;
 
 	public static final float STORAGE_BORDER_V = 0.6F;
-
+	
+	public static boolean isStickyItem(ItemStack itemStack){
+		if(itemStack==null)
+			return false;
+		if(itemStack.getItem() == PCtr_Transport.SLIME_BOOTS)
+			return true;
+		NBTTagCompound nbtTagCompound = PC_Utils.getNBTTagOf(itemStack);
+		if(nbtTagCompound==null)
+			return false;
+		return nbtTagCompound.getBoolean("sticky");
+	}
+	
 	public static boolean isEntityIgnored(Entity entity) {
 		if (entity == null || !entity.isEntityAlive()
 				|| PC_Utils.isEntityFX(entity) || entity.ridingEntity != null) {
@@ -54,8 +65,7 @@ public class PCtr_BeltHelper {
 				return true;
 			}
 			ItemStack boots = player.inventory.armorItemInSlot(0);
-			return boots != null
-					&& boots.getItem() == PCtr_Transport.SLIME_BOOTS;
+			return isStickyItem(boots);
 		}
 
 		return false;
@@ -98,16 +108,16 @@ public class PCtr_BeltHelper {
 					if(PC_InventoryUtils.storeItemStackToInventoryFrom(inventory, is, dir.getOpposite())){
 						entity.setDead();
 						return 1;
-					}else{
-						((EntityItem)entity).setEntityItemStack(is);
-						return 2;
 					}
+					((EntityItem)entity).setEntityItemStack(is);
+					return 2;
 				}
 			}
 		}
 		return 0;
 	}
 	
+	@SuppressWarnings("unused")
 	public static void moveEntity(Entity entity, World world, int x, int y, int z, boolean elevator, PC_Direction dir){
 		final double FAC = 0.5;
 		entity.motionX = dir.offsetX!=0?dir.offsetX*0.2:(x+0.5-entity.posX)*FAC;
@@ -136,7 +146,7 @@ public class PCtr_BeltHelper {
 		}else if (entity instanceof EntityXPOrb) {
 			EntityXPOrb xp = (EntityXPOrb)entity;
 			if(preventPickup){
-				PC_Reflection.setValue(EntityXPOrb.class, xp, 6, int.class, xp.xpColor - 20 + xp.getEntityId() % 100 + 7);
+				PC_Reflection.setValue(EntityXPOrb.class, xp, 6, int.class, Integer.valueOf(xp.xpColor - 20 + xp.getEntityId() % 100 + 7));
 			}
 			if (xp.xpOrbAge >= 5000) {
 				if (xp.worldObj.getEntitiesWithinAABBExcludingEntity(
@@ -153,7 +163,7 @@ public class PCtr_BeltHelper {
 		if(isEntityIgnored(entity))
 			return false;
 		NBTTagCompound compound = PC_Utils.getNBTTagOf(entity);
-		if(compound.hasKey("dir")){
+		if(compound!=null && compound.hasKey("dir")){
 			PC_Direction dir = PC_Direction.fromSide(compound.getInteger("dir"));
 			if(!world.isRemote){
 				int result = tryToStoreEntity(entity, world, x, y, z, dir);
@@ -191,7 +201,7 @@ public class PCtr_BeltHelper {
 			return;
 		NBTTagCompound tagCompound1 = PC_Utils.getNBTTagOf(entityitem1);
 		NBTTagCompound tagCompound2 = PC_Utils.getNBTTagOf(entityitem2);
-		if(tagCompound1.hasKey("dir") && tagCompound2.hasKey("dir") && 
+		if(tagCompound1!=null && tagCompound2!=null && tagCompound1.hasKey("dir") && tagCompound2.hasKey("dir") && 
 				tagCompound1.getInteger("dir")==tagCompound2.getInteger("dir")){
 			entityitem1.combineItems(entityitem2);
 		}

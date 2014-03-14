@@ -13,7 +13,7 @@ public class PCtr_ItemSlimeBoots extends PC_ItemArmor{
 
 	@Override
 	public void registerIcons(PC_IconRegistry iconRegistry) {
-		itemIcon = iconRegistry.registerIcon("item");
+		this.itemIcon = iconRegistry.registerIcon("item");
 	}
 	
 	

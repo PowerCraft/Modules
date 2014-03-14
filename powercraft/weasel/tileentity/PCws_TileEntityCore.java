@@ -36,7 +36,7 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	private PC_WeaselClassSave classSave;
 	private PC_WeaselEngine engine;
 	
-	private int address;
+	int address;
 	
 	private boolean occupied;
 	
@@ -145,38 +145,38 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 
 	@Override
 	public PC_WeaselGrid getGrid() {
-		return grid;
+		return this.grid;
 	}
 
 	@Override
 	public int getAddress() {
-		return address;
+		return this.address;
 	}
 
 	@Override
 	public void setAddressOccupied(boolean b) {
-		occupied = b;
+		this.occupied = b;
 	}
 
 	@Override
 	public void getGridIfNull() {
-		PC_GridHelper.getGridIfNull(worldObj, xCoord, yCoord, zCoord, 0x3F, this, PC_WeaselGrid.factory, PC_IWeaselGridTile.class);
+		PC_GridHelper.getGridIfNull(this.worldObj, this.xCoord, this.yCoord, this.zCoord, 0x3F, this, PC_WeaselGrid.factory, PC_IWeaselGridTile.class);
 	}
 
 	@Override
 	public void removeFromGrid() {
-		PC_GridHelper.removeFromGrid(worldObj, (PC_IWeaselGridTile)this);
+		PC_GridHelper.removeFromGrid(this.worldObj, (PC_IWeaselGridTile)this);
 	}
 
 	@Override
 	public void onNeighborBlockChange(Block neighbor) {
 		super.onNeighborBlockChange(neighbor);
-		if(!occupied){
+		if(!this.occupied){
 			for(PC_Direction dir:PC_Direction.VALID_DIRECTIONS){
-				int value = redstoneValuesIn[dir.ordinal()];
-				int newValue = worldObj.getIndirectPowerLevelTo(xCoord, yCoord, zCoord, dir.ordinal());
+				int value = this.redstoneValuesIn[dir.ordinal()];
+				int newValue = this.worldObj.getIndirectPowerLevelTo(this.xCoord, this.yCoord, this.zCoord, dir.ordinal());
 				if(value!=newValue){
-					redstoneValuesIn[dir.ordinal()] = newValue;
+					this.redstoneValuesIn[dir.ordinal()] = newValue;
 					sendRedstoneChangeEvent(dir.ordinal(), newValue);
 				}
 			}
@@ -184,8 +184,8 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	}
 	
 	private void sendRedstoneChangeEvent(final int side, final int value){
-		if(!occupied){
-			grid.sendEvent(new PC_IWeaselEvent(){
+		if(!this.occupied){
+			this.grid.sendEvent(new PC_IWeaselEvent(){
 	
 				@Override
 				public String getEventName() {
@@ -204,7 +204,7 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	
 				@Override
 				public long[] getParams() {
-					return new long[]{address, side, value};
+					return new long[]{PCws_TileEntityCore.this.address, side, value};
 				}
 				
 			});
@@ -213,34 +213,37 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	
 	@Override
 	public int getRedstonePowerValue(PC_Direction side, int faceSide) {
-		return redstoneValuesOut[side.ordinal()];
+		return this.redstoneValuesOut[side.ordinal()];
 	}
 
 	@Override
 	public void onEvent(PC_IWeaselEvent event) {
-		engine.onEvent(event);
+		this.engine.onEvent(event);
 	}
 
+	@SuppressWarnings("hiding")
 	@Override
 	public int getTypeUnsafe(int address) {
-		PC_IWeaselGridTileAddressable tile = grid.getTileByAddress(address);
+		PC_IWeaselGridTileAddressable tile = this.grid.getTileByAddress(address);
 		return tile==null?0:tile.getType();
 	}
 
+	@SuppressWarnings("hiding")
 	@Override
 	public boolean isDevicePresent(int address) {
-		return grid.getTileByAddress(address)!=null;
+		return this.grid.getTileByAddress(address)!=null;
 	}
 
+	@SuppressWarnings("hiding")
 	@Override
 	public int getRedstoneValueUnsafe(int address, int side) {
-		PC_IWeaselGridTileAddressable tile = grid.getTileByAddress(address);
+		PC_IWeaselGridTileAddressable tile = this.grid.getTileByAddress(address);
 		return tile==null?-1:tile.getRedstoneValue(side);
 	}
 
 	@Override
 	public boolean setRedstoneValueUnsafe(int address, int side, int value) {
-		PC_IWeaselGridTileAddressable tile = grid.getTileByAddress(address);
+		PC_IWeaselGridTileAddressable tile = this.grid.getTileByAddress(address);
 		if(tile==null){
 			return false;
 		}
@@ -255,12 +258,12 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 
 	@Override
 	public int getRedstoneValue(int side) {
-		return redstoneValuesIn[side];
+		return this.redstoneValuesIn[side];
 	}
 
 	@Override
 	public void setRedstoneValue(int side, int value) {
-		redstoneValuesOut[side] = value;
+		this.redstoneValuesOut[side] = value;
 		notifyNeighbors();
 	}
 
