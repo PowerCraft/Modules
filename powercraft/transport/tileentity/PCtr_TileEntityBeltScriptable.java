@@ -280,7 +280,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		compound.setInteger("dir", direction);
 		PCtr_BeltHelper.handleEntity(entity, this.worldObj, this.xCoord, this.yCoord, this.zCoord, false, true);
 		if(prevDir!=direction){
-			PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity), this.worldObj.getWorldInfo().getVanillaDimension(), this.xCoord, this.yCoord, this.zCoord, 16);
+			PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity), this.worldObj, this.xCoord, this.yCoord, this.zCoord, 16);
 		}
 	}
 	
