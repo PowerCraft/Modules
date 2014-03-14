@@ -13,11 +13,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCla_ItemCatalysator extends PC_Item {
-	@SideOnly(Side.CLIENT)
+	
 	private String[] names = new String[] { "block", "plant", "item", "player", "entity", "livingEntity", "mob",
 			"area", "nothing" };
 
-	@SideOnly(Side.CLIENT)
 	private IIcon[] icons = new IIcon[names.length];
 
 	public PCla_ItemCatalysator() {

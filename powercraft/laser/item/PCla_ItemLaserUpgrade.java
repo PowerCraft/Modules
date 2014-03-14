@@ -12,11 +12,11 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCla_ItemLaserUpgrade extends PC_Item {
-	@SideOnly(Side.CLIENT)
+
 	private String[] names = new String[] { "2laser", "3laser", "4laser", "2upgrade", "3upgrade", "4upgrade",
 			"5upgrade", "rotatingItems", "switchingItems", "colorMixer" };
 
-	@SideOnly(Side.CLIENT)
+
 	private IIcon[] icons = new IIcon[names.length];
 
 	public PCla_ItemLaserUpgrade() {

@@ -24,7 +24,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCla_BlockLaser extends PC_BlockTileEntity {
 
-	@SideOnly(Side.CLIENT)
 	public static IIcon[] icons = new IIcon[3];
 
 	private final double laserT = 0.4f;

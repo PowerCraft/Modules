@@ -13,10 +13,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCla_ItemLaserEmitter extends PC_Item {
-	@SideOnly(Side.CLIENT)
+
 	private String[] names = new String[] { "break", "emit", "damage", "sensor", "cosmetic", "heal", "build", "replace" };
 
-	@SideOnly(Side.CLIENT)
+
 	private IIcon[] icons = new IIcon[names.length];
 
 	public PCla_ItemLaserEmitter() {

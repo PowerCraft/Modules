@@ -13,10 +13,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCla_ItemLens extends PC_Item {
 
-	@SideOnly(Side.CLIENT)
 	private String[] names = new String[] { "blue", "blueGreen", "green", "pink", "red", "white", "yellow" };
 
-	@SideOnly(Side.CLIENT)
 	private IIcon[] icons = new IIcon[names.length];
 
 	public PCla_ItemLens() {
