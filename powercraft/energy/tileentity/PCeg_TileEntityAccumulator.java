@@ -1,5 +1,7 @@
 package powercraft.energy.tileentity;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import powercraft.api.PC_Direction;
@@ -82,6 +84,7 @@ public class PCeg_TileEntityAccumulator extends PC_TileEntity implements PC_IEne
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public PC_IGresGui openClientGui(EntityPlayer player, NBTTagCompound serverData) {
 		return new PCeg_GuiAccumulator(this);
 	}

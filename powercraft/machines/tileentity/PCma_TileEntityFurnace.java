@@ -1,5 +1,7 @@
 package powercraft.machines.tileentity;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -144,6 +146,7 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public PC_IGresGui openClientGui(EntityPlayer player, NBTTagCompound serverData) {
 		return new PCma_GuiFurnace(player, this);
 	}

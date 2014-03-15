@@ -3,6 +3,8 @@ package powercraft.weasel.tileentity;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -108,6 +110,7 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public PC_IGresGui openClientGui(EntityPlayer player, NBTTagCompound serverData) {
 		HashMap<String, String> sources = new HashMap<String, String>();
 		NBTTagList list = (NBTTagList) serverData.getTag("list");

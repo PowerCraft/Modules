@@ -3,6 +3,8 @@ package powercraft.machines.tileentity;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryCrafting;
@@ -213,6 +215,7 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public PC_IGresGui openClientGui(EntityPlayer player, NBTTagCompound serverData) {
 		return new PCma_GuiAutomaticWorkbench(player, this);
 	}

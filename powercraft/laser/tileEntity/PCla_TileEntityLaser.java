@@ -1,6 +1,9 @@
 package powercraft.laser.tileEntity;
 
 import java.util.Vector;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -95,6 +98,7 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public PC_IGresGui openClientGui(EntityPlayer player, NBTTagCompound serverData) {
 		return new PCla_GuiLaser(player, this);
 	}

@@ -1,5 +1,7 @@
 package powercraft.test.block.tileentity;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import powercraft.api.block.PC_TileEntity;
@@ -53,6 +55,7 @@ public class PCtm_TileEntityEnergyConsumer extends PC_TileEntity implements PC_I
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public PC_IGresGui openClientGui(EntityPlayer player,
 			NBTTagCompound serverData) {
 		// TODO Auto-generated method stub
