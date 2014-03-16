@@ -10,6 +10,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import org.lwjgl.opengl.GL11;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_IconRegistry;
 import powercraft.api.PC_Vec3;
@@ -95,7 +96,7 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 		tessellator.addTranslation(x, y, z);
 		tessellator.setColorRGBA(255, 255, 255, 255);
 		PCla_TileEntityLaser tileLaser = (PCla_TileEntityLaser) world.getTileEntity(x, y, z);
-		PC_Vec4I colorToDraw = tileLaser.currColor;
+		PC_Vec4I colorToDraw = tileLaser.calculator.getCurrColor();
 		/*
 		 * PC_ModelHelper.drawBox(new PC_Vec3(0.8, 0.8, -1), new PC_Vec3(0.2,
 		 * 0.2, 0), tessellator, PCla_BlockLaser.icons[2]);
@@ -118,7 +119,7 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 		PCla_TileEntityLaser tileEntity = (PCla_TileEntityLaser) world.getTileEntity(x, y, z);
 
 		tessellator.setColorRGBA(colorToDraw.x, colorToDraw.y, colorToDraw.z, 255);
-		for (PC_Vec3I posToDraw : tileEntity.validLaserPos)
+		for (PC_Vec3I posToDraw : tileEntity.calculator.validLaserPos)
 			switch (tileEntity.orientation) {
 			case EAST:
 				PC_ModelHelper.drawBox(new PC_Vec3(posToDraw.x - x, minLaserP, minLaserP), new PC_Vec3(posToDraw.x - x
@@ -148,8 +149,15 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 	@SideOnly(Side.CLIENT)
 	public void renderInventoryBlock(int metadata, int modelId, RenderBlocks renderer) {
 		Tessellator tessellator = Tessellator.instance;
-		tessellator.setTranslation(0, 0, 0);
-		PC_ModelHelper.drawBlockAsUsual(this, tessellator, metadata);
+		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+		IIcon[] iconsToDraw = new IIcon[6];
+		for (int i = 0; i < 6; i++) {
+			if (i == 3)
+				iconsToDraw[i] = icons[1];
+			else
+				iconsToDraw[i] = icons[0];
+		}
+		PC_ModelHelper.drawBlockAsUsual(tessellator, iconsToDraw);
 		// Idk why it doesn't render in Inventorys. Someone has an Idea?
 	}
 
