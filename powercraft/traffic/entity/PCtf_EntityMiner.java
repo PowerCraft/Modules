@@ -7,7 +7,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCtf_EntityMiner extends PC_Entity{
-
+	
+	private int instruction;
+	
 	public PCtf_EntityMiner(World world) {
 		super(world);
 	}
@@ -16,6 +18,12 @@ public class PCtf_EntityMiner extends PC_Entity{
 	protected void entityInit() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void onUpdate() {
+		
+		super.onUpdate();
 	}
 
 	@Override

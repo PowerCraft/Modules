@@ -2,11 +2,14 @@ package powercraft.transport.block;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_IconRegistry;
 import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_TileEntity;
+import powercraft.api.recipes.PC_Recipes;
 import powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable;
 
 public class PCtr_BlockBeltScriptable extends PC_BlockTileEntity {
@@ -17,6 +20,7 @@ public class PCtr_BlockBeltScriptable extends PC_BlockTileEntity {
 		super(Material.circuits);
 		setCreativeTab(CreativeTabs.tabTransport);
 		this.maxY = 1.0f/16.0f;
+		PC_Recipes.addShapedRecipe(new ItemStack(this, 2, 0), " P ", " D ", "OOO", 'O', Blocks.obsidian, 'D', Blocks.dispenser, 'P', Blocks.stone_pressure_plate);
 	}
 	
 	@Override

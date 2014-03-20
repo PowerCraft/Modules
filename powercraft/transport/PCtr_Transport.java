@@ -4,6 +4,7 @@ import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
 import powercraft.api.network.PC_PacketHandler;
+import powercraft.transport.block.PCtr_BlockBeltNormal;
 import powercraft.transport.block.PCtr_BlockBeltScriptable;
 import powercraft.transport.block.PCtr_PacketSetEntitySpeed;
 import powercraft.transport.item.PCtr_ItemSlimeBoots;
@@ -20,6 +21,8 @@ public class PCtr_Transport extends PC_Module {
 	public static final PCtr_Transport INSTANCE = new PCtr_Transport();
 	
 	public static final PCtr_BlockBeltScriptable ScriptableBelt = new PCtr_BlockBeltScriptable();
+	
+	public static final PCtr_BlockBeltNormal normalBelt = new PCtr_BlockBeltNormal();
 	
 	public static final PCtr_ItemSlimeBoots SLIME_BOOTS = new PCtr_ItemSlimeBoots();
 	

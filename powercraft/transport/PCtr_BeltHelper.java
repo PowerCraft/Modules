@@ -19,9 +19,11 @@ import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3I;
 import powercraft.api.inventory.PC_InventoryUtils;
 import powercraft.api.reflect.PC_Reflection;
+import powercraft.transport.block.PCtr_BlockBeltNormal;
 import powercraft.transport.block.PCtr_BlockBeltScriptable;
 
-public class PCtr_BeltHelper {
+public final class PCtr_BeltHelper {
+	
 	public static final float HEIGHT = 0.0625F;
 
 	public static final float HEIGHT_SELECTED = HEIGHT;
@@ -41,6 +43,10 @@ public class PCtr_BeltHelper {
 	public static final float STORAGE_BORDER_LONG = 0.8F;
 
 	public static final float STORAGE_BORDER_V = 0.6F;
+	
+	private PCtr_BeltHelper(){
+		throw new InstantiationError();
+	}
 	
 	public static boolean isStickyItem(ItemStack itemStack){
 		if(itemStack==null)
@@ -95,7 +101,8 @@ public class PCtr_BeltHelper {
 	}
 
 	public static boolean isConveyorAt(World world, PC_Vec3I pos) {
-		return PC_Utils.getBlock(world, pos, PCtr_BlockBeltScriptable.class) != null;
+		Block block = PC_Utils.getBlock(world, pos);
+		return block instanceof PCtr_BlockBeltScriptable || block instanceof PCtr_BlockBeltNormal;
 	}
 	
 	public static int tryToStoreEntity(Entity entity, World world, int x, int y, int z, PC_Direction dir){
