@@ -1,9 +1,15 @@
 package powercraft.traffic;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
+import powercraft.api.PC_Utils;
 import powercraft.api.entity.PC_Entities;
+import powercraft.api.recipes.PC_I3DRecipeHandler;
+import powercraft.api.recipes.PC_Recipes;
+import powercraft.api.recipes.PC_3DRecipe.StructStart;
 import powercraft.traffic.entity.PCtf_EntityMiner;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.InstanceFactory;
@@ -24,6 +30,16 @@ public class PCtf_Traffic extends PC_Module {
 	
 	private PCtf_Traffic() {
 		PC_Entities.register(PCtf_EntityMiner.class, 64, 10, false);
+		PC_Recipes.add3DRecipe(true, new PC_I3DRecipeHandler() {
+			
+			@Override
+			public boolean foundStructAt(World world, StructStart structStart) {
+				PC_Utils.setAir(world, structStart.pos);
+				PCtf_EntityMiner miner = new PCtf_EntityMiner(world, structStart.pos);
+				PC_Utils.spawnEntity(world, miner);
+				return true;
+			}
+		}, new String[]{"I"}, 'I', Blocks.iron_block);
 	}
 	
 	@Override
