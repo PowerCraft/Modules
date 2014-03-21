@@ -16,7 +16,6 @@ public class PCla_ItemLaserUpgrade extends PC_Item {
 	private String[] names = new String[] { "2laser", "3laser", "4laser", "2upgrade", "3upgrade", "4upgrade",
 			"5upgrade", "rotatingItems", "switchingItems", "colorMixer" };
 
-
 	private IIcon[] icons = new IIcon[names.length];
 
 	public PCla_ItemLaserUpgrade() {
@@ -30,19 +29,6 @@ public class PCla_ItemLaserUpgrade extends PC_Item {
 
 	public int getNewNumUpgrades(int meta) {
 		switch (meta) {
-		case 0:
-			return 2;
-		case 1:
-			return 3;
-		case 2:
-			return 4;
-		default:
-			return 0;
-		}
-	}
-
-	public int getNewNumLaserThings(int meta) {
-		switch (meta) {
 		case 3:
 			return 2;
 		case 4:
@@ -51,6 +37,19 @@ public class PCla_ItemLaserUpgrade extends PC_Item {
 			return 4;
 		case 6:
 			return 5;
+		default:
+			return 0;
+		}
+	}
+
+	public int getNewNumLaserThings(int meta) {
+		switch (meta) {
+		case 0:
+			return 2;
+		case 1:
+			return 3;
+		case 2:
+			return 4;
 		default:
 			return 0;
 		}

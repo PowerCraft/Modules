@@ -1,7 +1,10 @@
 package powercraft.laser;
 
 import java.util.Vector;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.IBlockAccess;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3I;
@@ -85,6 +88,11 @@ public class PCla_LaserTypeCalculator {
 
 	public void performItemUpdate() {
 		ItemStack[] contents = laserObj.getInvContents();
+		PC_Utils.setArrayContentsToNull(lens);
+		PC_Utils.setArrayContentsToNull(laserEmitter);
+		PC_Utils.setArrayContentsToNull(catalysator1);
+		PC_Utils.setArrayContentsToNull(catalysator2);
+		PC_Utils.setArrayContentsToNull(upgrades);
 		for (int i = 0; i < contents.length; i++) {
 			int resIndex = i % 4;
 			if (contents[i] != null) {
@@ -121,12 +129,13 @@ public class PCla_LaserTypeCalculator {
 		PC_Vec4I[] colors = new PC_Vec4I[4];
 		for (int i = 0; i < lens.length; i++) {
 			if (lens[i] == null) {
-				colors[i] = new PC_Vec4I(255, 255, 255, 255);
+				colors[i] = null;
 			} else {
 				ItemStack is = lens[i];
 				colors[i] = ((PCla_ItemLens) is.getItem()).getColorFromMeta(is.getItemDamage());
 			}
 		}
+		currColor = null;
 		currColor = PC_Utils.averageVec4I(colors);
 		//Effects
 		for (int i = 0; i < laserEmitter.length; i++) {
@@ -170,32 +179,32 @@ public class PCla_LaserTypeCalculator {
 		switch (orientation) {
 		case WEST:
 			for (int xPos = laserObj.xCoord + 1; xPos < laserObj.xCoord + maxLaserLength; xPos++)
-				if (laserObj.getWorldObj().getBlock(xPos, laserObj.yCoord, laserObj.zCoord)
-						.isAir(laserObj.getWorldObj(), xPos, laserObj.yCoord, laserObj.zCoord))
+				if (canLaserThrough(laserObj.getWorldObj(), xPos, laserObj.yCoord, laserObj.zCoord, laserObj
+						.getWorldObj().getBlock(xPos, laserObj.yCoord, laserObj.zCoord)))
 					validLaserPos.add(new PC_Vec3I(xPos, laserObj.yCoord, laserObj.zCoord));
 				else
 					return;
 			break;
 		case SOUTH:
 			for (int zPos = laserObj.zCoord - 1; zPos > laserObj.zCoord - maxLaserLength; zPos--)
-				if (laserObj.getWorldObj().getBlock(laserObj.xCoord, laserObj.yCoord, zPos)
-						.isAir(laserObj.getWorldObj(), laserObj.xCoord, laserObj.yCoord, zPos))
+				if (canLaserThrough(laserObj.getWorldObj(), laserObj.xCoord, laserObj.yCoord, zPos, laserObj
+						.getWorldObj().getBlock(laserObj.xCoord, laserObj.yCoord, zPos)))
 					validLaserPos.add(new PC_Vec3I(laserObj.xCoord, laserObj.yCoord, zPos));
 				else
 					return;
 			break;
 		case NORTH:
 			for (int zPos = laserObj.zCoord + 1; zPos < laserObj.zCoord + maxLaserLength; zPos++)
-				if (laserObj.getWorldObj().getBlock(laserObj.xCoord, laserObj.yCoord, zPos)
-						.isAir(laserObj.getWorldObj(), laserObj.xCoord, laserObj.yCoord, zPos))
+				if (canLaserThrough(laserObj.getWorldObj(), laserObj.xCoord, laserObj.yCoord, zPos, laserObj
+						.getWorldObj().getBlock(laserObj.xCoord, laserObj.yCoord, zPos)))
 					validLaserPos.add(new PC_Vec3I(laserObj.xCoord, laserObj.yCoord, zPos));
 				else
 					return;
 			break;
 		case EAST:
 			for (int xPos = laserObj.xCoord - 1; xPos > laserObj.xCoord - maxLaserLength; xPos--)
-				if (laserObj.getWorldObj().getBlock(xPos, laserObj.yCoord, laserObj.zCoord)
-						.isAir(laserObj.getWorldObj(), xPos, laserObj.yCoord, laserObj.zCoord))
+				if (canLaserThrough(laserObj.getWorldObj(), xPos, laserObj.yCoord, laserObj.zCoord, laserObj
+						.getWorldObj().getBlock(xPos, laserObj.yCoord, laserObj.zCoord)))
 					validLaserPos.add(new PC_Vec3I(xPos, laserObj.yCoord, laserObj.zCoord));
 				else
 					return;
@@ -207,5 +216,17 @@ public class PCla_LaserTypeCalculator {
 
 	public PC_Vec4I getCurrColor() {
 		return currColor;
+	}
+
+	public boolean canLaserThrough(IBlockAccess world, int x, int y, int z, Block block) {
+		if (block.isAir(world, x, y, z))
+			return true;
+		if (block.getMaterial().equals(Material.carpet) || block.getMaterial().equals(Material.circuits)
+				|| block.getMaterial().equals(Material.glass) || block.getMaterial().equals(Material.dragonEgg)
+				|| block.getMaterial().equals(Material.fire) || block.getMaterial().equals(Material.ice)
+				|| block.getMaterial().equals(Material.plants) || block.getMaterial().equals(Material.vine)
+				|| block.getMaterial().equals(Material.water) || block.getMaterial().equals(Material.web))
+			return true;
+		return false;
 	}
 }

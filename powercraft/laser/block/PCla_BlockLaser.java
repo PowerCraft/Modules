@@ -10,7 +10,6 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import org.lwjgl.opengl.GL11;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_IconRegistry;
 import powercraft.api.PC_Vec3;
@@ -27,7 +26,7 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 
 	public static IIcon[] icons = new IIcon[3];
 
-	private final double laserT = 0.4f;
+	private final double laserT = 0.25f;
 	private final double minLaserP = 0.5 - 0.5 * laserT;
 	private final double maxLaserP = 0.5 + 0.5 * laserT;// Used in Rendering
 
@@ -70,7 +69,7 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(PC_Direction side, int metadata) {
-		if (side.equals(PC_Direction.NORTH))
+		if (side.equals(PC_Direction.SOUTH))
 			return icons[1];
 		return icons[0];
 	}
@@ -118,7 +117,7 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 		PC_ModelHelper.drawBlockAsUsual(tessellator, iconsToDraw);
 		PCla_TileEntityLaser tileEntity = (PCla_TileEntityLaser) world.getTileEntity(x, y, z);
 
-		tessellator.setColorRGBA(colorToDraw.x, colorToDraw.y, colorToDraw.z, 255);
+		tessellator.setColorRGBA(colorToDraw.x, colorToDraw.y, colorToDraw.z, colorToDraw.w);
 		for (PC_Vec3I posToDraw : tileEntity.calculator.validLaserPos)
 			switch (tileEntity.orientation) {
 			case EAST:
@@ -143,22 +142,6 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 		tessellator.addTranslation(-x, -y, -z);
 		tessellator.setColorRGBA(255, 255, 255, 255);
 		return true;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void renderInventoryBlock(int metadata, int modelId, RenderBlocks renderer) {
-		Tessellator tessellator = Tessellator.instance;
-		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
-		IIcon[] iconsToDraw = new IIcon[6];
-		for (int i = 0; i < 6; i++) {
-			if (i == 3)
-				iconsToDraw[i] = icons[1];
-			else
-				iconsToDraw[i] = icons[0];
-		}
-		PC_ModelHelper.drawBlockAsUsual(tessellator, iconsToDraw);
-		// Idk why it doesn't render in Inventorys. Someone has an Idea?
 	}
 
 }

@@ -33,6 +33,13 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 				new Group(true, PC_InventoryUtils.makeIndexList(16, 21)));
 		orientation = PC_Direction.NORTH;
 		this.workWhen = PC_RedstoneWorkType.EVER;
+		markDirty();
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound nbtTagCompound) {
+		super.readFromNBT(nbtTagCompound);
+		markDirty();
 	}
 
 	@Override
