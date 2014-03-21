@@ -44,6 +44,9 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	protected ItemStack[] inventoryContents = new ItemStack[6*9];
 	@PC_Field
 	protected PCtf_MinerController minerController;
+	@PC_Field
+	protected boolean miningEnabled=false;
+	
 	
 	public PCtf_EntityMiner(World world) {
 		super(world);
