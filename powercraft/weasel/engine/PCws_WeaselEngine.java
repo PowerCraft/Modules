@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import powercraft.api.script.weasel.PC_IWeaselEvent;
-import powercraft.api.script.weasel.PC_IWeaselNativeHandler;
 import powercraft.api.script.weasel.PC_WeaselClassSave;
 import powercraft.api.script.weasel.PC_WeaselEngine;
 import powercraft.weasel.PCws_Weasel;
@@ -20,23 +19,23 @@ public class PCws_WeaselEngine implements PC_WeaselEngine {
 
 	private XVirtualMachine virtualMachine;
 	
-	public PCws_WeaselEngine(PC_WeaselClassSave classes, int memSize, PC_IWeaselNativeHandler handler){
+	public PCws_WeaselEngine(PC_WeaselClassSave classes, int memSize, Object handler){
 		this.virtualMachine = new XVirtualMachine(PCws_Weasel.getRTClassLoader(), memSize);
 		this.virtualMachine.getClassProvider().addClassLoader(PCws_Weasel.getWeaselRTClassLoader());
 		this.virtualMachine.getClassProvider().addClassLoader((PCws_WeaselClassSave)classes);
-		PCws_WeaselNative.registerNatives(this.virtualMachine.getNativeProvider());
 		this.virtualMachine.setUserData(handler);
+		PCws_WeaselNative.registerNatives(this.virtualMachine);
 		this.virtualMachine.setTimer(PCws_Timer.INSTANCE);
 	}
 	
-	public PCws_WeaselEngine(PC_WeaselClassSave classes, byte[] data, PC_IWeaselNativeHandler handler) throws IOException {
+	public PCws_WeaselEngine(PC_WeaselClassSave classes, byte[] data, Object handler) throws IOException {
 		List<XClassLoader>classLoader = new ArrayList<XClassLoader>();
 		classLoader.add(PCws_Weasel.getRTClassLoader());
 		classLoader.add(PCws_Weasel.getWeaselRTClassLoader());
 		classLoader.add((PCws_WeaselClassSave)classes);
 		this.virtualMachine = new XVirtualMachine(classLoader, new ByteArrayInputStream(data), PCws_Timer.INSTANCE);
-		PCws_WeaselNative.registerNatives(this.virtualMachine.getNativeProvider());
 		this.virtualMachine.setUserData(handler);
+		PCws_WeaselNative.registerNatives(this.virtualMachine);
 	}
 
 	@Override
@@ -65,6 +64,11 @@ public class PCws_WeaselEngine implements PC_WeaselEngine {
 		XClass xClass = this.virtualMachine.getClassProvider().getXClass(event.getEntryClass());
 		XMethod xMethod = xClass.getMethod(event.getEntryMethod());
 		this.virtualMachine.getThreadProvider().interrupt(event.getEventName(), null, xMethod, null, event.getParams());
+	}
+
+	@Override
+	public void registerNativeClass(Class<?> c) {
+		this.virtualMachine.getNativeProvider().addNativeClass(c);
 	}
 	
 }

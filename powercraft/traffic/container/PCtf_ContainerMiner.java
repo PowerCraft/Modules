@@ -1,4 +1,4 @@
-package powercraft.traffic.entity.container;
+package powercraft.traffic.container;
 
 import net.minecraft.entity.player.EntityPlayer;
 import powercraft.api.gres.PC_GresBaseWithInventory;

@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
 import powercraft.api.PC_Utils;
-import powercraft.api.script.weasel.PC_IWeaselNativeHandler;
 import powercraft.api.script.weasel.PC_Weasel;
 import powercraft.api.script.weasel.PC_WeaselClassSave;
 import powercraft.api.script.weasel.PC_WeaselEngine;
@@ -56,7 +55,7 @@ public class PCws_Weasel extends PC_Module implements PC_WeaselModule {
 	}
 
 	@Override
-	public PC_WeaselEngine createEngine(PC_WeaselClassSave classSave, int memSize, PC_IWeaselNativeHandler handler) {
+	public PC_WeaselEngine createEngine(PC_WeaselClassSave classSave, int memSize, Object handler) {
 		return new PCws_WeaselEngine(classSave, memSize, handler);
 	}
 
@@ -77,7 +76,7 @@ public class PCws_Weasel extends PC_Module implements PC_WeaselModule {
 	}
 
 	@Override
-	public PC_WeaselEngine loadEngine(PC_WeaselClassSave classSave, byte[] data, PC_IWeaselNativeHandler handler) {
+	public PC_WeaselEngine loadEngine(PC_WeaselClassSave classSave, byte[] data, Object handler) {
 		try {
 			return new PCws_WeaselEngine(classSave, data, handler);
 		} catch (IOException e) {
