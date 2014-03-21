@@ -78,7 +78,7 @@ public class PCtf_MinerController implements PC_INBT{
 		}
 	}
 	
-	public PCtf_EntityMiner getMiner(){
+	public PCtf_EntityMiner getMiner(int address){
 		return this.miner;
 	}
 	
@@ -95,33 +95,51 @@ public class PCtf_MinerController implements PC_INBT{
 	public static class MinerNativeInterface{
 		
 		@XNativeMethod
-		public static boolean operationFinished(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController){
-			return minerController.getMiner().operationFinished();
+		public static boolean operationFinished(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address){
+			PCtf_EntityMiner miner = minerController.getMiner(address);
+			if(miner==null){
+				return false;
+			}
+			return miner.operationFinished();
 		}
 		
 		@XNativeMethod
-		public static void digForward(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController){
+		public static void digForward(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address){
 			
 		}
 	
 		@XNativeMethod
-		public static void moveForward(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int steps){
-			minerController.getMiner().moveForward(steps);
+		public static void moveForward(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address, int steps){
+			PCtf_EntityMiner miner = minerController.getMiner(address);
+			if(miner!=null){
+				miner.moveForward(steps);
+			}
 		}
 		
 		@XNativeMethod
-		public static void rotate(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int dir){
-			minerController.getMiner().rotate(dir);
+		public static void rotate(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address, int dir){
+			PCtf_EntityMiner miner = minerController.getMiner(address);
+			if(miner!=null){
+				miner.rotate(dir);
+			}
 		}
 		
 		@XNativeMethod
-		public static boolean isMiningEnabled(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController){
-			return true;
+		public static boolean isMiningEnabled(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address){
+			PCtf_EntityMiner miner = minerController.getMiner(address);
+			if(miner!=null){
+				return miner.isMiningEnabled();
+			}
+			return false;
 		}
 		
 		@XNativeMethod
-		public static boolean setMining(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, boolean state){
-			return state;
+		public static boolean setMining(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address, boolean state){
+			PCtf_EntityMiner miner = minerController.getMiner(address);
+			if(miner!=null){
+				return miner.setMining(state);
+			}
+			return false;
 		}
 	}
 }

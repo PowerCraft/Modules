@@ -227,26 +227,26 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	@SuppressWarnings("hiding")
 	@Override
 	public int getTypeUnsafe(int address) {
-		PC_IWeaselGridTileAddressable tile = this.grid.getTileByAddress(address);
+		PC_IWeaselGridTileAddressable tile = this.grid.getTileByAddress(this, address);
 		return tile==null?0:tile.getType();
 	}
 
 	@SuppressWarnings("hiding")
 	@Override
 	public boolean isDevicePresent(int address) {
-		return this.grid.getTileByAddress(address)!=null;
+		return this.grid.getTileByAddress(this, address)!=null;
 	}
 
 	@SuppressWarnings("hiding")
 	@Override
 	public int getRedstoneValueUnsafe(int address, int side) {
-		PC_IWeaselGridTileAddressable tile = this.grid.getTileByAddress(address);
+		PC_IWeaselGridTileAddressable tile = this.grid.getTileByAddress(this, address);
 		return tile==null?-1:tile.getRedstoneValue(side);
 	}
 
 	@Override
 	public boolean setRedstoneValueUnsafe(int address, int side, int value) {
-		PC_IWeaselGridTileAddressable tile = this.grid.getTileByAddress(address);
+		PC_IWeaselGridTileAddressable tile = this.grid.getTileByAddress(this, address);
 		if(tile==null){
 			return false;
 		}

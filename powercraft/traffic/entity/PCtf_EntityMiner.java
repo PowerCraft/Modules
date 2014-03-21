@@ -2,6 +2,7 @@ package powercraft.traffic.entity;
 
 import java.util.HashMap;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
@@ -12,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Field;
@@ -20,6 +22,7 @@ import powercraft.api.PC_Logger;
 import powercraft.api.PC_NBTTagHandler;
 import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3I;
+import powercraft.api.block.PC_Block;
 import powercraft.api.entity.PC_Entities;
 import powercraft.api.entity.PC_Entity;
 import powercraft.api.gres.PC_GresBaseWithInventory;
@@ -46,7 +49,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	protected PCtf_MinerController minerController;
 	@PC_Field
 	protected boolean miningEnabled=false;
-	
+	@PC_Field
+	protected int[] minings = new int[12];
 	
 	public PCtf_EntityMiner(World world) {
 		super(world);
@@ -129,8 +133,48 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			this.motionZ *= MOTION_SPEED;
 		}
 		moveEntity(this.motionX, this.motionY, this.motionZ);
+		
+		for(int i=0; i<this.minings.length; i++){
+			if(this.minings[i]>0){
+				if(--this.minings[i]==0){
+					PC_Vec3I pos = getPosFor(i);
+					Block block = PC_Utils.getBlock(this.worldObj, getPosFor(i));
+					block.dropBlockAsItemWithChance(this.worldObj, pos.x, pos.y, pos.z, PC_Utils.getMetadata(this.worldObj, pos), 1, 1);
+					block.onBlockExploded(this.worldObj, pos.x, pos.y, pos.z, new Explosion(this.worldObj, this, pos.x+0.5, pos.y+0.5, pos.z+0.5, 0.5f));
+				}
+			}
+		}
+		
 	}
 
+	private PC_Vec3I getPosFor(int i){
+		int pos = i/2;
+		int side = i%2;
+		PC_Vec3I p = new PC_Vec3I((int)Math.round(this.posX), (int)Math.round(this.posY), (int)Math.round(this.posZ));
+		p.y += pos>3?2:pos-1;
+		switch(getTargetRot()){
+		case 0:
+			p.x += side;
+			p.z -= 2;
+			break;
+		case 1:
+			p.x += 2;
+			p.z += side;
+			break;
+		case 2:
+			p.x -= side;
+			p.z += 2;
+			break;
+		case 3:
+			p.x -= 2;
+			p.z -= side;
+			break;
+		default:
+			break;
+		}
+		return p;
+	}
+	
 	@Override
 	public boolean canBeCollidedWith(){
         return !this.isDead;
@@ -548,6 +592,15 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			return;
 		PCtf_EntityMiner miner = new PCtf_EntityMiner(world, structStart.pos, structStart.dir);
 		PC_Utils.spawnEntity(world, miner);
+	}
+
+	public boolean isMiningEnabled() {
+		return this.miningEnabled;
+	}
+
+	public boolean setMining(boolean state) {
+		this.miningEnabled = state;
+		return true;
 	}
 	
 }
