@@ -24,5 +24,10 @@ public class PCco_ItemNanobots extends PC_Item {
 	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
 		return PC_Recipes.tryToDo3DRecipe(world, x, y, z);
 	}
+
+	@Override
+	public boolean hasEffect(ItemStack itemStack, int pass) {
+		return pass==0;
+	}
 	
 }
