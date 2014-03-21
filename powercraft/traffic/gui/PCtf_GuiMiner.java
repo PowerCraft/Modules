@@ -3,6 +3,7 @@ package powercraft.traffic.gui;
 import java.util.HashMap;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
 
@@ -18,8 +19,10 @@ import powercraft.api.gres.events.PC_GresEvent;
 import powercraft.api.gres.events.PC_GresKeyEvent;
 import powercraft.api.gres.events.PC_IGresEventListener;
 import powercraft.api.gres.layout.PC_GresLayoutVertical;
+import powercraft.api.gres.slot.PC_Slot;
 import powercraft.api.script.weasel.PC_WeaselGresEdit;
 import powercraft.api.script.weasel.PC_WeaselGresEdit.SaveEvent;
+import powercraft.traffic.PCtf_Traffic;
 import powercraft.traffic.container.PCtf_ContainerMiner;
 import powercraft.traffic.entity.PCtf_EntityMiner;
 
@@ -51,6 +54,16 @@ public class PCtf_GuiMiner extends PCtf_ContainerMiner implements PC_IGresGui, P
 		gc.add(inv);
 		gc.add(new PC_GresPlayerInventory(this));
 		tab.add("Inventory", gc);
+		gc = new PC_GresGroupContainer();
+		gc.setLayout(new PC_GresLayoutVertical());
+		inv = new PC_GresInventory(1, 1);
+		PC_Slot slot = (PC_Slot) this.invSlots[9*6];
+		slot.setBackgroundStack(new ItemStack(PCtf_Traffic.SAWBLADE_IRON));
+		slot.setRenderGrayWhenEmpty(true);
+		inv.setSlot(0, 0, slot);
+		gc.add(inv);
+		gc.add(new PC_GresPlayerInventory(this));
+		tab.add("Equipment", gc);
 		tab.add("Programm", this.edit = new PC_WeaselGresEdit(this.sources));
 		this.edit.addEventListener(this);
 		window.add(tab);

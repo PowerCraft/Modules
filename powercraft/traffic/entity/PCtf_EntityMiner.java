@@ -22,7 +22,6 @@ import powercraft.api.PC_Logger;
 import powercraft.api.PC_NBTTagHandler;
 import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3I;
-import powercraft.api.block.PC_Block;
 import powercraft.api.entity.PC_Entities;
 import powercraft.api.entity.PC_Entity;
 import powercraft.api.gres.PC_GresBaseWithInventory;
@@ -38,13 +37,14 @@ import powercraft.api.renderer.model.PC_Model;
 import powercraft.traffic.PCtf_MinerController;
 import powercraft.traffic.container.PCtf_ContainerMiner;
 import powercraft.traffic.gui.PCtf_GuiMiner;
+import powercraft.traffic.items.PCtf_ItemSawblade;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandler, PC_IInventory{
 	
 	@PC_Field
-	protected ItemStack[] inventoryContents = new ItemStack[6*9];
+	protected ItemStack[] inventoryContents = new ItemStack[6*9+1];
 	@PC_Field
 	protected PCtf_MinerController minerController;
 	@PC_Field
@@ -444,7 +444,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-		return true;
+		return i==9*6?itemstack.getItem() instanceof PCtf_ItemSawblade:true;
 	}
 
 	@Override
