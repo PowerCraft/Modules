@@ -90,34 +90,38 @@ public class PCtf_MinerController implements PC_INBT{
 		return map;
 	}
 	
-	@XNativeMethod
-	public static boolean operationFinished(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController){
-		return minerController.getMiner().operationFinished();
-	}
+	//Weasel Available Methods
 	
-	@XNativeMethod
-	public static void digForward(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController){
+	public static class MinerNativeInterface{
 		
-	}
-
-	@XNativeMethod
-	public static void moveForward(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int steps){
-		minerController.getMiner().moveForward(steps);
-	}
+		@XNativeMethod
+		public static boolean operationFinished(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController){
+			return minerController.getMiner().operationFinished();
+		}
+		
+		@XNativeMethod
+		public static void digForward(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController){
+			
+		}
 	
-	@XNativeMethod
-	public static void rotate(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int dir){
-		minerController.getMiner().rotate(dir);
+		@XNativeMethod
+		public static void moveForward(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int steps){
+			minerController.getMiner().moveForward(steps);
+		}
+		
+		@XNativeMethod
+		public static void rotate(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int dir){
+			minerController.getMiner().rotate(dir);
+		}
+		
+		@XNativeMethod
+		public static boolean isMiningEnabled(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController){
+			return true;
+		}
+		
+		@XNativeMethod
+		public static boolean setMining(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, boolean state){
+			return state;
+		}
 	}
-	
-	@XNativeMethod
-	public static boolean isMiningEnabled(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController){
-		return true;
-	}
-	
-	@XNativeMethod
-	public static boolean setMining(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, boolean state){
-		return state;
-	}
-	
 }
