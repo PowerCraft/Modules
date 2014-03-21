@@ -2,6 +2,7 @@ package powercraft.laser.item;
 
 import java.util.List;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -53,6 +54,14 @@ public class PCla_ItemLaserUpgrade extends PC_Item {
 		default:
 			return 0;
 		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean bool) {
+		par3List.add("This is a §l§bLENS");
+		par3List.add("You can change the §bcolor§7");
+		par3List.add("of a laser with this Item");
 	}
 
 	@Override
