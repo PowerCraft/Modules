@@ -539,6 +539,10 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	
 	public boolean operationFinished() {
 		yawToRange();
+		for(int i=0; i<this.minings.length; i++){
+			if(this.minings[i]>0)
+				return false;
+		}
 		return this.rotationYaw==getTargetRot()*90 && this.posX==getTargetX() && this.posZ==getTargetZ();
 	}
 	
@@ -569,6 +573,25 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
     	super.setAngles(par1, par2);
     	yawToRange();
     }
+    
+    public boolean isMiningEnabled() {
+		return this.miningEnabled;
+	}
+
+	public boolean setMining(boolean state) {
+		this.miningEnabled = state;
+		return true;
+	}
+	
+	public void digForward(){
+		for(int i=2; i<6; i++){
+			PC_Vec3I pos = getPosFor(i);
+			Block block = PC_Utils.getBlock(this.worldObj, pos);
+			if(!block.isAir(this.worldObj, pos.x, pos.y, pos.z)){
+				this.minings[i] = 20;
+			}
+		}
+	}
 	
 	public static void registerRecipe(){
 		PC_Recipes.add3DRecipe(new PC_I3DRecipeHandler() {
@@ -592,15 +615,6 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			return;
 		PCtf_EntityMiner miner = new PCtf_EntityMiner(world, structStart.pos, structStart.dir);
 		PC_Utils.spawnEntity(world, miner);
-	}
-
-	public boolean isMiningEnabled() {
-		return this.miningEnabled;
-	}
-
-	public boolean setMining(boolean state) {
-		this.miningEnabled = state;
-		return true;
 	}
 	
 }

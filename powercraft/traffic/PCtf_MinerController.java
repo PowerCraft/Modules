@@ -105,7 +105,10 @@ public class PCtf_MinerController implements PC_INBT{
 		
 		@XNativeMethod
 		public static void digForward(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address){
-			
+			PCtf_EntityMiner miner = minerController.getMiner(address);
+			if(miner!=null){
+				miner.digForward();
+			}
 		}
 	
 		@XNativeMethod
