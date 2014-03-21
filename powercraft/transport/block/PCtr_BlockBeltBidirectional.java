@@ -1,60 +1,22 @@
 package powercraft.transport.block;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import powercraft.api.PC_3DRotation;
-import powercraft.api.PC_Direction;
-import powercraft.api.PC_IconRegistry;
 import powercraft.api.PC_Utils;
-import powercraft.api.block.PC_Block;
 import powercraft.api.network.PC_PacketHandler;
 import powercraft.transport.PCtr_BeltHelper;
 
-public class PCtr_BlockBeltNormal extends PC_Block {
-
-	protected IIcon[] icons = new IIcon[3];
+public class PCtr_BlockBeltBidirectional extends PCtr_BlockBeltNormal {
 	
-	public PCtr_BlockBeltNormal() {
-		super(Material.circuits);
-		setCreativeTab(CreativeTabs.tabTransport);
-		this.maxY = 1.0f/16.0f;
+	public PCtr_BlockBeltBidirectional() {
+		super();
 		//PC_Recipes.addShapedRecipe(new ItemStack(this, 2, 0), " P ", " D ", "OOO", 'O', Blocks.obsidian, 'D', Blocks.dispenser, 'P', Blocks.stone_pressure_plate);
-	}
-	
-	@Override
-	public boolean renderAsNormalBlock(){
-		return false;
-	}
-	
-	@Override
-    public boolean isOpaqueCube(){
-        return false;
-    }
-
-	@Override
-	public void registerIcons(PC_IconRegistry iconRegistry) {
-		this.icons[0] = iconRegistry.registerIcon("top");
-		this.icons[1] = iconRegistry.registerIcon("down");
-		this.icons[2] = iconRegistry.registerIcon("side");
-	}
-
-	@Override
-	public IIcon getIcon(PC_Direction side, int metadata) {
-		if(side==PC_Direction.UP){
-			return this.icons[0];
-		}else if(side==PC_Direction.DOWN){
-			return this.icons[1];
-		}
-		return this.icons[2];
 	}
 
 	@Override
 	public boolean canRotate() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -85,19 +47,16 @@ public class PCtr_BlockBeltNormal extends PC_Block {
 					return;
 				}
 			}
+		}else{
+			prevDir=PC_Utils.getEntityMovement2D(entity).ordinal();
+			compound.setInteger("dir", prevDir);
+			PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity), world, x, y, z, 16);
 		}
 		compound.setInteger("lastX", x);
 		compound.setInteger("lastY", y);
 		compound.setInteger("lastZ", z);
 		compound.setInteger("lastTick", entity.ticksExisted);
-		
-		PC_3DRotation rotation = getRotation(world, x, y, z);
-		PC_Direction direction = rotation.getSidePosition(PC_Direction.SOUTH);
-		compound.setInteger("dir", direction.ordinal());
 		PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true);
-		if(prevDir!=direction.ordinal()){
-			PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity), world, x, y, z, 16);
-		}
 	}
 	
 }
