@@ -34,12 +34,18 @@ public class PCtf_Traffic extends PC_Module {
 			
 			@Override
 			public boolean foundStructAt(World world, StructStart structStart) {
-				PC_Utils.setAir(world, structStart.pos);
-				PCtf_EntityMiner miner = new PCtf_EntityMiner(world, structStart.pos);
+				for(int i=0; i<2; i++){
+					for(int j=0; j<2; j++){
+						for(int k=0; k<2; k++){
+							PC_Utils.setAir(world, structStart.relative(i, j, k));
+						}
+					}
+				}
+				PCtf_EntityMiner miner = new PCtf_EntityMiner(world, structStart.pos, structStart.dir);
 				PC_Utils.spawnEntity(world, miner);
 				return true;
 			}
-		}, new String[]{"I"}, 'I', Blocks.iron_block);
+		}, new String[]{"II", "CC"}, new String[]{"II", "II"}, 'I', Blocks.iron_block, 'C', Blocks.chest);
 	}
 	
 	@Override

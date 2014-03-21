@@ -4,11 +4,16 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import powercraft.api.PC_Direction;
+import powercraft.api.PC_Logger;
+import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3I;
 import powercraft.api.entity.PC_Entities;
 import powercraft.api.entity.PC_Entity;
@@ -28,7 +33,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	
 	private int instruction;
 	
-	protected ItemStack[] inventoryContents;
+	protected ItemStack[] inventoryContents = new ItemStack[6*9];
 	
 	public PCtf_EntityMiner(World world) {
 		super(world);
@@ -39,9 +44,12 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		this.isImmuneToFire = true;
 	}
 	
-	public PCtf_EntityMiner(World world, PC_Vec3I pos) {
+	private static int DIR_MAPPER[] = {270, 90, 180, 0};
+	
+	public PCtf_EntityMiner(World world, PC_Vec3I pos, PC_Direction dir) {
 		this(world);
-		setPosition(pos.x, pos.y, pos.z);
+		setPosition(pos.x+(dir==PC_Direction.EAST || dir==PC_Direction.NORTH?1:0), pos.y, pos.z+(dir==PC_Direction.EAST || dir==PC_Direction.SOUTH?1:0));
+		setRotation(DIR_MAPPER[dir.ordinal()-2], 0);
 	}
 
 	@Override
@@ -54,7 +62,6 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-		moveEntity(0, this.motionY, 1);
 	}
 
 	@Override
@@ -91,7 +98,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 				this.riddenByEntity.mountEntity(this); // unmount
 			}
 
-			kill();
+			turnIntoBlocks();
 		}
 		return true;
 	}
@@ -130,6 +137,47 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 
 	public int getForwardDirection() {
 		return this.dataWatcher.getWatchableObjectInt(18);
+	}
+	
+	public void turnIntoBlocks() {
+		if(this.worldObj.isRemote)
+			return;
+		int xh = (int) Math.round(this.posX);
+		int y = (int) Math.floor(this.posY + 0.0001F);
+		int zh = (int) Math.round(this.posZ);
+		int yaw = (this.rotationYaw < 45 || this.rotationYaw > 315) ? 0 : (this.rotationYaw < 135 ? 1 : (this.rotationYaw < 215 ? 2 : (this.rotationYaw < 315 ? 3 : 0)));
+
+		int xl = xh - 1, zl = zh - 1;
+		
+		// building chests
+		for (int x = xl; x <= xh; x++) {
+			for (int z = zl; z <= zh; z++) {
+				PC_Utils.setBlock(this.worldObj, x, y, z, Blocks.iron_block);
+				if ((yaw == 0 && z == zh) || (yaw == 1 && x == xl) || (yaw == 2 && z == zl) || (yaw == 3 && x == xh)) {
+					PC_Utils.setBlock(this.worldObj, x, y+1, z, Blocks.chest);
+				} else {
+					PC_Utils.setBlock(this.worldObj, x, y+1, z, Blocks.iron_block);
+				}
+			}
+		}
+		
+		IInventory inv = null;
+
+		for (int x = xl; x <= xh && inv==null; x++) {
+			for (int k = zl; k <= zh && inv==null; k++) {
+				inv = PC_InventoryUtils.getBlockInventoryAt(this.worldObj, x, y + 1, k);
+			}
+		}
+		
+		if (inv != null) {
+			PC_InventoryUtils.moveStacks(this, inv);
+		} else {
+			PC_Logger.warning("Despawning miner - the chest blocks weren't found.");
+		}
+		PC_InventoryUtils.dropInventoryContent(this, this.worldObj, this.posX, y+1, this.posZ);
+		
+		setDead();
+
 	}
 	
 	@Override
