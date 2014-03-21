@@ -20,7 +20,7 @@ public class PCtr_BlockBeltScriptable extends PC_BlockTileEntity {
 		super(Material.circuits);
 		setCreativeTab(CreativeTabs.tabTransport);
 		this.maxY = 1.0f/16.0f;
-		PC_Recipes.addShapedRecipe(new ItemStack(this, 2, 0), " P ", " D ", "OOO", 'O', Blocks.obsidian, 'D', Blocks.dispenser, 'P', Blocks.stone_pressure_plate);
+		PC_Recipes.addShapedRecipe(new ItemStack(this, 2, 0), " P ", " D ", "OOO", Character.valueOf('O'), Blocks.obsidian, Character.valueOf('D'), Blocks.dispenser, Character.valueOf('P'), Blocks.stone_pressure_plate);
 	}
 	
 	@Override

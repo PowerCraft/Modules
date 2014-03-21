@@ -12,9 +12,11 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import powercraft.api.PC_Direction;
+import powercraft.api.PC_Field;
 import powercraft.api.PC_Logger;
 import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3I;
+import powercraft.api.PC_Field.Flag;
 import powercraft.api.entity.PC_Entities;
 import powercraft.api.entity.PC_Entity;
 import powercraft.api.gres.PC_GresBaseWithInventory;
@@ -22,6 +24,9 @@ import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.inventory.PC_IInventory;
 import powercraft.api.inventory.PC_InventoryUtils;
+import powercraft.api.recipes.PC_3DRecipe.StructStart;
+import powercraft.api.recipes.PC_I3DRecipeHandler;
+import powercraft.api.recipes.PC_Recipes;
 import powercraft.api.renderer.PC_EntityRenderer;
 import powercraft.api.renderer.model.PC_Model;
 import powercraft.traffic.entity.container.PCtf_ContainerMiner;
@@ -31,8 +36,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandler, PC_IInventory{
 	
-	private int instruction;
-	
+	@PC_Field
 	protected ItemStack[] inventoryContents = new ItemStack[6*9];
 	
 	public PCtf_EntityMiner(World world) {
@@ -50,6 +54,9 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		this(world);
 		setPosition(pos.x+(dir==PC_Direction.EAST || dir==PC_Direction.NORTH?1:0), pos.y, pos.z+(dir==PC_Direction.EAST || dir==PC_Direction.SOUTH?1:0));
 		setRotation(DIR_MAPPER[dir.ordinal()-2], 0);
+		setTargetRot(Math.round(this.rotationYaw/90.0f));
+		setTargetX((int) Math.round(this.posX));
+		setTargetZ((int) Math.round(this.posZ));
 	}
 
 	@Override
@@ -57,11 +64,36 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		this.dataWatcher.addObject(17, new Integer(0));
 		this.dataWatcher.addObject(18, new Integer(1));
 		this.dataWatcher.addObject(19, new Float(0));
+		this.dataWatcher.addObject(20, new Integer(0));
+		this.dataWatcher.addObject(21, new Integer(0));
+		this.dataWatcher.addObject(22, new Integer(0));
 	}
 
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
+		this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
+		float diff = (getTargetRot()*90 - this.rotationYaw) % 360;
+		if(diff>180)
+			diff = -360.0f+diff;
+		if(diff>3)
+			diff = 3;
+		if(diff<-3)
+			diff=-3;
+		this.rotationYaw += diff;
+		this.motionX = getTargetX()-this.posX;
+		this.motionY -= 0.03999999910593033D;
+		this.motionZ = getTargetZ()-this.posZ;
+		double diffXZ = Math.sqrt(this.motionX*this.motionX+this.motionZ*this.motionZ);
+		if(diffXZ>0.02){
+			this.motionX /= diffXZ;
+			this.motionZ /= diffXZ;
+			this.motionX *= 0.04;
+			this.motionZ *= 0.04;
+		}
+		moveEntity(this.motionX, this.motionY, this.motionZ);
 	}
 
 	@Override
@@ -94,9 +126,6 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		setDamageTaken(getDamageTaken() + i * 7);
 		setBeenAttacked();
 		if (getDamageTaken() > 40) {
-			if (this.riddenByEntity != null) {
-				this.riddenByEntity.mountEntity(this); // unmount
-			}
 
 			turnIntoBlocks();
 		}
@@ -139,7 +168,34 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		return this.dataWatcher.getWatchableObjectInt(18);
 	}
 	
+	public void setTargetRot(int i) {
+		this.dataWatcher.updateObject(20, Integer.valueOf(i%4));
+	}
+
+	public int getTargetRot() {
+		return this.dataWatcher.getWatchableObjectInt(20);
+	}
+	
+	public void setTargetX(int i) {
+		this.dataWatcher.updateObject(21, Integer.valueOf(i));
+	}
+
+	public int getTargetX() {
+		return this.dataWatcher.getWatchableObjectInt(21);
+	}
+	
+	public void setTargetZ(int i) {
+		this.dataWatcher.updateObject(22, Integer.valueOf(i));
+	}
+
+	public int getTargetZ() {
+		return this.dataWatcher.getWatchableObjectInt(22);
+	}
+	
 	public void turnIntoBlocks() {
+		if (this.riddenByEntity != null) {
+			this.riddenByEntity.mountEntity(null);
+		}
 		if(this.worldObj.isRemote)
 			return;
 		int xh = (int) Math.round(this.posX);
@@ -335,6 +391,46 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	@Override
 	public int[] getAppliedSides(int i) {
 		return null;
+	}
+	
+	@Override
+	protected void readEntityFromNBT(NBTTagCompound tag) {
+		super.readEntityFromNBT(tag);
+		setTargetRot(tag.getInteger("targetRot"));
+		setTargetX(tag.getInteger("targetX"));
+		setTargetZ(tag.getInteger("targetZ"));
+	}
+
+	@Override
+	protected void writeEntityToNBT(NBTTagCompound tag) {
+		super.writeEntityToNBT(tag);
+		tag.setInteger("targetRot", getTargetRot());
+		tag.setInteger("targetX", getTargetX());
+		tag.setInteger("targetZ", getTargetZ());
+	}
+	
+	public static void registerRecipe(){
+		PC_Recipes.add3DRecipe(new PC_I3DRecipeHandler() {
+			@Override
+			public boolean foundStructAt(World world, StructStart structStart) {
+				clearAndSpawnMiner(world, structStart);
+				return true;
+			}
+		}, new String[]{"II", "CC"}, new String[]{"II", "II"}, Character.valueOf('I'), Blocks.iron_block, Character.valueOf('C'), Blocks.chest);
+	}
+	
+	static void clearAndSpawnMiner(World world, StructStart structStart){
+		for(int i=0; i<2; i++){
+			for(int j=0; j<2; j++){
+				for(int k=0; k<2; k++){
+					PC_Utils.setAir(world, structStart.relative(i, j, k));
+				}
+			}
+		}
+		if(world.isRemote)
+			return;
+		PCtf_EntityMiner miner = new PCtf_EntityMiner(world, structStart.pos, structStart.dir);
+		PC_Utils.spawnEntity(world, miner);
 	}
 	
 }
