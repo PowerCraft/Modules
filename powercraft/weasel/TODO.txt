@@ -1,0 +1,34 @@
+add:{
+event:
+sawblade consumed
+fuel slot empty
+item collected
+
+
+method:
+canHarvest(offset):bool
+getItemAtSlot(index):Item
+getBlockAt(offset):Block
+moveItem(slotSource, slotTarget):remainingAmount
+dig(offset):bool/success
+burn(Item):index
+burn(index)
+getEmptySlot():index
+getAmountEmptySlots():count
+
+field:
+GPS
+Sawblade
+NetworkModule(probably combined with GPS)
+
+}
+
+change:{
+method:
+split digUp->(digUp4|digUp2)&digForward
+split digDown->(digDown4|digDown2)&digForward
+moveForward->((digginEnabled?digForward)->moveForward)
+placeBlock->clickDirection=absHighestOffset
+placeBlock->placeBlock:bool
+placeBlock->opaque-check wenn in sich selbst
+}
