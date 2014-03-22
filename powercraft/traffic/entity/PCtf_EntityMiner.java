@@ -575,7 +575,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	}
 	
 	public int operationFinished() {
-		return !(isMining() || isRotating() || isMoving());
+		return isMining() || isRotating() || isMoving()?1:0;
 	}
 	
 	public boolean isMining(){
