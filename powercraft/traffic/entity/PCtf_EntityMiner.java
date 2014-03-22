@@ -53,6 +53,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	protected boolean miningEnabled=false;
 	@PC_Field
 	protected int[] minings = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+	@PC_Field
+	protected int moveAfterMining;
 	
 	public PCtf_EntityMiner(World world) {
 		super(world);
@@ -153,6 +155,11 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 					}
 				}
 			}
+		}
+		
+		if(!isMining() && this.moveAfterMining!=0){
+			moveForwardWithoutMining(this.moveAfterMining);
+			this.moveAfterMining = 0;
 		}
 		
 	}
@@ -536,6 +543,15 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	
 
 	public void moveForward(int steps) {
+		if(this.miningEnabled){
+			digForward();
+			this.moveAfterMining = steps;
+			return;
+		}
+		moveForwardWithoutMining(steps);
+	}
+	
+	public void moveForwardWithoutMining(int steps) {
 		switch(getTargetRot()){
 		case 0:
 			setTargetZ(getTargetZ()-steps);
@@ -558,13 +574,25 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		setTargetRot(getTargetRot()+dir);
 	}
 	
-	public boolean operationFinished() {
-		yawToRange();
+	public int operationFinished() {
+		return !(isMining() || isRotating() || isMoving());
+	}
+	
+	public boolean isMining(){
 		for(int i=0; i<this.minings.length; i++){
 			if(this.minings[i]>=0)
-				return false;
+				return true;
 		}
-		return this.rotationYaw==getTargetRot()*90 && this.posX==getTargetX() && this.posZ==getTargetZ();
+		return false;
+	}
+	
+	public boolean isRotating(){
+		yawToRange();
+		return this.rotationYaw!=getTargetRot()*90;
+	}
+	
+	public boolean isMoving(){
+		return this.posX!=getTargetX() || this.posZ!=getTargetZ();
 	}
 	
 	/**
@@ -630,7 +658,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		if(block.isAir(this.worldObj, pos.x, pos.y, pos.z))
 			return -1;
 		int metadata = PC_Utils.getMetadata(this.worldObj, pos);
-		ItemStack is = inventoryContents[6*9];
+		ItemStack is = this.inventoryContents[6*9];
 		/*Material material = block.getMaterial();
 		if(!material.isToolNotRequired()){
 			int level = block.getHarvestLevel(metadata);
@@ -650,10 +678,10 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		return (int) hardness;
 	}
 	
-	public void setBlock(int invPlace, int x, int y, int z) {
+	public boolean placeBlock(int invPlace, int x, int y, int z) {
 		PC_Vec3I pos = getRealPosition(x, y, z);
 		ItemStack is = this.inventoryContents[invPlace];
-		tryToPlace(is, pos);
+		return tryToPlace(is, pos);
 	}
 	
 	public boolean tryToPlace(ItemStack is, PC_Vec3I pos) {

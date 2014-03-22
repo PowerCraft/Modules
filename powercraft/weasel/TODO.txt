@@ -28,7 +28,6 @@ change:{
 method:
 split digUp->(digUp4|digUp2)&digForward
 split digDown->(digDown4|digDown2)&digForward
-moveForward->((digginEnabled?digForward)->moveForward)
 placeBlock->clickDirection=absHighestOffset
 placeBlock->placeBlock:bool
 placeBlock->opaque-check wenn in sich selbst

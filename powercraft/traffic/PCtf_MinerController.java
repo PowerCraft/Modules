@@ -93,10 +93,10 @@ public class PCtf_MinerController implements PC_INBT{
 	public static class MinerNativeInterface{
 		
 		@XNativeMethod
-		public static boolean operationFinished(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address){
+		public static int operationFinished(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address){
 			PCtf_EntityMiner miner = minerController.getMiner(address);
 			if(miner==null){
-				return false;
+				return -1;
 			}
 			return miner.operationFinished();
 		}
@@ -126,10 +126,10 @@ public class PCtf_MinerController implements PC_INBT{
 		}
 		
 		@XNativeMethod
-		public static void setBlock(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address, int invPlace, int x, int y, int z){
+		public static void placeBlock(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address, int invPlace, int x, int y, int z){
 			PCtf_EntityMiner miner = minerController.getMiner(address);
 			if(miner!=null){
-				miner.setBlock(invPlace, x, y, z);
+				miner.placeBlock(invPlace, x, y, z);
 			}
 		}
 	
