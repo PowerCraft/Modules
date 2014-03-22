@@ -32,3 +32,8 @@ placeBlock->clickDirection=absHighestOffset
 placeBlock->placeBlock:bool
 placeBlock->opaque-check wenn in sich selbst
 }
+
+fix:{
+method:
+dig->check whether block hasn't changed
+}
