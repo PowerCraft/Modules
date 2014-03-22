@@ -45,6 +45,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandler, PC_IInventory{
 	
+	public static final int OPERATION_FINISHED = 0;
+	public static final int OPERATION_ERRORED = -1;
+	public static final int OPERATION_INWORK = 1;
+	
 	@PC_Field
 	protected ItemStack[] inventoryContents = new ItemStack[6*9+1];
 	@PC_Field
@@ -55,6 +59,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	protected int[] minings = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 	@PC_Field
 	protected int moveAfterMining;
+	@PC_Field
+	protected boolean operationErrored;
 	
 	public PCtf_EntityMiner(World world) {
 		super(world);
@@ -142,7 +148,9 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			if(this.minings[i]>=0){
 				if(this.minings[i]==0){
 					PC_Vec3I pos = getPosFor(i);
-					destroyBlock(pos);
+					if(!destroyBlock(pos)){
+						this.operationErrored = true;
+					}
 					this.minings[i] = -1;
 				}else{
 					if((--this.minings[i])%10==0){
@@ -158,20 +166,47 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		}
 		
 		if(!isMining() && this.moveAfterMining!=0){
-			moveForwardWithoutMining(this.moveAfterMining);
+			if(!this.operationErrored){
+				moveForwardWithoutMining(this.moveAfterMining);
+			}
 			this.moveAfterMining = 0;
 		}
 		
 	}
 
-	private void destroyBlock(PC_Vec3I pos){
+	private boolean destroyBlock(PC_Vec3I pos){
 		Block block = PC_Utils.getBlock(this.worldObj, pos);
 		if(this.worldObj instanceof WorldServer){
 			int metadata = PC_Utils.getMetadata(this.worldObj, pos);
 			EntityPlayer player = FakePlayerFactory.getMinecraft((WorldServer)this.worldObj);
 			block.harvestBlock(this.worldObj, player, pos.x, pos.y, pos.z, metadata);
-			block.removedByPlayer(this.worldObj, player, pos.x, pos.y, pos.z);
+			return block.removedByPlayer(this.worldObj, player, pos.x, pos.y, pos.z);
 		}
+		return true;
+	}
+	
+	private PC_Vec3I getPosFor(int offX, int offY, int offZ){
+		PC_Direction facing = PC_Direction.directionFacing(this.rotationYaw, 0, null);
+		double tmpX=0, tmpZ=0;
+		if(facing.offsetX+facing.offsetZ>0){
+			if(offZ>0) offZ-=1;
+		}else{
+			if(offZ<0) offZ+=1;
+		}
+		tmpX+=facing.offsetX*offZ;
+		tmpZ+=facing.offsetZ*offZ;
+		
+		PC_Direction side = facing.rotateOnce(PC_Direction.UP);
+		if(facing.offsetX+facing.offsetZ>0){
+			if(offX>0) offX-=1;
+		}else{
+			if(offX<0) offX+=1;
+		}
+		tmpX+=side.offsetX*offX;
+		tmpZ+=side.offsetZ*offX;
+		
+		System.out.println(tmpX+":"+tmpZ);
+		return new PC_Vec3I((int)(this.posX+tmpX), (int)(this.posY+(offY>0?offY-1:offY)), (int)(this.posZ+tmpZ));
 	}
 	
 	private PC_Vec3I getPosFor(int i){
@@ -540,61 +575,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		tag.setInteger("targetX", getTargetX());
 		tag.setInteger("targetZ", getTargetZ());
 	}
-	
-
-	public void moveForward(int steps) {
-		if(this.miningEnabled){
-			digForward();
-			this.moveAfterMining = steps;
-			return;
-		}
-		moveForwardWithoutMining(steps);
-	}
-	
-	public void moveForwardWithoutMining(int steps) {
-		switch(getTargetRot()){
-		case 0:
-			setTargetZ(getTargetZ()-steps);
-			break;
-		case 1:
-			setTargetX(getTargetX()+steps);
-			break;
-		case 2:
-			setTargetZ(getTargetZ()+steps);
-			break;
-		case 3:
-			setTargetX(getTargetX()-steps);
-			break;
-		default:
-			break;
-		}
-	}
-	
-	public void rotate(int dir) {
-		setTargetRot(getTargetRot()+dir);
-	}
-	
-	public int operationFinished() {
-		return isMining() || isRotating() || isMoving()?1:0;
-	}
-	
-	public boolean isMining(){
-		for(int i=0; i<this.minings.length; i++){
-			if(this.minings[i]>=0)
-				return true;
-		}
-		return false;
-	}
-	
-	public boolean isRotating(){
-		yawToRange();
-		return this.rotationYaw!=getTargetRot()*90;
-	}
-	
-	public boolean isMoving(){
-		return this.posX!=getTargetX() || this.posZ!=getTargetZ();
-	}
-	
+		
 	/**
      * Sets the entity's position and rotation. Args: posX, posY, posZ, yaw, pitch
      */
@@ -621,36 +602,36 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
     public void setAngles(float par1, float par2){
     	super.setAngles(par1, par2);
     	yawToRange();
-    }
-    
-    public boolean isMiningEnabled() {
-		return this.miningEnabled;
-	}
-
-	public boolean setMining(boolean state) {
-		this.miningEnabled = state;
-		return true;
+    }public boolean tryToPlace(ItemStack is, PC_Vec3I pos) {
+		Block block = PC_Utils.getBlock(this.worldObj, pos);
+		if((block==null || block.isReplaceable(this.worldObj, pos.x, pos.y, pos.z)) && is!=null && is.stackSize>0 && this.worldObj instanceof WorldServer){
+			return is.tryPlaceItemIntoWorld(FakePlayerFactory.getMinecraft((WorldServer)this.worldObj), this.worldObj, pos.x, pos.y, pos.z, 1, 0.5f, 1f, 0.5f);
+		}
+		return false;
 	}
 	
-	public void digForward(){
-		for(int i=2; i<6; i++){
-			PC_Vec3I pos = getPosFor(i);
-			this.minings[i] = getTimeForBlockHarvest(pos);
-		}
+	public static void registerRecipe(){
+		PC_Recipes.add3DRecipe(new PC_I3DRecipeHandler() {
+			@Override
+			public boolean foundStructAt(World world, StructStart structStart) {
+				clearAndSpawnMiner(world, structStart);
+				return true;
+			}
+		}, new String[]{"II", "CC"}, new String[]{"II", "II"}, Character.valueOf('I'), Blocks.iron_block, Character.valueOf('C'), Blocks.chest);
 	}
 	
-	public void digUpward() {
-		for(int i=2; i<10; i++){
-			PC_Vec3I pos = getPosFor(i);
-			this.minings[i] = getTimeForBlockHarvest(pos);
+	static void clearAndSpawnMiner(World world, StructStart structStart){
+		for(int i=0; i<2; i++){
+			for(int j=0; j<2; j++){
+				for(int k=0; k<2; k++){
+					PC_Utils.setAir(world, structStart.relative(i, j, k));
+				}
+			}
 		}
-	}
-
-	public void digDownward() {
-		for(int i=0; i<6; i++){
-			PC_Vec3I pos = getPosFor(i);
-			this.minings[i] = getTimeForBlockHarvest(pos);
-		}
+		if(world.isRemote)
+			return;
+		PCtf_EntityMiner miner = new PCtf_EntityMiner(world, structStart.pos, structStart.dir);
+		PC_Utils.spawnEntity(world, miner);
 	}
 	
 	public int getTimeForBlockHarvest(PC_Vec3I pos){
@@ -678,73 +659,102 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		return (int) hardness;
 	}
 	
-	public boolean placeBlock(int invPlace, int x, int y, int z) {
-		PC_Vec3I pos = getRealPosition(x, y, z);
-		ItemStack is = this.inventoryContents[invPlace];
-		return tryToPlace(is, pos);
-	}
-	
-	public boolean tryToPlace(ItemStack is, PC_Vec3I pos) {
-		Block block = PC_Utils.getBlock(this.worldObj, pos);
-		if((block==null || block.isReplaceable(this.worldObj, pos.x, pos.y, pos.z)) && is!=null && is.stackSize>0 && this.worldObj instanceof WorldServer){
-			return is.tryPlaceItemIntoWorld(FakePlayerFactory.getMinecraft((WorldServer)this.worldObj), this.worldObj, pos.x, pos.y, pos.z, 1, 0.5f, 1f, 0.5f);
-		}
-		return false;
-	}
-	
-	private static int getWithoutZero(int num){
-		return num<0?num+1:num;
-	}
-	
-	public PC_Vec3I getRealPosition(int x, int y, int z){
-		PC_Vec3I p = new PC_Vec3I((int)Math.round(this.posX), (int)Math.round(this.posY), (int)Math.round(this.posZ));
-		p.y += getWithoutZero(y);
-		System.out.println(getTargetRot());
+	public void moveForwardWithoutMining(int steps) {
+		this.operationErrored = false;
 		switch(getTargetRot()){
 		case 0:
-			p.x += getWithoutZero(z)-1;
-			p.z -= getWithoutZero(x);
+			setTargetZ(getTargetZ()-steps);
 			break;
 		case 1:
-			p.x += 1+getWithoutZero(x);
-			p.z += getWithoutZero(z)-1;
+			setTargetX(getTargetX()+steps);
 			break;
 		case 2:
-			p.x -= getWithoutZero(z);
-			p.z += 1+getWithoutZero(x);
+			setTargetZ(getTargetZ()+steps);
 			break;
 		case 3:
-			p.x -= getWithoutZero(x);
-			p.z -= getWithoutZero(z);
+			setTargetX(getTargetX()-steps);
 			break;
 		default:
 			break;
 		}
-		return p;
 	}
 	
-	public static void registerRecipe(){
-		PC_Recipes.add3DRecipe(new PC_I3DRecipeHandler() {
-			@Override
-			public boolean foundStructAt(World world, StructStart structStart) {
-				clearAndSpawnMiner(world, structStart);
+	public boolean isMining(){
+		for(int i=0; i<this.minings.length; i++){
+			if(this.minings[i]>=0)
 				return true;
-			}
-		}, new String[]{"II", "CC"}, new String[]{"II", "II"}, Character.valueOf('I'), Blocks.iron_block, Character.valueOf('C'), Blocks.chest);
+		}
+		return false;
 	}
 	
-	static void clearAndSpawnMiner(World world, StructStart structStart){
-		for(int i=0; i<2; i++){
-			for(int j=0; j<2; j++){
-				for(int k=0; k<2; k++){
-					PC_Utils.setAir(world, structStart.relative(i, j, k));
-				}
-			}
-		}
-		if(world.isRemote)
-			return;
-		PCtf_EntityMiner miner = new PCtf_EntityMiner(world, structStart.pos, structStart.dir);
-		PC_Utils.spawnEntity(world, miner);
+	public boolean isRotating(){
+		yawToRange();
+		return this.rotationYaw!=getTargetRot()*90;
 	}
+	
+	public boolean isMoving(){
+		return this.posX!=getTargetX() || this.posZ!=getTargetZ();
+	}
+
+	public void moveForward(int steps) {
+		if(this.miningEnabled){
+			digForward();
+			this.moveAfterMining = steps;
+			return;
+		}
+		moveForwardWithoutMining(steps);
+	}
+	
+	public void rotate(int dir) {
+		this.operationErrored = false;
+		setTargetRot(getTargetRot()+dir);
+	}
+	
+	public int operationFinished() {
+		return isMining() || isRotating() || isMoving()?OPERATION_INWORK:this.operationErrored?OPERATION_ERRORED:OPERATION_FINISHED;
+	}
+	
+	
+    
+    public boolean isMiningEnabled() {
+		return this.miningEnabled;
+	}
+
+	public boolean setMining(boolean state) {
+		this.miningEnabled = state;
+		return true;
+	}
+	
+	public void digForward(){
+		this.operationErrored = false;
+		for(int i=2; i<6; i++){
+			PC_Vec3I pos = getPosFor(i);
+			this.minings[i] = getTimeForBlockHarvest(pos);
+		}
+	}
+	
+	public void digUpward() {
+		this.operationErrored = false;
+		for(int i=2; i<10; i++){
+			PC_Vec3I pos = getPosFor(i);
+			this.minings[i] = getTimeForBlockHarvest(pos);
+		}
+	}
+
+	public void digDownward() {
+		this.operationErrored = false;
+		for(int i=0; i<6; i++){
+			PC_Vec3I pos = getPosFor(i);
+			this.minings[i] = getTimeForBlockHarvest(pos);
+		}
+	}
+	
+	public void placeBlock(int invPlace, int x, int y, int z) {
+		PC_Vec3I pos = getPosFor(x, y, z);
+		ItemStack is = this.inventoryContents[invPlace];
+		this.operationErrored = !tryToPlace(is, pos);
+	}
+	
+	
 	
 }

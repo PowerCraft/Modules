@@ -21,6 +21,7 @@ field:
 GPS
 Sawblade
 NetworkModule(probably combined with GPS)
+Disk
 
 }
 
