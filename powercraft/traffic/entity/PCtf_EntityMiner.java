@@ -1,6 +1,7 @@
 package powercraft.traffic.entity;
 
 import java.util.HashMap;
+import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -13,8 +14,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.FakePlayerFactory;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Field;
 import powercraft.api.PC_Field.Flag;
@@ -50,11 +52,11 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	@PC_Field
 	protected boolean miningEnabled=false;
 	@PC_Field
-	protected int[] minings = new int[12];
+	protected int[] minings = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 	
 	public PCtf_EntityMiner(World world) {
 		super(world);
-		setSize(2.0f, 2.0f);
+		setSize(1.3F, 1.4F);
 		this.yOffset = 0F;
 		this.entityCollisionReduction = 1.0F;
 		this.stepHeight = 0.6F;
@@ -135,38 +137,57 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		moveEntity(this.motionX, this.motionY, this.motionZ);
 		
 		for(int i=0; i<this.minings.length; i++){
-			if(this.minings[i]>0){
-				if(--this.minings[i]==0){
+			if(this.minings[i]>=0){
+				if(this.minings[i]==0){
 					PC_Vec3I pos = getPosFor(i);
-					Block block = PC_Utils.getBlock(this.worldObj, getPosFor(i));
-					block.dropBlockAsItemWithChance(this.worldObj, pos.x, pos.y, pos.z, PC_Utils.getMetadata(this.worldObj, pos), 1, 1);
-					block.onBlockExploded(this.worldObj, pos.x, pos.y, pos.z, new Explosion(this.worldObj, this, pos.x+0.5, pos.y+0.5, pos.z+0.5, 0.5f));
+					destroyBlock(pos);
+					this.minings[i] = -1;
+				}else{
+					if((--this.minings[i])%10==0){
+						ItemStack is = this.inventoryContents[6*9];
+						if(is!=null){
+							if(is.attemptDamageItem(1, new Random())){
+								setInventorySlotContents(6*9, null);
+							}
+						}
+					}
 				}
 			}
 		}
 		
 	}
 
+	private void destroyBlock(PC_Vec3I pos){
+		Block block = PC_Utils.getBlock(this.worldObj, pos);
+		if(this.worldObj instanceof WorldServer){
+			int metadata = PC_Utils.getMetadata(this.worldObj, pos);
+			EntityPlayer player = FakePlayerFactory.getMinecraft((WorldServer)this.worldObj);
+			block.harvestBlock(this.worldObj, player, pos.x, pos.y, pos.z, metadata);
+			block.removedByPlayer(this.worldObj, player, pos.x, pos.y, pos.z);
+		}
+	}
+	
 	private PC_Vec3I getPosFor(int i){
 		int pos = i/2;
 		int side = i%2;
 		PC_Vec3I p = new PC_Vec3I((int)Math.round(this.posX), (int)Math.round(this.posY), (int)Math.round(this.posZ));
 		p.y += pos>3?2:pos-1;
+		pos = pos>3?pos-3:0;
 		switch(getTargetRot()){
 		case 0:
-			p.x += side;
-			p.z -= 2;
+			p.x += side-1;
+			p.z -= 2-pos;
 			break;
 		case 1:
-			p.x += 2;
-			p.z += side;
+			p.x += 1-pos;
+			p.z += side-1;
 			break;
 		case 2:
 			p.x -= side;
-			p.z += 2;
+			p.z += 1-pos;
 			break;
 		case 3:
-			p.x -= 2;
+			p.x -= 2-pos;
 			p.z -= side;
 			break;
 		default:
@@ -540,7 +561,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	public boolean operationFinished() {
 		yawToRange();
 		for(int i=0; i<this.minings.length; i++){
-			if(this.minings[i]>0)
+			if(this.minings[i]>=0)
 				return false;
 		}
 		return this.rotationYaw==getTargetRot()*90 && this.posX==getTargetX() && this.posZ==getTargetZ();
@@ -586,11 +607,92 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	public void digForward(){
 		for(int i=2; i<6; i++){
 			PC_Vec3I pos = getPosFor(i);
-			Block block = PC_Utils.getBlock(this.worldObj, pos);
-			if(!block.isAir(this.worldObj, pos.x, pos.y, pos.z)){
-				this.minings[i] = 20;
-			}
+			this.minings[i] = getTimeForBlockHarvest(pos);
 		}
+	}
+	
+	public void digUpward() {
+		for(int i=2; i<10; i++){
+			PC_Vec3I pos = getPosFor(i);
+			this.minings[i] = getTimeForBlockHarvest(pos);
+		}
+	}
+
+	public void digDownward() {
+		for(int i=0; i<6; i++){
+			PC_Vec3I pos = getPosFor(i);
+			this.minings[i] = getTimeForBlockHarvest(pos);
+		}
+	}
+	
+	public int getTimeForBlockHarvest(PC_Vec3I pos){
+		Block block = PC_Utils.getBlock(this.worldObj, pos);
+		if(block.isAir(this.worldObj, pos.x, pos.y, pos.z))
+			return -1;
+		int metadata = PC_Utils.getMetadata(this.worldObj, pos);
+		ItemStack is = inventoryContents[6*9];
+		/*Material material = block.getMaterial();
+		if(!material.isToolNotRequired()){
+			int level = block.getHarvestLevel(metadata);
+			ItemStack is = inventoryContents[6*9];
+			if(is==null)
+				return 0;
+			
+		}*/
+		float hardness = block.getBlockHardness(this.worldObj, pos.x, pos.y, pos.z);
+		if(hardness<0)
+			return -1;
+		hardness *= 10;
+		if(is!=null){
+			PCtf_ItemSawblade sawblade = (PCtf_ItemSawblade)is.getItem();
+			hardness /= sawblade.getSpeed();
+		}
+		return (int) hardness;
+	}
+	
+	public void setBlock(int invPlace, int x, int y, int z) {
+		PC_Vec3I pos = getRealPosition(x, y, z);
+		ItemStack is = this.inventoryContents[invPlace];
+		tryToPlace(is, pos);
+	}
+	
+	public boolean tryToPlace(ItemStack is, PC_Vec3I pos) {
+		Block block = PC_Utils.getBlock(this.worldObj, pos);
+		if((block==null || block.isReplaceable(this.worldObj, pos.x, pos.y, pos.z)) && is!=null && is.stackSize>0 && this.worldObj instanceof WorldServer){
+			return is.tryPlaceItemIntoWorld(FakePlayerFactory.getMinecraft((WorldServer)this.worldObj), this.worldObj, pos.x, pos.y, pos.z, 1, 0.5f, 1f, 0.5f);
+		}
+		return false;
+	}
+	
+	private static int getWithoutZero(int num){
+		return num<0?num+1:num;
+	}
+	
+	public PC_Vec3I getRealPosition(int x, int y, int z){
+		PC_Vec3I p = new PC_Vec3I((int)Math.round(this.posX), (int)Math.round(this.posY), (int)Math.round(this.posZ));
+		p.y += getWithoutZero(y);
+		System.out.println(getTargetRot());
+		switch(getTargetRot()){
+		case 0:
+			p.x += getWithoutZero(z)-1;
+			p.z -= getWithoutZero(x);
+			break;
+		case 1:
+			p.x += 1+getWithoutZero(x);
+			p.z += getWithoutZero(z)-1;
+			break;
+		case 2:
+			p.x -= getWithoutZero(z);
+			p.z += 1+getWithoutZero(x);
+			break;
+		case 3:
+			p.x -= getWithoutZero(x);
+			p.z -= getWithoutZero(z);
+			break;
+		default:
+			break;
+		}
+		return p;
 	}
 	
 	public static void registerRecipe(){

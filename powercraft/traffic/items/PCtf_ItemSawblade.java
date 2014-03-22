@@ -22,7 +22,7 @@ public class PCtf_ItemSawblade extends PC_Item {
 	
 	private static final Object[] ITEMS = {Items.iron_ingot, Items.gold_ingot, Items.diamond, Blocks.obsidian};
 	
-	private static final float[] SPEED = {1, 3, 2f, 2.5f};
+	private static final float[] SPEED = {2, 4, 3f, 3.5f};
 	
 	private static final int[] TOOL_LEVEL = {2, 0, 3, 4};
 	

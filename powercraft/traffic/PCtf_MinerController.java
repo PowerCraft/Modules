@@ -18,7 +18,6 @@ import xscript.runtime.nativemethod.XNativeClass.XNativeMethod;
 import xscript.runtime.nativemethod.XNativeClass.XParamSpecial;
 import xscript.runtime.nativemethod.XNativeClass.XParamSpecial.XParamTypes;
 
-@XNativeClass("weasel.miner.Miner")
 public class PCtf_MinerController implements PC_INBT{
 	
 	private PCtf_EntityMiner miner;
@@ -28,14 +27,14 @@ public class PCtf_MinerController implements PC_INBT{
 	public PCtf_MinerController(PCtf_EntityMiner miner){
 		this.classSave = PC_Weasel.createClassSave(true);
 		this.engine = PC_Weasel.createEngine(this.classSave, 1024, null);
-		this.engine.registerNativeClass(getClass());
+		this.engine.registerNativeClass(MinerNativeInterface.class);
 		this.miner = miner;
 	}
 
 	public PCtf_MinerController(NBTTagCompound nbtTagCompound, Flag flag){
 		this.classSave = PC_NBTTagHandler.loadFromNBT(nbtTagCompound, "classSave", PC_WeaselClassSave.class, flag);
 		this.engine = PC_Weasel.createEngine(this.classSave, 1024, null);
-		this.engine.registerNativeClass(getClass());
+		this.engine.registerNativeClass(MinerNativeInterface.class);
 	}
 	
 	public void setMiner(PCtf_EntityMiner miner){
@@ -67,8 +66,7 @@ public class PCtf_MinerController implements PC_INBT{
 		}
 		this.classSave.compileMarked();
 		this.engine = PC_Weasel.createEngine(this.classSave, 1024, this);
-		this.engine.registerNativeClass(getClass());
-		System.out.println("registerNativeClass");
+		this.engine.registerNativeClass(MinerNativeInterface.class);
 		try {
 			this.engine.callMain("Main", "main()void");
 		} catch (RuntimeException e) {
@@ -91,7 +89,7 @@ public class PCtf_MinerController implements PC_INBT{
 	}
 	
 	//Weasel Available Methods
-	
+	@XNativeClass("weasel.miner.Miner")
 	public static class MinerNativeInterface{
 		
 		@XNativeMethod
@@ -108,6 +106,30 @@ public class PCtf_MinerController implements PC_INBT{
 			PCtf_EntityMiner miner = minerController.getMiner(address);
 			if(miner!=null){
 				miner.digForward();
+			}
+		}
+		
+		@XNativeMethod
+		public static void digUpward(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address){
+			PCtf_EntityMiner miner = minerController.getMiner(address);
+			if(miner!=null){
+				miner.digUpward();
+			}
+		}
+		
+		@XNativeMethod
+		public static void digDownward(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address){
+			PCtf_EntityMiner miner = minerController.getMiner(address);
+			if(miner!=null){
+				miner.digDownward();
+			}
+		}
+		
+		@XNativeMethod
+		public static void setBlock(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address, int invPlace, int x, int y, int z){
+			PCtf_EntityMiner miner = minerController.getMiner(address);
+			if(miner!=null){
+				miner.setBlock(invPlace, x, y, z);
 			}
 		}
 	
