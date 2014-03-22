@@ -16,6 +16,4 @@ public class PCtr_ItemSlimeBoots extends PC_ItemArmor{
 		this.itemIcon = iconRegistry.registerIcon("item");
 	}
 	
-	
-	
 }

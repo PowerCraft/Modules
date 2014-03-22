@@ -15,6 +15,7 @@ burn(Item):index
 burn(index)
 getEmptySlot():index
 getAmountEmptySlots():count
+useItem(offset);
 
 field:
 GPS
