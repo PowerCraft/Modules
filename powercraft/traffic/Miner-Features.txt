@@ -1,0 +1,13 @@
+MINER-FEATURES:
+MINING,
+BUILDING,
+MOVING
+
+Auto-Mining on moving
+->bucket filling
+AUto-Building on moving
+->tunnel
+->bridge
+->torches
+->autofill
+->staires

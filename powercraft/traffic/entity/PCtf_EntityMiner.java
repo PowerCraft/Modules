@@ -1,6 +1,7 @@
 package powercraft.traffic.entity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -8,7 +9,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,6 +24,7 @@ import powercraft.api.PC_Direction;
 import powercraft.api.PC_Field;
 import powercraft.api.PC_Field.Flag;
 import powercraft.api.PC_Logger;
+import powercraft.api.PC_MathHelper;
 import powercraft.api.PC_NBTTagHandler;
 import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3I;
@@ -109,6 +113,37 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		this.rotationYaw = ((this.rotationYaw%360)+360)%360;
 	}
 	
+	@Override
+	public void applyEntityCollision(Entity entity) {
+		if (entity.riddenByEntity == this || entity.ridingEntity == this) {
+			return;
+		}
+
+		double d = entity.posX - this.posX;
+		double d1 = entity.posZ - this.posZ;
+		double d2 = PC_MathHelper.abs_max(d, d1);
+		if (d2 >= 0.001D) {
+			d2 = PC_MathHelper.sqrt_double(d2);
+			d /= d2;
+			d1 /= d2;
+			double d3 = 1.0D / d2;
+			if (d3 > 1.0D) {
+				d3 = 1.0D;
+			}
+			d *= d3;
+			d1 *= d3;
+			d *= 0.05D;
+			d1 *= 0.05D;
+			d *= 1.0F - this.entityCollisionReduction;
+			d1 *= 1.0F - this.entityCollisionReduction;
+			this.isAirBorne = true;
+
+			// this entity won't be moved!
+
+			entity.addVelocity(d, 0.0D, d1);
+		}
+	}
+	
 	private static final float MOTION_SPEED = 0.12f;
 	
 	@Override
@@ -142,6 +177,10 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			this.motionX *= MOTION_SPEED;
 			this.motionZ *= MOTION_SPEED;
 		}
+		
+		
+		pickupItems();
+		
 		moveEntity(this.motionX, this.motionY, this.motionZ);
 		
 		for(int i=0; i<this.minings.length; i++){
@@ -174,6 +213,64 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		
 	}
 
+	private void pickupItems(){
+		if(this.worldObj.isRemote)
+			return;
+			
+		@SuppressWarnings("unchecked")
+		List<EntityItem> list = this.worldObj.getEntitiesWithinAABB(EntityItem.class, this.boundingBox.expand(1.5D, 0.5D, 1.5D));
+		if (list != null && list.size() > 0) {
+			for (int j1 = 0; j1 < list.size(); j1++) {
+				EntityItem entity = list.get(j1);
+				if (entity.delayBeforeCanPickup >= 6) {
+					continue;
+				}
+
+				ItemStack itemStack = entity.getEntityItem().copy();
+				
+				if(PC_InventoryUtils.storeItemStackToInventoryFrom(this, itemStack))
+					entity.setDead();
+				
+			}
+		}
+	}
+	
+	private void pushEntities(){
+		if(this.worldObj.isRemote)
+			return;
+		
+		@SuppressWarnings("unchecked")
+		List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(0.2D, 0.01D, 0.2D));
+		if (list != null && list.size() > 0) {
+			for (int j1 = 0; j1 < list.size(); j1++) {
+				Entity entity = list.get(j1);
+				if (PC_Utils.isEntityFX(entity)|| entity instanceof EntityXPOrb) {
+					continue;
+				}
+				if (entity.isDead) {
+					continue;
+				}
+
+				if (entity instanceof EntityArrow) {
+					PC_InventoryUtils.storeItemStackToInventoryFrom(this, new ItemStack(Items.arrow, 1, 0));
+					entity.setDead();
+					return;
+				}
+
+				// keep the same old velocity
+				double motionX_prev = this.motionX;
+				double motionY_prev = this.motionY;
+				double motionZ_prev = this.motionZ;
+
+				entity.applyEntityCollision(this);
+
+				this.motionX = motionX_prev;
+				this.motionY = motionY_prev;
+				this.motionZ = motionZ_prev;
+			}
+		}
+	}
+	
 	private boolean destroyBlock(PC_Vec3I pos){
 		Block block = PC_Utils.getBlock(this.worldObj, pos);
 		if(this.worldObj instanceof WorldServer){
@@ -255,6 +352,11 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	public AxisAlignedBB getBoundingBox(){
         return this.boundingBox;
     }
+	
+	@Override
+	public boolean canBePushed() {
+		return true;
+	}
 	
 	@Override
 	public boolean attackEntityFrom(DamageSource damagesource, float i) {
