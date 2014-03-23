@@ -180,6 +180,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		
 		
 		pickupItems();
+		pushEntities();
 		
 		moveEntity(this.motionX, this.motionY, this.motionZ);
 		
@@ -857,6 +858,9 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		PC_Vec3I pos = getPosFor(x, y, z);
 		ItemStack is = this.inventoryContents[invPlace];
 		this.operationErrored = !tryToPlace(is, pos);
+		if(is.stackSize==0){
+			this.inventoryContents[invPlace] = null;
+		}
 	}
 	
 	
