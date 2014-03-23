@@ -81,7 +81,7 @@ public class PCws_WeaselSourceClass implements PC_WeaselSourceClass {
 
 	@Override
 	public List<Diagnostic<String>> getDiagnostics() {
-		return new PC_ImmutableList<Diagnostic<String>>(this.diagnostics);
+		return this.diagnostics==null?null:new PC_ImmutableList<Diagnostic<String>>(this.diagnostics);
 	}
 	
 }

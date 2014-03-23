@@ -244,7 +244,7 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 	
 	@Override
 	public List<Diagnostic<String>> getDiagnostics() {
-		return new PC_ImmutableList<Diagnostic<String>>(this.globalDiagnostics);
+		return this.globalDiagnostics==null?null:new PC_ImmutableList<Diagnostic<String>>(this.globalDiagnostics);
 	}
 	
 	@Override
