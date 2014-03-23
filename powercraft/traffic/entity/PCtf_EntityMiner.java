@@ -285,6 +285,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	private PC_Vec3I getPosFor(int offX, int offY, int offZ){
 		PC_Direction facing = PC_Direction.directionFacing(this.rotationYaw, 0, null);
 		double tmpX=0, tmpZ=0;
+		System.out.println("facing:"+facing);
 		if(facing.offsetX+facing.offsetZ>0){
 			if(offZ>0) offZ-=1;
 		}else{
@@ -294,6 +295,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		tmpZ+=facing.offsetZ*offZ;
 		
 		PC_Direction side = facing.rotateOnce(PC_Direction.UP);
+		System.out.println("side:"+side);
 		if(facing.offsetX+facing.offsetZ>0){
 			if(offX>0) offX-=1;
 		}else{
@@ -302,8 +304,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		tmpX+=side.offsetX*offX;
 		tmpZ+=side.offsetZ*offX;
 		
-		System.out.println(tmpX+":"+tmpZ);
-		return new PC_Vec3I((int)(this.posX+tmpX), (int)(this.posY+(offY>0?offY-1:offY)), (int)(this.posZ+tmpZ));
+		System.out.println("rotatedOffset:"+tmpX+":"+(offY<0?offY+1:offY)+":"+tmpZ);
+		return new PC_Vec3I((int)(Math.floor(this.posX+tmpX)), (int)(Math.floor(this.posY+(offY<0?offY+1:offY))), (int)(Math.floor(this.posZ+tmpZ)));
 	}
 	
 	private PC_Vec3I getPosFor(int i){
