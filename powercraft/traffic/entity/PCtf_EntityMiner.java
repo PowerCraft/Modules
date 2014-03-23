@@ -32,7 +32,6 @@ import powercraft.api.entity.PC_Entities;
 import powercraft.api.entity.PC_Entity;
 import powercraft.api.gres.PC_Gres;
 import powercraft.api.gres.PC_GresBaseWithInventory;
-import powercraft.api.gres.PC_GresComponent;
 import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.inventory.PC_IInventory;
@@ -498,7 +497,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	public PC_IGresGui openClientGui(EntityPlayer player, NBTTagCompound serverData) {
 		HashMap<String, String> sources = new HashMap<String, String>();
 		PC_NBTTagHandler.loadMapFromNBT(serverData, "sources", sources, String.class, String.class, Flag.SYNC);
-		return new PCtf_GuiMiner(player, this, sources);
+		NBTTagCompound diagnostics = serverData.getCompoundTag("diagnostics");
+		return new PCtf_GuiMiner(player, this, sources, diagnostics);
 	}
 
 	@Override
@@ -510,6 +510,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		PC_NBTTagHandler.saveMapToNBT(nbtTagCompound, "sources", this.minerController.getSources(), Flag.SYNC);
+		nbtTagCompound.setTag("diagnostics", this.minerController.getDiagnostics());
 		return nbtTagCompound;
 	}
 	

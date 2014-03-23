@@ -34,11 +34,14 @@ public class PCtf_GuiMiner extends PCtf_ContainerMiner implements PC_IGresGui, P
 	
 	private HashMap<String, String> sources;
 	
-	public PCtf_GuiMiner(EntityPlayer player, PCtf_EntityMiner miner, HashMap<String, String> sources) {
+	private NBTTagCompound diagnostics;
+	
+	public PCtf_GuiMiner(EntityPlayer player, PCtf_EntityMiner miner, HashMap<String, String> sources, NBTTagCompound diagnostics) {
 		super(player, miner);
 		this.sources = sources;
+		this.diagnostics = diagnostics;
 	}
-
+	
 	@Override
 	public void initGui(PC_GresGuiHandler gui) {
 		PC_GresWindow window = new PC_GresWindow("Miner");
@@ -59,6 +62,9 @@ public class PCtf_GuiMiner extends PCtf_ContainerMiner implements PC_IGresGui, P
 		tab.add("Equipment", gc);
 		tab.add("Programm", this.edit = new PC_WeaselGresEdit(this.sources));
 		this.edit.addEventListener(this);
+		this.edit.setErrors(this.diagnostics);
+		this.diagnostics = null;
+		this.sources = null;
 		window.add(tab);
 		gui.add(window);
 		gui.addEventListener(this);

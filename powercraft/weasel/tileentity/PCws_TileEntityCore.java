@@ -3,8 +3,6 @@ package powercraft.weasel.tileentity;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,13 +19,14 @@ import powercraft.api.grid.PC_IGridHolder;
 import powercraft.api.script.weasel.PC_IWeaselEvent;
 import powercraft.api.script.weasel.PC_IWeaselNativeHandler;
 import powercraft.api.script.weasel.PC_Weasel;
-import powercraft.api.script.weasel.PC_WeaselClassSave;
-import powercraft.api.script.weasel.PC_WeaselEngine;
+import powercraft.api.script.weasel.PC_WeaselContainer;
 import powercraft.api.script.weasel.PC_WeaselSourceClass;
 import powercraft.api.script.weasel.grid.PC_IWeaselGridTile;
 import powercraft.api.script.weasel.grid.PC_IWeaselGridTileAddressable;
 import powercraft.api.script.weasel.grid.PC_WeaselGrid;
 import powercraft.weasel.gui.PCws_GuiCore;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpenHandler, PC_IGridHolder, PC_IWeaselGridTileAddressable, PC_IWeaselNativeHandler {
@@ -35,8 +34,7 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	private PC_WeaselGrid grid;
 	
 	@PC_Field
-	private PC_WeaselClassSave classSave;
-	private PC_WeaselEngine engine;
+	private PC_WeaselContainer container;
 	
 	int address;
 	
@@ -48,21 +46,21 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	
 	public PCws_TileEntityCore(){
 		if(!isClient()){
-			this.classSave = PC_Weasel.createClassSave(true);
-			this.engine = PC_Weasel.createEngine(this.classSave, 1024, this);
+			this.container = PC_Weasel.createContainer("Core", 1024);
+			this.container.setHandler(this);
 		}
 	}
 	
 	@Override
 	public void onTick(){
 		if(!isClient())
-			this.engine.run(10, 100);
+			this.container.run(10, 100);
 	}
 
 	@Override
 	public void onLoadedFromNBT(Flag flag) {
 		if(flag==Flag.SAVE && !isClient())
-			this.engine = PC_Weasel.createEngine(this.classSave, 1024, this);
+			this.container.setHandler(this);
 	}
 
 	@Override
@@ -73,19 +71,18 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 				NBTTagCompound tagCompound = list.getCompoundTagAt(i);
 				String file = tagCompound.getString("FileName");
 				if(tagCompound.hasKey("source")){
-					PC_WeaselSourceClass sourceClass = this.classSave.getClass(file);
+					PC_WeaselSourceClass sourceClass = this.container.getClass(file);
 					if(sourceClass==null){
-						sourceClass = this.classSave.addClass(file);
+						sourceClass = this.container.addClass(file);
 					}
 					sourceClass.setSource(tagCompound.getString("source"));
 				}else{
-					this.classSave.removeClass(file);
+					this.container.removeClass(file);
 				}
 			}
-			this.classSave.compileMarked(null, null);
-			this.engine = PC_Weasel.createEngine(this.classSave, 1024, this);
+			this.container.compileMarked(null, null);
 			try {
-				this.engine.callMain("Main", "main()void");
+				this.container.callMain("Main", "main()void");
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			} catch (NoSuchMethodException e) {
@@ -130,7 +127,7 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		NBTTagList list = new NBTTagList();
-		HashMap<String, ? extends PC_WeaselSourceClass> hm = this.classSave.getSources();
+		HashMap<String, ? extends PC_WeaselSourceClass> hm = this.container.getSources();
 		for(Entry<String, ? extends PC_WeaselSourceClass> e:hm.entrySet()){
 			NBTTagCompound tagCompound = new NBTTagCompound();
 			tagCompound.setString("FileName", e.getKey());
@@ -221,7 +218,7 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 
 	@Override
 	public void onEvent(PC_IWeaselEvent event) {
-		this.engine.onEvent(event);
+		this.container.onEvent(event);
 	}
 
 	@SuppressWarnings("hiding")

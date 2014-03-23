@@ -26,6 +26,7 @@ public class PCws_WeaselSourceClass implements PC_WeaselSourceClass {
 		this.source = tagCompound.getString("source");
 		if(tagCompound.hasKey("data"))
 			this.data = tagCompound.getByteArray("data");
+		this.diagnostics = PCws_WeaselContainer.loadDiagnostics(tagCompound, "diagnostics");
 	}
 
 	@Override
@@ -67,6 +68,7 @@ public class PCws_WeaselSourceClass implements PC_WeaselSourceClass {
 		tagCompound.setString("source", this.source);
 		if(this.data!=null)
 			tagCompound.setByteArray("data", this.data);
+		PCws_WeaselContainer.saveDiagnostics(tagCompound, "diagnostics", this.diagnostics);
 	}
 
 	@Override

@@ -1,6 +1,9 @@
 package powercraft.weasel.engine;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +17,8 @@ import net.minecraft.nbt.NBTTagList;
 import powercraft.api.PC_ImmutableList;
 import powercraft.api.PC_Field.Flag;
 import powercraft.api.script.PC_FakeDiagnostic;
-import powercraft.api.script.weasel.PC_WeaselClassSave;
+import powercraft.api.script.weasel.PC_IWeaselEvent;
+import powercraft.api.script.weasel.PC_WeaselContainer;
 import powercraft.api.script.weasel.PC_WeaselSourceClass;
 import powercraft.weasel.PCws_Weasel;
 import xscript.compiler.XCompiler;
@@ -22,19 +26,37 @@ import xscript.compiler.XSourceProvider;
 import xscript.compiler.message.XMessageElement;
 import xscript.compiler.tree.XTreeMakeEasy;
 import xscript.runtime.XRuntimeException;
+import xscript.runtime.XVirtualMachine;
+import xscript.runtime.clazz.XClass;
 import xscript.runtime.clazz.XClassLoader;
 import xscript.runtime.clazz.XInputStream;
+import xscript.runtime.method.XMethod;
+import xscript.runtime.threads.XInterruptTerminatedListener;
+import xscript.runtime.threads.XThread;
+import xscript.runtime.threads.XThreadErroredListener;
 
 
-public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_WeaselClassSave {
+public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_WeaselContainer, XThreadErroredListener, XInterruptTerminatedListener {
 
+	private int memSize;
+	
 	private HashMap<String, PCws_WeaselSourceClass> sourceFiles = new HashMap<String, PCws_WeaselSourceClass>();
+	
 	private List<Diagnostic<String>> globalDiagnostics;
 	
-	public PCws_WeaselClassSave(boolean createDefault){
-		if(createDefault){
+	private XVirtualMachine virtualMachine;
+	
+	private PrintStream errorStream;
+	
+	private Object handler;
+	
+	private List<Class<?>> nativeClasses = new ArrayList<Class<?>>();
+	
+	public PCws_WeaselContainer(String deviceName, int memSize){
+		this.memSize = memSize;
+		if(deviceName!=null){
 			PCws_WeaselSourceClass sc = new PCws_WeaselSourceClass();
-			sc.setSource("/*\n * A Weasel powered Core\n */\n\npublic class Main{\n\t\n\t// This is the entry point."
+			sc.setSource("/*\n * A Weasel powered "+deviceName+"\n */\n\npublic class Main{\n\t\n\t// This is the entry point."
 					+ "\n\t// It needs the name \"main\" in the Main class\n\t// no params and returns void\n\t// and it has to be static\n\tpublic static "
 					+ "void main(){\n\t\t// TODO write your program here\n\t}\n\t\n}");
 			this.sourceFiles.put("Main", sc);
@@ -42,11 +64,49 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 	}
 	
 	@SuppressWarnings("unused")
-	public PCws_WeaselClassSave(NBTTagCompound tagCompound, Flag flag){
+	public PCws_WeaselContainer(NBTTagCompound tagCompound, Flag flag){
+		this.memSize = tagCompound.getInteger("memSize");
 		NBTTagList list = (NBTTagList)tagCompound.getTag("list");
 		for(int i=0; i<list.tagCount(); i++){
 			NBTTagCompound t = list.getCompoundTagAt(i);
 			this.sourceFiles.put(t.getString("FileName"), new PCws_WeaselSourceClass(t));
+		}
+		this.globalDiagnostics = loadDiagnostics(tagCompound, "diagnostics");
+		if(tagCompound.hasKey("engine")){
+			ByteArrayInputStream bais = new ByteArrayInputStream(tagCompound.getByteArray("engine"));
+			List<XClassLoader> classLoader = new ArrayList<XClassLoader>();
+			classLoader.add(PCws_Weasel.getRTClassLoader());
+			classLoader.add(PCws_Weasel.getWeaselRTClassLoader());
+			classLoader.add(this);
+			try {
+				this.virtualMachine = new XVirtualMachine(classLoader, bais, PCws_Timer.INSTANCE);
+				this.virtualMachine.getThreadProvider().registerThreadErroredListener(this);
+				this.virtualMachine.getThreadProvider().registerInterruptTerminatedListener(this);
+				PCws_WeaselNative.registerNatives(this.virtualMachine);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void setHandler(Object handler){
+		this.handler = handler;
+		if(this.virtualMachine!=null){
+			this.virtualMachine.setUserData(this.handler);
+		}
+	}
+	
+	private void setupVirtualMachine(){
+		this.virtualMachine = new XVirtualMachine(PCws_Weasel.getRTClassLoader(), this.memSize);
+		this.virtualMachine.getClassProvider().addClassLoader(PCws_Weasel.getWeaselRTClassLoader());
+		this.virtualMachine.getClassProvider().addClassLoader(this);
+		PCws_WeaselNative.registerNatives(this.virtualMachine);
+		this.virtualMachine.setTimer(PCws_Timer.INSTANCE);
+		this.virtualMachine.getThreadProvider().registerThreadErroredListener(this);
+		this.virtualMachine.getThreadProvider().registerInterruptTerminatedListener(this);
+		this.virtualMachine.setUserData(this.handler);
+		for(Class<?>c:this.nativeClasses){
+			this.virtualMachine.getNativeProvider().addNativeClass(c);
 		}
 	}
 	
@@ -161,6 +221,7 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 		}
 		if(this.globalDiagnostics.isEmpty())
 			this.globalDiagnostics = null;
+		setupVirtualMachine();
 		return errored;
 	}
 
@@ -227,6 +288,7 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 
 	@Override
 	public void saveToNBT(NBTTagCompound tag, Flag flag) {
+		tag.setInteger("memSize", this.memSize);
 		NBTTagList list = new NBTTagList();
 		for(Entry<String, PCws_WeaselSourceClass> e:this.sourceFiles.entrySet()){
 			NBTTagCompound t = new NBTTagCompound();
@@ -235,6 +297,16 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 			list.appendTag(t);
 		}
 		tag.setTag("list", list);
+		saveDiagnostics(tag, "diagnostics", this.globalDiagnostics);
+		if(this.virtualMachine!=null){
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			try {
+				this.virtualMachine.save(baos);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			tag.setByteArray("engine", baos.toByteArray());
+		}
 	}
 
 	@Override
@@ -255,7 +327,7 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 		}
 	}
 	
-	private static void saveDiagnostics(NBTTagCompound tagCompound, String name, List<Diagnostic<String>> diagnostics){
+	static void saveDiagnostics(NBTTagCompound tagCompound, String name, List<Diagnostic<String>> diagnostics){
 		if(diagnostics==null || diagnostics.isEmpty())
 			return;
 		NBTTagList list = new NBTTagList();
@@ -264,5 +336,83 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 		}
 		tagCompound.setTag(name, list);
 	}
+	
+	static List<Diagnostic<String>> loadDiagnostics(NBTTagCompound tagCompound, String name){
+		if(tagCompound.hasKey(name)){
+			List<Diagnostic<String>> diagnostics = new ArrayList<Diagnostic<String>>();
+			NBTTagList list = (NBTTagList)tagCompound.getTag(name);
+			for(int i=0; i<list.tagCount(); i++){
+				diagnostics.add(PC_FakeDiagnostic.fromCompound(list.getCompoundTagAt(i)));
+			}
+			return diagnostics;
+		}
+		return null;
+	}
+
+	@Override
+	public void run(int numInstructions, int numBlocks){
+		if(this.virtualMachine!=null)
+			this.virtualMachine.getThreadProvider().run(numInstructions, numBlocks);
+	}
+	
+	@Override
+	public void callMain(String className, String methodName, Object...params) throws NoSuchMethodException{
+		if(this.virtualMachine!=null)
+			this.virtualMachine.invokeFunction(className+"."+methodName, params);
+	}
+
+	@Override
+	public void onEvent(PC_IWeaselEvent event) {
+		XClass xClass = this.virtualMachine.getClassProvider().getXClass(event.getEntryClass());
+		XMethod xMethod = xClass.getMethod(event.getEntryMethod());
+		this.virtualMachine.getThreadProvider().interrupt(event.getEventName(), null, xMethod, null, event.getParams());
+	}
+
+	@Override
+	public void registerNativeClass(Class<?> c) {
+		if(this.virtualMachine!=null)
+			this.virtualMachine.getNativeProvider().addNativeClass(c);
+		if(!this.nativeClasses.contains(c)){
+			this.nativeClasses.add(c);
+		}
+	}
+
+	@Override
+	public void setErrorOutput(PrintStream errorStream) {
+		this.errorStream = errorStream;
+	}
+	
+	@SuppressWarnings("hiding")
+	@Override
+	public void onThreadErrored(XVirtualMachine virtualMachine, XThread thread) {
+		if(this.errorStream==null)
+			return;
+		byte[] userData = thread.getUserData();
+		if(userData!=null && userData.length>0){
+			if(userData[0]==1){
+				this.errorStream.println("Fatal Error");
+				return;
+			}
+		}
+		long pointer = thread.getException();
+		XClass xClass = this.virtualMachine.getClassProvider().getXClass("weasel.Intern");
+		XMethod xMethod = xClass.getMethod("t2s(xscript.lang.Throwable)xscript.lang.String");
+		XThread interrupt = virtualMachine.getThreadProvider().importantInterrupt("ThrowableToString", xMethod, null, new long[]{pointer});
+		interrupt.setUserData(new byte[]{1});
+	}
+
+	@SuppressWarnings("hiding")
+	@Override
+	public void onInterruptTerminated(XVirtualMachine virtualMachine, XThread thread) {
+		byte[] userData = thread.getUserData();
+		if(userData!=null && userData.length>0){
+			if(userData[0]==1){
+				String message = virtualMachine.getObjectProvider().getString(virtualMachine.getObjectProvider().getObject(thread.getResult()));
+				this.errorStream.println(message);
+			}
+		}
+	}
+	
+	
 	
 }

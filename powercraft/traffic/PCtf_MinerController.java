@@ -9,8 +9,7 @@ import powercraft.api.PC_Field.Flag;
 import powercraft.api.PC_INBT;
 import powercraft.api.PC_NBTTagHandler;
 import powercraft.api.script.weasel.PC_Weasel;
-import powercraft.api.script.weasel.PC_WeaselClassSave;
-import powercraft.api.script.weasel.PC_WeaselEngine;
+import powercraft.api.script.weasel.PC_WeaselContainer;
 import powercraft.api.script.weasel.PC_WeaselSourceClass;
 import powercraft.traffic.entity.PCtf_EntityMiner;
 import xscript.runtime.nativemethod.XNativeClass;
@@ -21,20 +20,21 @@ import xscript.runtime.nativemethod.XNativeClass.XParamSpecial.XParamTypes;
 public class PCtf_MinerController implements PC_INBT{
 	
 	private PCtf_EntityMiner miner;
-	private PC_WeaselClassSave classSave;
-	private PC_WeaselEngine engine;
+	private PC_WeaselContainer weasel;
 	
 	public PCtf_MinerController(PCtf_EntityMiner miner){
-		this.classSave = PC_Weasel.createClassSave(true);
-		this.engine = PC_Weasel.createEngine(this.classSave, 1024, null);
-		this.engine.registerNativeClass(MinerNativeInterface.class);
+		this.weasel = PC_Weasel.createContainer("Miner", 1024);
+		this.weasel.setErrorOutput(System.err);
+		this.weasel.setHandler(this);
+		this.weasel.registerNativeClass(MinerNativeInterface.class);
 		this.miner = miner;
 	}
 
 	public PCtf_MinerController(NBTTagCompound nbtTagCompound, Flag flag){
-		this.classSave = PC_NBTTagHandler.loadFromNBT(nbtTagCompound, "classSave", PC_WeaselClassSave.class, flag);
-		this.engine = PC_Weasel.createEngine(this.classSave, 1024, null);
-		this.engine.registerNativeClass(MinerNativeInterface.class);
+		this.weasel = PC_NBTTagHandler.loadFromNBT(nbtTagCompound, "container", PC_WeaselContainer.class, flag);
+		this.weasel.setErrorOutput(System.err);
+		this.weasel.setHandler(this);
+		this.weasel.registerNativeClass(MinerNativeInterface.class);
 	}
 	
 	public void setMiner(PCtf_EntityMiner miner){
@@ -45,36 +45,40 @@ public class PCtf_MinerController implements PC_INBT{
 	
 	@Override
 	public void saveToNBT(NBTTagCompound nbtTagCompound, Flag flag) {
-		PC_NBTTagHandler.saveToNBT(nbtTagCompound, "classSave", this.classSave, flag);
+		PC_NBTTagHandler.saveToNBT(nbtTagCompound, "container", this.weasel, flag);
 	}
 	
 	public void run(){
-		this.engine.run(10, 100);
+		this.weasel.run(10, 100);
+	}
+	
+	public NBTTagCompound getDiagnostics() {
+		NBTTagCompound tagCompound = new NBTTagCompound();
+		this.weasel.saveDiagnosticsToNBT(tagCompound);
+		return tagCompound;
 	}
 	
 	public void setClassesAndCompile(HashMap<String, String> source){
 		for(Entry<String, String>e:source.entrySet()){
 			if(e.getValue()==null){
-				this.classSave.removeClass(e.getKey());
+				this.weasel.removeClass(e.getKey());
 			}else{
-				PC_WeaselSourceClass sourceClass = this.classSave.getClass(e.getKey());
+				PC_WeaselSourceClass sourceClass = this.weasel.getClass(e.getKey());
 				if(sourceClass==null){
-					sourceClass = this.classSave.addClass(e.getKey());
+					sourceClass = this.weasel.addClass(e.getKey());
 				}
 				sourceClass.setSource(e.getValue());
 			}
 		}
-		boolean success = this.classSave.compileMarked(new String[]{"weasel.miner.Miner"}, new String[]{"weasel.miner"});
+		boolean success = this.weasel.compileMarked(new String[]{"weasel.miner.Miner"}, new String[]{"weasel.miner"});
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		NBTTagCompound diagnostics = new NBTTagCompound();
-		this.classSave.saveDiagnosticsToNBT(diagnostics);
+		this.weasel.saveDiagnosticsToNBT(diagnostics);
 		tagCompound.setTag("diagnostics", diagnostics);
 		tagCompound.setInteger("type", 1);
 		this.miner.sendMessage(tagCompound);
-		this.engine = PC_Weasel.createEngine(this.classSave, 1024, this);
-		this.engine.registerNativeClass(MinerNativeInterface.class);
 		try {
-			this.engine.callMain("Main", "main()void");
+			this.weasel.callMain("Main", "main()void");
 		} catch (RuntimeException e) {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
@@ -88,7 +92,7 @@ public class PCtf_MinerController implements PC_INBT{
 	
 	public Map<String, String> getSources() {
 		Map<String, String> map = new HashMap<String, String>();
-		for(Entry<String, ? extends PC_WeaselSourceClass> e:this.classSave.getSources().entrySet()){
+		for(Entry<String, ? extends PC_WeaselSourceClass> e:this.weasel.getSources().entrySet()){
 			map.put(e.getKey(), e.getValue().getSource());
 		}
 		return map;
@@ -173,4 +177,5 @@ public class PCtf_MinerController implements PC_INBT{
 			return false;
 		}
 	}
+	
 }
