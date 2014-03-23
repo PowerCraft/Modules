@@ -5,16 +5,18 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.tools.Diagnostic;
+
 import net.minecraft.nbt.NBTTagCompound;
+import powercraft.api.PC_ImmutableList;
 import powercraft.api.script.weasel.PC_WeaselSourceClass;
-import xscript.compiler.message.XMessageElement;
 
 public class PCws_WeaselSourceClass implements PC_WeaselSourceClass {
 
 	private String source = "";
 	private byte[] data;
 	private boolean dirty;
-	private List<XMessageElement> messageElements;
+	private List<Diagnostic<String>> diagnostics;
 	
 	public PCws_WeaselSourceClass(){
 		
@@ -42,7 +44,7 @@ public class PCws_WeaselSourceClass implements PC_WeaselSourceClass {
 	}
 
 	public boolean needRecompile(){
-		return this.dirty;
+		return this.dirty || this.diagnostics!=null;
 	}
 
 	@SuppressWarnings("static-method")
@@ -50,15 +52,15 @@ public class PCws_WeaselSourceClass implements PC_WeaselSourceClass {
 		return "xscript";
 	}
 
-	public void addMessageElement(XMessageElement messageElement) {
-		if(this.messageElements==null){
-			this.messageElements = new ArrayList<XMessageElement>();
+	public void addDiagnostic(Diagnostic<String> diagnostic) {
+		if(this.diagnostics==null){
+			this.diagnostics = new ArrayList<Diagnostic<String>>();
 		}
-		this.messageElements.add(messageElement);
+		this.diagnostics.add(diagnostic);
 	}
 
-	public void clearMessages() {
-		this.messageElements = null;
+	public void clearDiagnostics() {
+		this.diagnostics = null;
 	}
 	
 	public void saveToNBT(NBTTagCompound tagCompound) {
@@ -75,6 +77,11 @@ public class PCws_WeaselSourceClass implements PC_WeaselSourceClass {
 
 	public boolean canUseByteCode() {
 		return !this.dirty && this.data!=null;
+	}
+
+	@Override
+	public List<Diagnostic<String>> getDiagnostics() {
+		return new PC_ImmutableList<Diagnostic<String>>(this.diagnostics);
 	}
 	
 }

@@ -40,9 +40,9 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 	private PC_GresMultilineHighlightingTextEdit textEdit;
 	private PC_GresButton save;
 	private PC_GresButton cancel;
-	private List<Diagnostic<? extends Void>> diagnostics;
+	private List<Diagnostic<?>> diagnostics;
 	
-	public PCtr_GuiBeltScriptable(PCtr_TileEntityBeltScriptable te, String source, List<Diagnostic<? extends Void>> diagnostics) {
+	public PCtr_GuiBeltScriptable(PCtr_TileEntityBeltScriptable te, String source, List<Diagnostic<?>> diagnostics) {
 		this.te = te;
 		this.source = source;
 		this.diagnostics = diagnostics;
@@ -106,7 +106,7 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 		}
 	}
 
-	public void setErrors(List<Diagnostic<? extends Void>> diagnostics) {
+	public void setErrors(List<Diagnostic<?>> diagnostics) {
 		this.diagnostics = diagnostics;
 		this.textEdit.setErrors(diagnostics);
 	}

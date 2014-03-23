@@ -82,7 +82,7 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 					this.classSave.removeClass(file);
 				}
 			}
-			this.classSave.compileMarked();
+			this.classSave.compileMarked(null, null);
 			this.engine = PC_Weasel.createEngine(this.classSave, 1024, this);
 			try {
 				this.engine.callMain("Main", "main()void");

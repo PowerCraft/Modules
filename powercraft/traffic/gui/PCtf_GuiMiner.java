@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 import org.lwjgl.input.Keyboard;
 
@@ -74,8 +75,15 @@ public class PCtf_GuiMiner extends PCtf_ContainerMiner implements PC_IGresGui, P
 		}else if(event instanceof SaveEvent){
 			SaveEvent se = (SaveEvent)event;
 			if(se.getComponent()==this.edit){
+				this.edit.clearErrors();
 				this.miner.saveAndCompile(se.getSources());
 			}
+		}
+	}
+
+	public void setErrors(PCtf_EntityMiner miner, NBTTagCompound compoundTag) {
+		if(miner==this.miner){
+			this.edit.setErrors(compoundTag);
 		}
 	}
 	

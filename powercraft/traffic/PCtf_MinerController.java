@@ -64,7 +64,13 @@ public class PCtf_MinerController implements PC_INBT{
 				sourceClass.setSource(e.getValue());
 			}
 		}
-		this.classSave.compileMarked();
+		boolean success = this.classSave.compileMarked(new String[]{"weasel.miner.Miner"}, new String[]{"weasel.miner"});
+		NBTTagCompound tagCompound = new NBTTagCompound();
+		NBTTagCompound diagnostics = new NBTTagCompound();
+		this.classSave.saveDiagnosticsToNBT(diagnostics);
+		tagCompound.setTag("diagnostics", diagnostics);
+		tagCompound.setInteger("type", 1);
+		this.miner.sendMessage(tagCompound);
 		this.engine = PC_Weasel.createEngine(this.classSave, 1024, this);
 		this.engine.registerNativeClass(MinerNativeInterface.class);
 		try {

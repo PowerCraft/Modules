@@ -6,9 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javax.tools.Diagnostic;
+import javax.tools.Diagnostic.Kind;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import powercraft.api.PC_ImmutableList;
 import powercraft.api.PC_Field.Flag;
+import powercraft.api.script.PC_FakeDiagnostic;
 import powercraft.api.script.weasel.PC_WeaselClassSave;
 import powercraft.api.script.weasel.PC_WeaselSourceClass;
 import powercraft.weasel.PCws_Weasel;
@@ -24,7 +29,7 @@ import xscript.runtime.clazz.XInputStream;
 public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_WeaselClassSave {
 
 	private HashMap<String, PCws_WeaselSourceClass> sourceFiles = new HashMap<String, PCws_WeaselSourceClass>();
-	private List<XMessageElement> globalMessageElements;
+	private List<Diagnostic<String>> globalDiagnostics;
 	
 	public PCws_WeaselClassSave(boolean createDefault){
 		if(createDefault){
@@ -120,33 +125,93 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 	}
 	
 	@Override
-	public void compileMarked(){
+	public boolean compileMarked(String[] staticIndirectImports, String[] indirectImports){
 		for(PCws_WeaselSourceClass sourceFile:this.sourceFiles.values()){
 			if(sourceFile.needRecompile()){
-				sourceFile.clearMessages();
+				sourceFile.clearDiagnostics();
 			}
 		}
 		XCompiler compiler = new XCompiler(PCws_Weasel.getRTClassLoader());
 		compiler.addPredefStaticIndirectImports("weasel.Predef");
+		if(staticIndirectImports!=null){
+			for(String s:staticIndirectImports){
+				compiler.addPredefStaticIndirectImports(s);
+			}
+		}
+		if(indirectImports!=null){
+			for(String s:indirectImports){
+				compiler.addPredefIndirectImport(s);
+			}
+		}
 		compiler.getClassProvider().addClassLoader(PCws_Weasel.getWeaselRTClassLoader());
 		compiler.getClassProvider().addClassLoader(this);
 		compiler.registerSourceProvider(this);
 		compiler.addTreeChanger(new XTreeMakeEasy());
-		compiler.compile();
+		boolean errored = compiler.compile();
 		List<XMessageElement> messageElements = compiler.getMessageList();
-		this.globalMessageElements = new ArrayList<XMessageElement>();
+		this.globalDiagnostics = new ArrayList<Diagnostic<String>>();
 		for(XMessageElement messageElement:messageElements){
 			PCws_WeaselSourceClass wsc = getClassEx(messageElement.className);
+			Diagnostic<String> diagnostic = toDiagnostic(messageElement, wsc);
 			if(wsc==null){
-				this.globalMessageElements.add(messageElement);
+				this.globalDiagnostics.add(diagnostic);
 			}else{
-				wsc.addMessageElement(messageElement);
+				wsc.addDiagnostic(diagnostic);
 			}
 		}
-		if(this.globalMessageElements.isEmpty())
-			this.globalMessageElements = null;
+		if(this.globalDiagnostics.isEmpty())
+			this.globalDiagnostics = null;
+		return errored;
 	}
 
+	private static Diagnostic<String> toDiagnostic(XMessageElement me, PCws_WeaselSourceClass wsc){
+		long line = me.lineDesk.startLine;
+		String message = me.key;
+		String args[];
+		if(me.args==null || me.args.length==0){
+			args = null;
+		}else{
+			args = new String[me.args.length];
+			for(int i=0; i<args.length; i++){
+				args[i] = me.args[i]==null?"null":me.args[i].toString();
+			}
+		}
+		long columnNumber = me.lineDesk.startLinePos;
+		long endPos = getPos(me.lineDesk.endLine, me.lineDesk.endLinePos, wsc);
+		long pos = getPos(me.lineDesk.startLine, me.lineDesk.startLinePos, wsc);
+		String source = me.className;
+		long startPos = pos;
+		Kind kind = null;
+		switch(me.level){
+		case ERROR:
+			kind = Kind.ERROR;
+			break;
+		case INFO:
+			kind = Kind.NOTE;
+			break;
+		case WARNING:
+			kind = Kind.WARNING;
+			break;
+		default:
+			break;
+		}
+		return new PC_FakeDiagnostic(line, message, args, columnNumber, endPos, pos, source, startPos, kind, PC_FakeDiagnostic.DEFAULT_TRANSLATER);
+	}
+	
+	private static long getPos(int line, int c, PCws_WeaselSourceClass wsc){
+		String source = wsc.getSource();
+		int p = -1;
+		int l = line;
+		while(l>1){
+			p = source.indexOf('\n', p+1);
+			if(p==-1)
+				return Diagnostic.NOPOS;
+			l--;
+		}
+		return p+c;
+		
+	}
+	
 	public PCws_WeaselSourceClass getClassEx(String name){
 		PCws_WeaselSourceClass wcs = this.sourceFiles.get(name);
 		if(wcs!=null)
@@ -175,6 +240,29 @@ public class PCws_WeaselClassSave implements XSourceProvider, XClassLoader, PC_W
 	@Override
 	public HashMap<String, ? extends PC_WeaselSourceClass> getSources() {
 		return this.sourceFiles;
+	}
+	
+	@Override
+	public List<Diagnostic<String>> getDiagnostics() {
+		return new PC_ImmutableList<Diagnostic<String>>(this.globalDiagnostics);
+	}
+	
+	@Override
+	public void saveDiagnosticsToNBT(NBTTagCompound tagCompound){
+		saveDiagnostics(tagCompound, "#default", this.globalDiagnostics);
+		for(Entry<String, PCws_WeaselSourceClass> e:this.sourceFiles.entrySet()){
+			saveDiagnostics(tagCompound, e.getKey(), e.getValue().getDiagnostics());
+		}
+	}
+	
+	private static void saveDiagnostics(NBTTagCompound tagCompound, String name, List<Diagnostic<String>> diagnostics){
+		if(diagnostics==null || diagnostics.isEmpty())
+			return;
+		NBTTagList list = new NBTTagList();
+		for(Diagnostic<String> diagnostic:diagnostics){
+			list.appendTag(PC_FakeDiagnostic.toCompound(diagnostic));
+		}
+		tagCompound.setTag(name, list);
 	}
 	
 }

@@ -302,9 +302,9 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 	@Override
 	@SideOnly(Side.CLIENT)
 	public PC_IGresGui openClientGui(EntityPlayer player, NBTTagCompound nbtTagCompound) {
-		List<Diagnostic<? extends Void>> diagnostics;
+		List<Diagnostic<?>> diagnostics;
 		if(nbtTagCompound.hasKey("diagnostics")){
-			diagnostics = new ArrayList<Diagnostic<? extends Void>>();
+			diagnostics = new ArrayList<Diagnostic<?>>();
 			NBTTagList list = (NBTTagList)nbtTagCompound.getTag("diagnostics");
 			for(int i=0; i<list.tagCount(); i++){
 				NBTTagCompound compound =list.getCompoundTagAt(i);
@@ -362,7 +362,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 	private static void handleDiagnostic(NBTTagList list){
 		PCtr_GuiBeltScriptable gui = PC_Gres.getCurrentClientGui(PCtr_GuiBeltScriptable.class);
 		if(gui!=null){
-			List<Diagnostic<? extends Void>> diagnostics = new ArrayList<Diagnostic<? extends Void>>();
+			List<Diagnostic<?>> diagnostics = new ArrayList<Diagnostic<?>>();
 			for(int i=0; i<list.tagCount(); i++){
 				NBTTagCompound compound =list.getCompoundTagAt(i);
 				diagnostics.add(PC_FakeDiagnostic.fromCompound(compound));

@@ -30,7 +30,9 @@ import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3I;
 import powercraft.api.entity.PC_Entities;
 import powercraft.api.entity.PC_Entity;
+import powercraft.api.gres.PC_Gres;
 import powercraft.api.gres.PC_GresBaseWithInventory;
+import powercraft.api.gres.PC_GresComponent;
 import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.inventory.PC_IInventory;
@@ -526,8 +528,24 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			PC_NBTTagHandler.loadMapFromNBT(nbtTagCompound, "sources", sources, String.class, String.class, Flag.SYNC);
 			this.minerController.setClassesAndCompile(sources);
 			break;
+		case 1:
 		default:
 			break;
+		}
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void onClientMessage(EntityPlayer player, NBTTagCompound nbtTagCompound) {
+		switch(nbtTagCompound.getInteger("type")){
+		case 1:
+			PCtf_GuiMiner gui = PC_Gres.getCurrentClientGui(PCtf_GuiMiner.class);
+			if(gui!=null){
+				gui.setErrors(this, nbtTagCompound.getCompoundTag("diagnostics"));
+			}
+			break;
+		default:
+			super.onClientMessage(player, nbtTagCompound);
 		}
 	}
 
