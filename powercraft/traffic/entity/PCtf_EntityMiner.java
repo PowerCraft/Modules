@@ -61,7 +61,14 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	@PC_Field
 	protected boolean miningEnabled=false;
 	@PC_Field
-	protected int[] minings = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+	protected int[] minings = {
+			-1 , -1,
+			-1 , -1,
+			-1 , -1,
+			-1 , -1,
+			-1 , -1,
+			-1 , -1
+	};
 	@PC_Field
 	protected int moveAfterMining;
 	@PC_Field
@@ -188,7 +195,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		for(int i=0; i<this.minings.length; i++){
 			if(this.minings[i]>=0){
 				if(this.minings[i]==0){
-					PC_Vec3I pos = getPosFor(i);
+					PC_Vec3I pos = getPosFor(miningIndexToOffset(i));
 					if(!destroyBlock(pos)){
 						this.operationErrored = true;
 					}
@@ -284,9 +291,10 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		return true;
 	}
 	
-	private PC_Vec3I getPosFor(int offX, int offY, int offZ){
+	private PC_Vec3I getPosFor(PC_Vec3I offset){
+		int offX = offset.x, offY = offset.y, offZ=offset.z;
 		PC_Direction facing = PC_Direction.directionFacing(this.rotationYaw, 0, null);
-		double tmpX=0, tmpZ=0;
+		int tmpX=0, tmpZ=0;
 		System.out.println("facing:"+facing);
 		if(facing.offsetX+facing.offsetZ>0){
 			if(offZ>0) offZ-=1;
@@ -308,35 +316,6 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		
 		System.out.println("rotatedOffset:"+tmpX+":"+(offY<0?offY+1:offY)+":"+tmpZ);
 		return new PC_Vec3I((int)(Math.floor(this.posX+tmpX)), (int)(Math.floor(this.posY+(offY<0?offY+1:offY))), (int)(Math.floor(this.posZ+tmpZ)));
-	}
-	
-	private PC_Vec3I getPosFor(int i){
-		int pos = i/2;
-		int side = i%2;
-		PC_Vec3I p = new PC_Vec3I((int)Math.round(this.posX), (int)Math.round(this.posY), (int)Math.round(this.posZ));
-		p.y += pos>3?2:pos-1;
-		pos = pos>3?pos-3:0;
-		switch(getTargetRot()){
-		case 0:
-			p.x += side-1;
-			p.z -= 2-pos;
-			break;
-		case 1:
-			p.x += 1-pos;
-			p.z += side-1;
-			break;
-		case 2:
-			p.x -= side;
-			p.z += 1-pos;
-			break;
-		case 3:
-			p.x -= 2-pos;
-			p.z -= side;
-			break;
-		default:
-			break;
-		}
-		return p;
 	}
 	
 	@Override
@@ -849,32 +828,61 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		return true;
 	}
 	
+	public void digPos(PC_Vec3I offset){
+		PC_Vec3I realPos = getPosFor(offset);
+		this.minings[offsetToMiningIndex(offset)] = getTimeForBlockHarvest(realPos);
+	}
+	
 	public void digForward(){
 		this.operationErrored = false;
-		for(int i=2; i<6; i++){
-			PC_Vec3I pos = getPosFor(i);
-			this.minings[i] = getTimeForBlockHarvest(pos);
+		PC_Vec3I pos= new PC_Vec3I(1, 1, 2);
+		
+		for(int i=0; i<4; i++){
+			digPos(pos);
+			pos=pos.rotate(PC_Direction.SOUTH, 1);
 		}
 	}
 	
 	public void digUpward() {
 		this.operationErrored = false;
-		for(int i=2; i<10; i++){
-			PC_Vec3I pos = getPosFor(i);
-			this.minings[i] = getTimeForBlockHarvest(pos);
-		}
+		digForward();
+		PC_Vec3I offset = new PC_Vec3I(1, 2, 2);
+		digPos(offset);
+		offset.mirror(PC_Direction.EAST);
+		digPos(offset);
+		offset.z--;
+		digPos(offset);
+		offset.mirror(PC_Direction.EAST);
+		digPos(offset);
 	}
 
 	public void digDownward() {
 		this.operationErrored = false;
-		for(int i=0; i<6; i++){
-			PC_Vec3I pos = getPosFor(i);
-			this.minings[i] = getTimeForBlockHarvest(pos);
-		}
+		digForward();
+		PC_Vec3I offset = new PC_Vec3I(1, -2, 2);
+		digPos(offset);
+		offset.mirror(PC_Direction.EAST);
+		digPos(offset);
+	}
+	
+	public int offsetToMiningIndex(PC_Vec3I offset){
+		int x=offset.x, y=offset.y, z=offset.z;
+		if(x<-1 || x>1 || y>2 || y<-2 || z>2 || z<1 || (Math.abs(x)==z)) return -1;
+		if(x==-1) x=0;
+		if(z==1) return (y>0?0*2:5*2)+x;
+		if(y<0) y+=1;
+		return 6-(y*2)+x;
+	}
+	
+	public PC_Vec3I miningIndexToOffset(int i){
+		int tmpY=0;
+		tmpY=(i>=4 && i<=7)?1:2;
+		if(i>=6) tmpY*=-1;
+		return new PC_Vec3I((i%2==0)?-1:1, tmpY, (i<2 || i>9)?1:2);
 	}
 	
 	public void placeBlock(int invPlace, int x, int y, int z) {
-		PC_Vec3I pos = getPosFor(x, y, z);
+		PC_Vec3I pos = getPosFor(new PC_Vec3I(x, y, z));
 		ItemStack is = this.inventoryContents[invPlace];
 		this.operationErrored = !tryToPlace(is, pos);
 		if(is.stackSize==0){
