@@ -306,7 +306,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		
 		PC_Direction side = facing.rotateOnce(PC_Direction.UP);
 		System.out.println("side:"+side);
-		if(facing.offsetX+facing.offsetZ>0){
+		if(side.offsetX+side.offsetZ>0){
 			if(offX>0) offX-=1;
 		}else{
 			if(offX<0) offX+=1;
@@ -705,7 +705,9 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
     public void setAngles(float par1, float par2){
     	super.setAngles(par1, par2);
     	yawToRange();
-    }public boolean tryToPlace(ItemStack is, PC_Vec3I pos) {
+    }
+    
+    public boolean tryToPlace(ItemStack is, PC_Vec3I pos) {
 		Block block = PC_Utils.getBlock(this.worldObj, pos);
 		if((block==null || block.isReplaceable(this.worldObj, pos.x, pos.y, pos.z)) && is!=null && is.stackSize>0 && this.worldObj instanceof WorldServer){
 			return is.tryPlaceItemIntoWorld(FakePlayerFactory.getMinecraft((WorldServer)this.worldObj), this.worldObj, pos.x, pos.y, pos.z, 1, 0.5f, 1f, 0.5f);
@@ -890,6 +892,15 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		}
 	}
 	
+	
+	public enum InventoryPart{
+		Inventory(0, 3*9);
+		
+		public int start, end;
+		InventoryPart(int start, int end){
+			
+		}
+	}
 	
 	
 }
