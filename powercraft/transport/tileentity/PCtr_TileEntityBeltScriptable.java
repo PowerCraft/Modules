@@ -308,7 +308,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 			NBTTagList list = (NBTTagList)nbtTagCompound.getTag("diagnostics");
 			for(int i=0; i<list.tagCount(); i++){
 				NBTTagCompound compound =list.getCompoundTagAt(i);
-				diagnostics.add(PC_FakeDiagnostic.fromCompound(compound));
+				diagnostics.add(PC_FakeDiagnostic.fromCompound(compound, PC_Miniscript.DIAGNOSTIC_TRANSLATER));
 			}
 		}else{
 			diagnostics = null;
@@ -365,7 +365,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 			List<Diagnostic<?>> diagnostics = new ArrayList<Diagnostic<?>>();
 			for(int i=0; i<list.tagCount(); i++){
 				NBTTagCompound compound =list.getCompoundTagAt(i);
-				diagnostics.add(PC_FakeDiagnostic.fromCompound(compound));
+				diagnostics.add(PC_FakeDiagnostic.fromCompound(compound, PC_Miniscript.DIAGNOSTIC_TRANSLATER));
 			}
 			gui.setErrors(diagnostics);
 		}

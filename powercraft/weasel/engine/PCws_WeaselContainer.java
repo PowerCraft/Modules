@@ -14,10 +14,11 @@ import javax.tools.Diagnostic.Kind;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import powercraft.api.PC_ImmutableList;
 import powercraft.api.PC_Field.Flag;
+import powercraft.api.PC_ImmutableList;
 import powercraft.api.script.PC_FakeDiagnostic;
 import powercraft.api.script.weasel.PC_IWeaselEvent;
+import powercraft.api.script.weasel.PC_Weasel;
 import powercraft.api.script.weasel.PC_WeaselContainer;
 import powercraft.api.script.weasel.PC_WeaselSourceClass;
 import powercraft.weasel.PCws_Weasel;
@@ -37,7 +38,7 @@ import xscript.runtime.threads.XThreadErroredListener;
 
 
 public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_WeaselContainer, XThreadErroredListener, XInterruptTerminatedListener {
-
+	
 	private int memSize;
 	
 	private HashMap<String, PCws_WeaselSourceClass> sourceFiles = new HashMap<String, PCws_WeaselSourceClass>();
@@ -89,6 +90,7 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 		}
 	}
 	
+	@Override
 	public void setHandler(Object handler){
 		this.handler = handler;
 		if(this.virtualMachine!=null){
@@ -342,7 +344,7 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 			List<Diagnostic<String>> diagnostics = new ArrayList<Diagnostic<String>>();
 			NBTTagList list = (NBTTagList)tagCompound.getTag(name);
 			for(int i=0; i<list.tagCount(); i++){
-				diagnostics.add(PC_FakeDiagnostic.fromCompound(list.getCompoundTagAt(i)));
+				diagnostics.add(PC_FakeDiagnostic.fromCompound(list.getCompoundTagAt(i), PC_Weasel.DIAGNOSTIC_TRANSLATER));
 			}
 			return diagnostics;
 		}
