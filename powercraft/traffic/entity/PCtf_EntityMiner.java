@@ -35,6 +35,8 @@ import powercraft.api.gres.PC_GresBaseWithInventory;
 import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.inventory.PC_IInventory;
+import powercraft.api.inventory.PC_InventoryMask;
+import powercraft.api.inventory.PC_InventoryMaskRedirecting;
 import powercraft.api.inventory.PC_InventoryUtils;
 import powercraft.api.recipes.PC_3DRecipe.StructStart;
 import powercraft.api.recipes.PC_I3DRecipeHandler;
@@ -73,6 +75,9 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	protected int moveAfterMining;
 	@PC_Field
 	protected boolean operationErrored;
+	
+	public final PC_InventoryMask INVENTORY = new PC_InventoryMaskRedirecting(null, this, 0, 9*3-1, "inventory", null);
+	public final PC_InventoryMask SAWBLADE = new PC_InventoryMaskRedirecting(null, this, 9*3, 9*3, "sawblade", null);
 	
 	public PCtf_EntityMiner(World world) {
 		super(world);
@@ -235,7 +240,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 					continue;
 				}
 
-				ItemStack itemStack = entity.getEntityItem().copy();
+				ItemStack itemStack = entity.getEntityItem();
 				
 				if(PC_InventoryUtils.storeItemStackToInventoryFrom(this, itemStack))
 					entity.setDead();
@@ -894,7 +899,9 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	
 	
 	public enum InventoryPart{
-		Inventory(0, 3*9);
+		Inventory(0, 3*9),
+		Sawblade(3*9, 3*9+1),
+		Engine(3*9+1, 3*9+2);
 		
 		public int start, end;
 		InventoryPart(int start, int end){
