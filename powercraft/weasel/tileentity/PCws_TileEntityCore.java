@@ -203,8 +203,8 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 				}
 	
 				@Override
-				public long[] getParams() {
-					return new long[]{PCws_TileEntityCore.this.address, side, value};
+				public Object[] getParams() {
+					return new Object[]{Long.valueOf(PCws_TileEntityCore.this.address), Long.valueOf(side), Long.valueOf(value)};
 				}
 				
 			});

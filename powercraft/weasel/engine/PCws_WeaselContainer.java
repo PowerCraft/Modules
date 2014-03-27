@@ -31,7 +31,9 @@ import xscript.runtime.XVirtualMachine;
 import xscript.runtime.clazz.XClass;
 import xscript.runtime.clazz.XClassLoader;
 import xscript.runtime.clazz.XInputStream;
+import xscript.runtime.clazz.XWrapper;
 import xscript.runtime.method.XMethod;
+import xscript.runtime.object.XObject;
 import xscript.runtime.threads.XInterruptTerminatedListener;
 import xscript.runtime.threads.XThread;
 import xscript.runtime.threads.XThreadErroredListener;
@@ -367,7 +369,22 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 	public void onEvent(PC_IWeaselEvent event) {
 		XClass xClass = this.virtualMachine.getClassProvider().getXClass(event.getEntryClass());
 		XMethod xMethod = xClass.getMethod(event.getEntryMethod());
-		this.virtualMachine.getThreadProvider().interrupt(event.getEventName(), null, xMethod, null, event.getParams());
+		Object[] params = event.getParams();
+		long[] l = new long[params.length];
+		for(int i=0; i<params.length; i++){
+			if(params[i] instanceof Float){
+				l[i] = Float.floatToIntBits((Float)params[i]);
+			}else if(params[i] instanceof Double){
+				l[i] = Double.doubleToLongBits((Double)params[i]);
+			}else if(params[i] instanceof Number){
+				l[i] = ((Number)params[i]).longValue();
+			}else if(params[i] instanceof String){
+				l[i] = virtualMachine.getObjectProvider().createString(null, null, (String)params[i]);
+			}else{
+				l[i] = virtualMachine.getObjectProvider().getPointer((XObject)params[i]);
+			}
+		}
+		this.virtualMachine.getThreadProvider().interrupt(event.getEventName(), null, xMethod, null, l);
 	}
 
 	@Override

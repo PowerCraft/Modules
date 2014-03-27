@@ -4,37 +4,52 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import powercraft.api.PC_Field.Flag;
 import powercraft.api.PC_INBT;
+import powercraft.api.PC_Logger;
 import powercraft.api.PC_NBTTagHandler;
+import powercraft.api.inventory.PC_WeaselNativeInventoryInterface;
+import powercraft.api.script.weasel.PC_IWeaselEvent;
+import powercraft.api.script.weasel.PC_IWeaselInventory;
 import powercraft.api.script.weasel.PC_Weasel;
 import powercraft.api.script.weasel.PC_WeaselContainer;
 import powercraft.api.script.weasel.PC_WeaselSourceClass;
+import powercraft.api.script.weasel.grid.PC_IWeaselGridTileAddressable;
+import powercraft.api.script.weasel.grid.PC_WeaselGrid;
 import powercraft.traffic.entity.PCtf_EntityMiner;
 import xscript.runtime.nativemethod.XNativeClass;
 import xscript.runtime.nativemethod.XNativeClass.XNativeMethod;
 import xscript.runtime.nativemethod.XNativeClass.XParamSpecial;
 import xscript.runtime.nativemethod.XNativeClass.XParamSpecial.XParamTypes;
 
-public class PCtf_MinerController implements PC_INBT{
+public class PCtf_MinerController implements PC_INBT, PC_IWeaselInventory, PC_IWeaselGridTileAddressable{
 	
 	private PCtf_EntityMiner miner;
 	private PC_WeaselContainer weasel;
+	private boolean isOccupied;
+	private int address;
+	private PC_WeaselGrid grid;
 	
 	public PCtf_MinerController(PCtf_EntityMiner miner){
 		this.weasel = PC_Weasel.createContainer("Miner", 1024);
-		this.weasel.setErrorOutput(System.err);
-		this.weasel.setHandler(this);
-		this.weasel.registerNativeClass(MinerNativeInterface.class);
+		registerNativeClasses();
 		this.miner = miner;
 	}
 
 	public PCtf_MinerController(NBTTagCompound nbtTagCompound, Flag flag){
 		this.weasel = PC_NBTTagHandler.loadFromNBT(nbtTagCompound, "container", PC_WeaselContainer.class, flag);
+		isOccupied = nbtTagCompound.getBoolean("isOccupied");
+		address = nbtTagCompound.getInteger("address");
+		registerNativeClasses();
+	}
+	
+	private void registerNativeClasses(){
 		this.weasel.setErrorOutput(System.err);
 		this.weasel.setHandler(this);
 		this.weasel.registerNativeClass(MinerNativeInterface.class);
+		this.weasel.registerNativeClass(PC_WeaselNativeInventoryInterface.class);
 	}
 	
 	public void setMiner(PCtf_EntityMiner miner){
@@ -46,6 +61,8 @@ public class PCtf_MinerController implements PC_INBT{
 	@Override
 	public void saveToNBT(NBTTagCompound nbtTagCompound, Flag flag) {
 		PC_NBTTagHandler.saveToNBT(nbtTagCompound, "container", this.weasel, flag);
+		nbtTagCompound.setBoolean("isOccupied", isOccupied);
+		nbtTagCompound.setInteger("address", address);
 	}
 	
 	public void run(){
@@ -97,6 +114,61 @@ public class PCtf_MinerController implements PC_INBT{
 		}
 		return map;
 	}
+	
+	public void makeInterrupt(PC_IWeaselEvent event){
+		String tmp;
+		if(event==null || (tmp=event.getEntryClass())==null || tmp.isEmpty() || (tmp=event.getEntryMethod())==null || tmp.isEmpty()){
+			PC_Logger.severe("tried to interrupt the Miner using an invalid event-object!");
+			return;
+		}
+		weasel.onEvent(event);
+	}
+
+	@Override
+	public IInventory[] getInventories(int address) {
+		return this.getMiner(address).inventoryArray;
+	}
+
+	@Override
+	public void setGrid(PC_WeaselGrid grid) {
+		this.grid = grid;
+	}
+
+	@Override
+	public PC_WeaselGrid getGrid() {
+		return grid;
+	}
+
+	@Override
+	public int getAddress() {
+		return address;
+	}
+
+	@Override
+	public void setAddressOccupied(boolean b) {
+		isOccupied = b;
+	}
+
+	@Override
+	public void onEvent(PC_IWeaselEvent event) {
+		weasel.onEvent(event);
+	}
+
+	@Override
+	public int getType() {
+		return 0;
+	}
+
+	@Override
+	public int getRedstoneValue(int side) {
+		return 0;
+	}
+
+	@Override
+	public void setRedstoneValue(int side, int value) {
+	}
+	
+
 	
 	//Weasel Available Methods
 	@XNativeClass("weasel.miner.Miner")

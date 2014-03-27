@@ -13,6 +13,7 @@ import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -43,6 +44,8 @@ import powercraft.api.recipes.PC_I3DRecipeHandler;
 import powercraft.api.recipes.PC_Recipes;
 import powercraft.api.renderer.PC_EntityRenderer;
 import powercraft.api.renderer.model.PC_Model;
+import powercraft.api.script.weasel.PC_IWeaselInventory;
+import powercraft.api.script.weasel.events.PC_WeaselEventInventorySlotEmpty;
 import powercraft.traffic.PCtf_MinerController;
 import powercraft.traffic.container.PCtf_ContainerMiner;
 import powercraft.traffic.gui.PCtf_GuiMiner;
@@ -76,8 +79,10 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	@PC_Field
 	protected boolean operationErrored;
 	
-	public final PC_InventoryMask INVENTORY = new PC_InventoryMaskRedirecting(null, this, 0, 9*3-1, "inventory", null);
-	public final PC_InventoryMask SAWBLADE = new PC_InventoryMaskRedirecting(null, this, 9*3, 9*3, "sawblade", null);
+	public final PC_InventoryMask INVENTORY = new PC_InventoryMaskRedirecting(null, this, 0, 9*6-1, "inventory", null);
+	public final PC_InventoryMask SAWBLADE = new PC_InventoryMaskRedirecting(null, this, 9*6, 9*6, "sawblade", null);
+	
+	public final IInventory[] inventoryArray = {INVENTORY, SAWBLADE};
 	
 	public PCtf_EntityMiner(World world) {
 		super(world);
@@ -207,10 +212,12 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 					this.minings[i] = -1;
 				}else{
 					if((--this.minings[i])%10==0){
-						ItemStack is = this.inventoryContents[6*9];
+						ItemStack is = SAWBLADE.getStackInSlot(0);
 						if(is!=null){
 							if(is.attemptDamageItem(1, new Random())){
-								setInventorySlotContents(6*9, null);
+								SAWBLADE.setInventorySlotContents(0, null);
+								if(!worldObj.isRemote)
+									minerController.makeInterrupt(new PC_WeaselEventInventorySlotEmpty(minerController.getAddress(), SAWBLADE.getInventoryName(), 0));
 							}
 						}
 					}
@@ -298,28 +305,29 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	
 	private PC_Vec3I getPosFor(PC_Vec3I offset){
 		int offX = offset.x, offY = offset.y, offZ=offset.z;
+		System.out.println("relativeOffset:"+offX+":"+offY+":"+offZ);
 		PC_Direction facing = PC_Direction.directionFacing(this.rotationYaw, 0, null);
 		int tmpX=0, tmpZ=0;
 		System.out.println("facing:"+facing);
-		if(facing.offsetX+facing.offsetZ>0){
-			if(offZ>0) offZ-=1;
+		if(facing.offsetX+facing.offsetZ>=0){
+			if(offZ>0) offZ--;
 		}else{
-			if(offZ<0) offZ+=1;
+			if(offZ<0) offZ++;
 		}
 		tmpX+=facing.offsetX*offZ;
 		tmpZ+=facing.offsetZ*offZ;
 		
 		PC_Direction side = facing.rotateOnce(PC_Direction.UP);
 		System.out.println("side:"+side);
-		if(side.offsetX+side.offsetZ>0){
-			if(offX>0) offX-=1;
+		if(side.offsetX+side.offsetZ>=0){
+			if(offX>0) offX--;
 		}else{
-			if(offX<0) offX+=1;
+			if(offX<0) offX++;
 		}
 		tmpX+=side.offsetX*offX;
 		tmpZ+=side.offsetZ*offX;
-		
 		System.out.println("rotatedOffset:"+tmpX+":"+(offY<0?offY+1:offY)+":"+tmpZ);
+		System.out.println("absolutePosition:"+(int)(Math.floor(this.posX+tmpX)) +":"+ (int)(Math.floor(this.posY+(offY<0?offY+1:offY))) +":"+ (int)(Math.floor(this.posZ+tmpZ)));
 		return new PC_Vec3I((int)(Math.floor(this.posX+tmpX)), (int)(Math.floor(this.posY+(offY<0?offY+1:offY))), (int)(Math.floor(this.posZ+tmpZ)));
 	}
 	
@@ -749,7 +757,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		if(block.isAir(this.worldObj, pos.x, pos.y, pos.z))
 			return -1;
 		int metadata = PC_Utils.getMetadata(this.worldObj, pos);
-		ItemStack is = this.inventoryContents[6*9];
+		ItemStack is = this.SAWBLADE.getStackInSlot(0);
 		/*Material material = block.getMaterial();
 		if(!material.isToolNotRequired()){
 			int level = block.getHarvestLevel(metadata);
@@ -855,11 +863,11 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		digForward();
 		PC_Vec3I offset = new PC_Vec3I(1, 2, 2);
 		digPos(offset);
-		offset.mirror(PC_Direction.EAST);
+		offset = offset.mirror(PC_Direction.EAST);
 		digPos(offset);
 		offset.z--;
 		digPos(offset);
-		offset.mirror(PC_Direction.EAST);
+		offset = offset.mirror(PC_Direction.EAST);
 		digPos(offset);
 	}
 
@@ -868,13 +876,13 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		digForward();
 		PC_Vec3I offset = new PC_Vec3I(1, -2, 2);
 		digPos(offset);
-		offset.mirror(PC_Direction.EAST);
+		offset = offset.mirror(PC_Direction.EAST);
 		digPos(offset);
 	}
 	
 	public int offsetToMiningIndex(PC_Vec3I offset){
 		int x=offset.x, y=offset.y, z=offset.z;
-		if(x<-1 || x>1 || y>2 || y<-2 || z>2 || z<1 || (Math.abs(x)==z)) return -1;
+		if(x<-1 || x>1 || y>2 || y<-2 || z>2 || z<1 || (Math.abs(y)==1 && Math.abs(x)==z)) return -1;
 		if(x==-1) x=0;
 		if(z==1) return (y>0?0*2:5*2)+x;
 		if(y<0) y+=1;
@@ -890,22 +898,12 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	
 	public void placeBlock(int invPlace, int x, int y, int z) {
 		PC_Vec3I pos = getPosFor(new PC_Vec3I(x, y, z));
-		ItemStack is = this.inventoryContents[invPlace];
+		ItemStack is = this.INVENTORY.getStackInSlot(invPlace);
 		this.operationErrored = !tryToPlace(is, pos);
 		if(is.stackSize==0){
-			this.inventoryContents[invPlace] = null;
-		}
-	}
-	
-	
-	public enum InventoryPart{
-		Inventory(0, 3*9),
-		Sawblade(3*9, 3*9+1),
-		Engine(3*9+1, 3*9+2);
-		
-		public int start, end;
-		InventoryPart(int start, int end){
-			
+			this.INVENTORY.setInventorySlotContents(invPlace, null);
+			if(!worldObj.isRemote)
+				minerController.makeInterrupt(new PC_WeaselEventInventorySlotEmpty(minerController.getAddress(), INVENTORY.getInventoryName(), INVENTORY.globalToLocalIndex(invPlace)));
 		}
 	}
 	
