@@ -11,25 +11,43 @@ import java.util.zip.ZipFile;
 
 import powercraft.api.gres.PC_GresComponent;
 import powercraft.api.gres.autoadd.PC_AutoCompleteDisplay;
+import powercraft.api.gres.autoadd.PC_StringListPart;
+import powercraft.api.gres.autoadd.PC_StringWithInfo;
 import powercraft.api.gres.doc.PC_GresDocument;
 import powercraft.api.gres.doc.PC_GresDocumentLine;
 import powercraft.api.script.weasel.PC_WeaselGresEdit;
 import powercraft.weasel.PCws_Weasel;
 import xscript.runtime.XVirtualMachine;
+import xscript.runtime.clazz.XClass;
 import xscript.runtime.clazz.XClassProvider;
 
 
 public final class PCws_AutoCompleteHelper {
 
-	public static void makeComplete(PC_GresComponent component, PC_GresDocument document, PC_GresDocumentLine line, int x, PC_AutoCompleteDisplay info, PC_WeaselGresEdit weaselGresEdit) {
-		XVirtualMachine vm = (XVirtualMachine)weaselGresEdit.getVM();
-		if(vm==null){
-			weaselGresEdit.setVM(vm = makeVM());
+	private static class AutoCompleteHelper{
+
+		List<PC_StringWithInfo> runtimeClasses;
+		
+		AutoCompleteHelper() {
+			this.runtimeClasses = getAllRuntimeClasses();
 		}
-		//vm.getClassProvider().addClassMaker(maker, name);
+		
 	}
 	
-	private static XVirtualMachine makeVM(){
+	public static void makeComplete(PC_GresComponent component, PC_GresDocument document, PC_GresDocumentLine line, int x, PC_AutoCompleteDisplay info, PC_WeaselGresEdit weaselGresEdit) {
+		AutoCompleteHelper ach = (AutoCompleteHelper)weaselGresEdit.getAutoCompleteHelper();
+		if(ach==null){
+			weaselGresEdit.setAutoCompleteHelper(ach = new AutoCompleteHelper());
+		}
+		info.display = true;
+		info.parts = new PC_StringListPart[1];
+		info.parts[0] = new PC_StringListPart(ach.runtimeClasses);
+		info.done = "";
+	}
+	
+	
+	
+	static List<PC_StringWithInfo> getAllRuntimeClasses(){
 		XVirtualMachine vm = new XVirtualMachine(PCws_Weasel.getRTClassLoader(), 0);
 		vm.getClassProvider().addClassLoader(PCws_Weasel.getWeaselRTClassLoader());
 		XClassProvider classProvider = vm.getClassProvider();
@@ -41,7 +59,13 @@ public final class PCws_AutoCompleteHelper {
 				//
 			}
 		}
-		return vm;
+		List<XClass> c = vm.getClassProvider().getAllLoadedClasses();
+		List<PC_StringWithInfo> l = new ArrayList<PC_StringWithInfo>();
+		for(XClass cc:c){
+			PC_StringWithInfo swi = new PC_StringWithInfo(cc.getSimpleName(), cc.getName());
+			l.add(swi);
+		}
+		return l;
 	}
 	
 	private static List<String> loadAllRuntimeClasses(){
