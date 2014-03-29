@@ -434,7 +434,7 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 	}
 	
 	@Override
-	public Map<Object, Object> createObject(String className) {
+	public Map<Object, Object> createInstance(String className) {
 		XGenericClass xClass = makeGenericClass(className);
 		return this.virtualMachine.getObjectProvider().getObject(this.virtualMachine.getObjectProvider().createObject(null, null, xClass));
 	}
