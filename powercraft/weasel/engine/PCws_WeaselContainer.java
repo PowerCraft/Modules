@@ -439,6 +439,15 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 		return this.virtualMachine.getObjectProvider().getObject(this.virtualMachine.getObjectProvider().createObject(null, null, xClass));
 	}
 	
+	@Override
+	public Map<Object, Object> createObject(String className, Object... params) {
+		Map<Object, Object> tmp = createInstance(className);
+		for(int i=0; i<params.length; i++){
+			tmp.put(params[i], params[++i]);
+		}
+		return tmp;
+	}
+	
 	private XGenericClass makeGenericClass(String name){
 		String n = name.trim();
 		int i = n.indexOf('<');
@@ -448,7 +457,7 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 		}
 		XClass c = this.virtualMachine.getClassProvider().getXClass(n.substring(0, i));
 		return new XGenericClass(c, makeGenericParams(n.substring(i)));
-	}
+	}	
 	
 	private XGenericClass[] makeGenericParams(String name){
 		String n = name.trim();

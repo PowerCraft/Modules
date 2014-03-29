@@ -125,8 +125,8 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselInventory, PC_IW
 	}
 
 	@Override
-	public IInventory[] getInventories(int address) {
-		return this.getMiner(address).inventoryArray;
+	public IInventory[] getInventories() {
+		return this.miner.inventoryArray;
 	}
 
 	@Override
