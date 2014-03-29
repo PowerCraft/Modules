@@ -79,8 +79,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	@PC_Field
 	protected boolean operationErrored;
 	
-	public final PC_InventoryMask INVENTORY = new PC_InventoryMaskRedirecting(null, this, 0, 9*6-1, "inventory", null);
-	public final PC_InventoryMask SAWBLADE = new PC_InventoryMaskRedirecting(null, this, 9*6, 9*6, "sawblade", null);
+	public final PC_InventoryMask INVENTORY = new PC_InventoryMaskRedirecting(null, this, 0, 9*6-1, "inventory", false, null);
+	public final PC_InventoryMask SAWBLADE = new PC_InventoryMaskRedirecting(null, this, 9*6, 9*6, "sawblade", false, null);
 	
 	public final IInventory[] inventoryArray = {INVENTORY, SAWBLADE};
 	
@@ -905,6 +905,11 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			if(!worldObj.isRemote)
 				minerController.makeInterrupt(new PC_WeaselEventInventorySlotEmpty(minerController.getAddress(), INVENTORY.getInventoryName(), INVENTORY.globalToLocalIndex(invPlace)));
 		}
+	}
+
+	@Override
+	public boolean canBeDragged(int i) {
+		return true;
 	}
 	
 	
