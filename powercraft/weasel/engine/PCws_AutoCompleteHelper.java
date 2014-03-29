@@ -23,6 +23,12 @@ import powercraft.api.script.weasel.source.PC_WeaselSourceIterator;
 import powercraft.api.script.weasel.source.PC_WeaselToken;
 import powercraft.api.script.weasel.source.PC_WeaselTokenKind;
 import powercraft.weasel.PCws_Weasel;
+import xscript.compiler.message.XMessageLevel;
+import xscript.compiler.message.XMessageList;
+import xscript.compiler.standart.XLexer;
+import xscript.compiler.standart.XParser;
+import xscript.compiler.token.XLineDesk;
+import xscript.compiler.tree.XTree;
 import xscript.runtime.XModifier;
 import xscript.runtime.XVirtualMachine;
 import xscript.runtime.clazz.XClass;
@@ -34,6 +40,18 @@ import xscript.runtime.method.XMethod;
 
 public final class PCws_AutoCompleteHelper {
 
+	private static final PC_SortedStringList keyWords = new PC_SortedStringList();
+	
+	static{
+		keyWords.add(new PC_StringWithInfo("if", "instruction: if"));
+		keyWords.add(new PC_StringWithInfo("for", "instruction: for"));
+		keyWords.add(new PC_StringWithInfo("do", "instruction: do"));
+		keyWords.add(new PC_StringWithInfo("while", "instruction: while"));
+		keyWords.add(new PC_StringWithInfo("try", "instruction: try"));
+		keyWords.add(new PC_StringWithInfo("switch", "instruction: switch"));
+		keyWords.add(new PC_StringWithInfo("return", "instruction: return"));
+	}
+	
 	private static class AutoCompleteHelper{
 
 		PC_SortedStringList runtimeClasses;
@@ -53,13 +71,25 @@ public final class PCws_AutoCompleteHelper {
 		}
 	}
 	
+	private static class MessageListener implements XMessageList{
+
+		MessageListener() {}
+
+		@Override
+		public void postMessage(XMessageLevel arg0, String arg1, XLineDesk arg2, Object[] arg3) {/**/}
+		
+	}
+	
 	public static void makeComplete(PC_GresComponent component, PC_GresDocument document, PC_GresDocumentLine line, int x, PC_AutoCompleteDisplay info, PC_WeaselGresEdit weaselGresEdit) {
 		AutoCompleteHelper ach = (AutoCompleteHelper)weaselGresEdit.getAutoCompleteHelper();
 		if(ach==null){
 			weaselGresEdit.setAutoCompleteHelper(ach = new AutoCompleteHelper());
 		}
+		int lineNum = document.getLineNum(line);
 		PC_WeaselSourceIterator iterator = new PC_WeaselSourceIterator(line, x);
 		if(iterator.getTypeAtPos()==0){
+			XTree tree = new XParser(new XLexer(document.getWholeText(), new MessageListener()), new MessageListener()).makeTree();
+			
 			iterator.gotoInstructionStart(";{}");
 			PC_WeaselToken token = iterator.readNextToken();
 			List<PC_WeaselToken> tokens = new ArrayList<PC_WeaselToken>();
@@ -69,9 +99,11 @@ public final class PCws_AutoCompleteHelper {
 			}
 			if(tokens.isEmpty()){
 				info.display = true;
-				info.parts = new PC_StringListPart[1];
-				info.parts[0] = new PC_StringListPart(ach.runtimeClasses);
+				info.parts = new PC_StringListPart[2];
+				info.parts[0] = new PC_StringListPart(keyWords);
+				info.parts[1] = new PC_StringListPart(ach.runtimeClasses);
 				info.parts[0].searchFor("");
+				info.parts[1].searchFor("");
 				info.done = "";
 			}else{
 				token = tokens.get(tokens.size()-1);
@@ -86,13 +118,11 @@ public final class PCws_AutoCompleteHelper {
 				}
 				if(getType){
 					int pos = findStart(tokens);
-					System.out.println(pos);
 					if(pos!=-1){
 						Type type = new Type(pos);
 						XVirtualMachine vm = makeVM();
 						while(type.pos != tokens.size()){
 							getType(tokens, type, vm);
-							System.out.println(type.p);
 						}
 						if(type.pos == tokens.size()){
 							info.display = true;
@@ -133,8 +163,11 @@ public final class PCws_AutoCompleteHelper {
 					}
 					info.display = true;
 					info.parts = new PC_StringListPart[1];
-					info.parts[0] = new PC_StringListPart(ach.runtimeClasses);
+					info.parts = new PC_StringListPart[2];
+					info.parts[0] = new PC_StringListPart(keyWords);
+					info.parts[1] = new PC_StringListPart(ach.runtimeClasses);
 					info.parts[0].searchFor(name);
+					info.parts[1].searchFor(name);
 					info.done = name;
 				}
 			}
@@ -142,6 +175,8 @@ public final class PCws_AutoCompleteHelper {
 			info.display = false;
 		}
 	}
+	
+	
 	
 	private static int findStart(List<PC_WeaselToken> list){
 		int exp = -1;
@@ -210,10 +245,10 @@ public final class PCws_AutoCompleteHelper {
 				if((((XClass)value).getModifier() & acceptedModifier)==acceptedModifier && (((XClass)value).getModifier() & inAcceptedModifier)==0)
 					list.add(new PC_StringWithInfo(((XClass)value).getSimpleName(), e.getKey()));
 			}else if(value instanceof XMethod){
-				if((((XMethod)value).getModifier() & acceptedModifier)==acceptedModifier && (((XMethod)value).getModifier() & inAcceptedModifier)==0)
+				if(((XMethod)value).getRealName().indexOf('<')==-1 && ((XMethod)value).getRealName().indexOf('$')==-1 && (((XMethod)value).getModifier() & acceptedModifier)==acceptedModifier && (((XMethod)value).getModifier() & inAcceptedModifier)==0)
 					list.add(new PC_StringWithInfo(((XMethod)value).getRealName(), e.getKey()));
 			}else if(value instanceof XField){
-				if((((XField)value).getModifier() & acceptedModifier)==acceptedModifier && (((XField)value).getModifier() & inAcceptedModifier)==0)
+				if(((XField)value).getSimpleName().indexOf('$')==-1 && (((XField)value).getModifier() & acceptedModifier)==acceptedModifier && (((XField)value).getModifier() & inAcceptedModifier)==0)
 					list.add(new PC_StringWithInfo(((XField)value).getSimpleName(), e.getKey()));
 			}
 		}
