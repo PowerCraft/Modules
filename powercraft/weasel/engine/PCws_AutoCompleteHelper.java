@@ -11,22 +11,27 @@ import java.util.zip.ZipFile;
 
 import powercraft.api.gres.PC_GresComponent;
 import powercraft.api.gres.autoadd.PC_AutoCompleteDisplay;
+import powercraft.api.gres.autoadd.PC_SortedStringList;
 import powercraft.api.gres.autoadd.PC_StringListPart;
 import powercraft.api.gres.autoadd.PC_StringWithInfo;
 import powercraft.api.gres.doc.PC_GresDocument;
 import powercraft.api.gres.doc.PC_GresDocumentLine;
 import powercraft.api.script.weasel.PC_WeaselGresEdit;
 import powercraft.weasel.PCws_Weasel;
+import xscript.runtime.XModifier;
 import xscript.runtime.XVirtualMachine;
 import xscript.runtime.clazz.XClass;
 import xscript.runtime.clazz.XClassProvider;
+import xscript.runtime.clazz.XField;
+import xscript.runtime.clazz.XPackage;
+import xscript.runtime.method.XMethod;
 
 
 public final class PCws_AutoCompleteHelper {
 
 	private static class AutoCompleteHelper{
 
-		List<PC_StringWithInfo> runtimeClasses;
+		PC_SortedStringList runtimeClasses;
 		
 		AutoCompleteHelper() {
 			this.runtimeClasses = getAllRuntimeClasses();
@@ -47,7 +52,7 @@ public final class PCws_AutoCompleteHelper {
 	
 	
 	
-	static List<PC_StringWithInfo> getAllRuntimeClasses(){
+	static PC_SortedStringList getAllRuntimeClasses(){
 		XVirtualMachine vm = new XVirtualMachine(PCws_Weasel.getRTClassLoader(), 0);
 		vm.getClassProvider().addClassLoader(PCws_Weasel.getWeaselRTClassLoader());
 		XClassProvider classProvider = vm.getClassProvider();
@@ -60,12 +65,33 @@ public final class PCws_AutoCompleteHelper {
 			}
 		}
 		List<XClass> c = vm.getClassProvider().getAllLoadedClasses();
-		List<PC_StringWithInfo> l = new ArrayList<PC_StringWithInfo>();
+		PC_SortedStringList l = new PC_SortedStringList();
 		for(XClass cc:c){
-			PC_StringWithInfo swi = new PC_StringWithInfo(cc.getSimpleName(), cc.getName());
-			l.add(swi);
+			if(!cc.isArray() && isVisible(cc)){
+				PC_StringWithInfo swi = new PC_StringWithInfo(cc.getSimpleName(), cc.getName());
+				l.add(swi);
+				String s = cc.getParent().getName();
+				if(s!=null && !s.isEmpty()){
+					swi = new PC_StringWithInfo(s, s);
+					l.add(swi);
+				}
+			}
 		}
 		return l;
+	}
+	
+	private static boolean isVisible(XPackage c){
+		if(c instanceof XClass){
+			if(!XModifier.isPublic(((XClass)c).getModifier()))
+				return false;
+		}else if(c instanceof XField){
+			if(!XModifier.isPublic(((XField)c).getModifier()))
+				return false;
+		}else if(c instanceof XMethod){
+			if(!XModifier.isPublic(((XMethod)c).getModifier()))
+				return false;
+		}
+		return c.getParent()==null?true:isVisible(c.getParent());
 	}
 	
 	private static List<String> loadAllRuntimeClasses(){
@@ -91,7 +117,7 @@ public final class PCws_AutoCompleteHelper {
 			while(entries.hasMoreElements()){
 				ZipEntry zipEntry = entries.nextElement();
 				String name = zipEntry.getName();
-				if(name.endsWith(".xcsc")){
+				if(name.endsWith(".xcbc")){
 					list.add(name.substring(0, name.length()-5).replace('/', '.').replace('\\', '.'));
 				}
 			}
@@ -113,7 +139,7 @@ public final class PCws_AutoCompleteHelper {
 			for(File f:files){
 				getAllClassNamesDir(f, list, fName);
 			}
-		}else if(fName.endsWith(".xcsc")){
+		}else if(fName.endsWith(".xcbc")){
 			fName = fName.substring(0, fName.length()-5);
 			if(name!=null){
 				fName = name+"."+fName;

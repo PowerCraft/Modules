@@ -1,6 +1,6 @@
 package powercraft.transport.gui;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -48,19 +48,36 @@ public class PCtr_GuiBeltScriptable implements PC_IGresGui, PC_IGresEventListene
 		this.diagnostics = diagnostics;
 	}
 
+	private static void addTo(HashMap<String, PC_StringWithInfo> map, HashMap<String, Integer> other){
+		for(Entry<String, Integer> e:other.entrySet()){
+			String key = e.getKey();
+			String[] splittet = key.split("\\.");
+			String path = null;
+			for(int i=0; i<splittet.length-1; i++){
+				if(path==null){
+					path = splittet[i];
+				}else{
+					path += splittet[i];
+				}
+				if(!map.containsKey(path)){
+					map.put(path, new PC_StringWithInfo(splittet[i], "Package: "+path));
+				}
+			}
+			map.put(key, new PC_StringWithInfo(splittet[splittet.length-1], "Const: "+e.getValue()));
+		}
+	}
+	
 	@Override
 	public void initGui(PC_GresGuiHandler gui) {
 		PC_FontTexture fontTexture = PC_Fonts.getFontByName("Consolas", 24, 0);
 		PC_GresHighlighting highlighting = PC_MiniscriptHighlighting.makeHighlighting(this.te.getConsts().keySet(), this.te.getPointers().keySet());
 		PC_AutoAdd autoAdd = PC_MiniscriptHighlighting.makeAutoAdd();
-		List<PC_StringWithInfo> list = new ArrayList<PC_StringWithInfo>();
-		for(Entry<String, Integer> e:this.te.getConsts().entrySet()){
-			list.add(new PC_StringWithInfo(e.getKey(), "Const: "+e.getValue()));
-		}
-		List<PC_StringWithInfo> list2 = new ArrayList<PC_StringWithInfo>();
-		for(Entry<String, Integer> e:this.te.getPointers().entrySet()){
-			list2.add(new PC_StringWithInfo(e.getKey(), "Const: "+e.getValue()));
-		}
+		HashMap<String, PC_StringWithInfo> list = new HashMap<String, PC_StringWithInfo>();
+		addTo(list, this.te.getConsts());
+		
+		HashMap<String, PC_StringWithInfo> list2 = new HashMap<String, PC_StringWithInfo>();
+		addTo(list2, this.te.getPointers());
+		
 		PC_AutoComplete autoComplete = PC_MiniscriptHighlighting.makeAutoComplete(list, list2);
 		PC_GresWindow win = new PC_GresWindow("Belt");
 		win.addSideTab(PC_GresWindowSideTab.createRedstoneSideTab(this.te));
