@@ -2,17 +2,21 @@ package powercraft.core.item;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import powercraft.api.PC_IconRegistry;
 import powercraft.api.item.PC_Item;
 import powercraft.api.recipes.PC_Recipes;
+import powercraft.core.PCco_Core;
 
 
 public class PCco_ItemNanobots extends PC_Item {
 	
 	public PCco_ItemNanobots(){
 		setCreativeTab(CreativeTabs.tabTools);
+		PC_Recipes.addShapedRecipe(new ItemStack(this), " I ", "IWI", " I ", 'I', Items.iron_ingot, 'W', Blocks.crafting_table);
 	}
 
 	@Override
