@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.tools.Diagnostic;
@@ -31,7 +32,7 @@ import xscript.runtime.XVirtualMachine;
 import xscript.runtime.clazz.XClass;
 import xscript.runtime.clazz.XClassLoader;
 import xscript.runtime.clazz.XInputStream;
-import xscript.runtime.clazz.XWrapper;
+import xscript.runtime.genericclass.XGenericClass;
 import xscript.runtime.method.XMethod;
 import xscript.runtime.object.XObject;
 import xscript.runtime.threads.XInterruptTerminatedListener;
@@ -373,15 +374,15 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 		long[] l = new long[params.length];
 		for(int i=0; i<params.length; i++){
 			if(params[i] instanceof Float){
-				l[i] = Float.floatToIntBits((Float)params[i]);
+				l[i] = Float.floatToIntBits(((Float)params[i]).floatValue());
 			}else if(params[i] instanceof Double){
-				l[i] = Double.doubleToLongBits((Double)params[i]);
+				l[i] = Double.doubleToLongBits(((Double)params[i]).doubleValue());
 			}else if(params[i] instanceof Number){
 				l[i] = ((Number)params[i]).longValue();
 			}else if(params[i] instanceof String){
-				l[i] = virtualMachine.getObjectProvider().createString(null, null, (String)params[i]);
+				l[i] = this.virtualMachine.getObjectProvider().createString(null, null, (String)params[i]);
 			}else{
-				l[i] = virtualMachine.getObjectProvider().getPointer((XObject)params[i]);
+				l[i] = this.virtualMachine.getObjectProvider().getPointer((XObject)params[i]);
 			}
 		}
 		this.virtualMachine.getThreadProvider().interrupt(event.getEventName(), null, xMethod, null, l);
@@ -432,6 +433,48 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 		}
 	}
 	
+	@Override
+	public Map<Object, Object> createObject(String className) {
+		XGenericClass xClass = makeGenericClass(className);
+		return this.virtualMachine.getObjectProvider().getObject(this.virtualMachine.getObjectProvider().createObject(null, null, xClass));
+	}
 	
+	private XGenericClass makeGenericClass(String name){
+		String n = name.trim();
+		int i = n.indexOf('<');
+		if(i==-1){
+			XClass c = this.virtualMachine.getClassProvider().getXClass(n);
+			return new XGenericClass(c);
+		}
+		XClass c = this.virtualMachine.getClassProvider().getXClass(n.substring(0, i));
+		return new XGenericClass(c, makeGenericParams(n.substring(i)));
+	}
+	
+	private XGenericClass[] makeGenericParams(String name){
+		String n = name.trim();
+		if(n.isEmpty())
+			return null;
+		List<XGenericClass> generics = new ArrayList<XGenericClass>();
+		int h = 0;
+		String cname = "";
+		for(int i=1; i<n.length(); i++){
+			char ch = n.charAt(i);
+			if(ch=='<'){
+				h++;
+			}else if(ch=='>'){
+				if(h==0){
+					generics.add(makeGenericClass(cname));
+					break;
+				}
+				h--;
+			}else if(h==0 && ch==','){
+				generics.add(makeGenericClass(cname));
+				cname = "";
+			}else{
+				cname += ch;
+			}
+		}
+		return generics.toArray(new XGenericClass[generics.size()]);
+	}
 	
 }

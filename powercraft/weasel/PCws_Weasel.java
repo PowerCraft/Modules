@@ -13,6 +13,7 @@ import powercraft.api.gres.doc.PC_GresDocument;
 import powercraft.api.gres.doc.PC_GresDocumentLine;
 import powercraft.api.script.weasel.PC_Weasel;
 import powercraft.api.script.weasel.PC_WeaselContainer;
+import powercraft.api.script.weasel.PC_WeaselGresEdit;
 import powercraft.api.script.weasel.PC_WeaselModule;
 import powercraft.weasel.block.PCws_BlockCore;
 import powercraft.weasel.engine.PCws_AutoCompleteHelper;
@@ -84,8 +85,8 @@ public class PCws_Weasel extends PC_Module implements PC_WeaselModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void makeComplete(PC_GresComponent component, PC_GresDocument document, PC_GresDocumentLine line, int x, PC_AutoCompleteDisplay info) {
-		PCws_AutoCompleteHelper.makeComplete(component, document, line, x, info);
+	public void makeComplete(PC_GresComponent component, PC_GresDocument document, PC_GresDocumentLine line, int x, PC_AutoCompleteDisplay info, PC_WeaselGresEdit weaselGresEdit) {
+		PCws_AutoCompleteHelper.makeComplete(component, document, line, x, info, weaselGresEdit);
 	}
 
 
