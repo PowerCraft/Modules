@@ -7,15 +7,29 @@ import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
 import powercraft.api.PC_Utils;
+import powercraft.api.gres.PC_GresComponent;
+import powercraft.api.gres.autoadd.PC_AutoCompleteDisplay;
+import powercraft.api.gres.doc.PC_GresDocument;
+import powercraft.api.gres.doc.PC_GresDocumentLine;
 import powercraft.api.script.weasel.PC_Weasel;
 import powercraft.api.script.weasel.PC_WeaselContainer;
 import powercraft.api.script.weasel.PC_WeaselModule;
 import powercraft.weasel.block.PCws_BlockCore;
+import powercraft.weasel.engine.PCws_AutoCompleteHelper;
 import powercraft.weasel.engine.PCws_WeaselContainer;
+import xscript.compiler.message.XMessageLevel;
+import xscript.compiler.message.XMessageList;
+import xscript.compiler.standart.XLexer;
+import xscript.compiler.standart.XParser;
+import xscript.compiler.token.XLineDesk;
+import xscript.compiler.tree.XTree;
+import xscript.compiler.tree.XTreeMakeEasy;
 import xscript.runtime.clazz.XClassLoader;
 import xscript.runtime.clazz.XZipClassLoader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.InstanceFactory;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @Mod(modid = PCws_Weasel.NAME, name = PCws_Weasel.NAME, version = PCws_Weasel.VERSION, dependencies = PCws_Weasel.DEPENDENCIES)
 public class PCws_Weasel extends PC_Module implements PC_WeaselModule {
@@ -66,6 +80,12 @@ public class PCws_Weasel extends PC_Module implements PC_WeaselModule {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void makeComplete(PC_GresComponent component, PC_GresDocument document, PC_GresDocumentLine line, int x, PC_AutoCompleteDisplay info) {
+		PCws_AutoCompleteHelper.makeComplete(component, document, line, x, info);
 	}
 
 
