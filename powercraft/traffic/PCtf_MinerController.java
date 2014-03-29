@@ -30,7 +30,7 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselInventory, PC_IW
 	private PC_WeaselContainer weasel;
 	private boolean isOccupied;
 	private int address;
-	private PC_WeaselGrid grid;
+	private PC_WeaselGrid grid = PC_WeaselGrid.factory.make(this);
 	
 	public PCtf_MinerController(PCtf_EntityMiner miner){
 		this.weasel = PC_Weasel.createContainer("Miner", 1024);
