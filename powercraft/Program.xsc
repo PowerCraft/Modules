@@ -1,26 +1,37 @@
 /*
  * A Weasel powered Miner
  */
-
+import weasel.inventory.Inventory;
 public class Main{
-	
+	public static bool aboutToRotate;
+	public static int moved;
 	// This is the entry point.
 	// It needs the name "main" in the Main class
 	// no params and returns void
 	// and it has to be static
 	public static void main(){
+		//for(int i=0; i<280; i++){
+		//	floor(0);
+		//	moveForward(0, 1, true);
+		//}
+		//return;
+		//moveAndMine(0, 2);
+		rotate(0, 1, true);
+		//moveForward(0, -2, true);
+		//moveAndMine(0, 4);
+		//rotate(0, -1, true);
 		//rotate(0,2, true);
-		//moveForward(0, 2, true);
+		//moveForward(0, 1, true);
 		//rotate(0,-1, true);
 		//moveForward(0, 2, true);
 		//rotate(0,-1, true);
 		//moveForward(0, 4, true);
 		//rotate(0,2, true);
-		area(0, 16, 8, 1, 0, 1);
+		area(0, 32, 20, 2, 1, 0, -1);
 	}
 	public static int rot=0;
 	
-	public static void area(int address, int length, int lines, int levels, int floorDistance, int start){
+	public static void area(int address, int length, int lines, int lineSpace, int levels, int floorSpace, int start){
 		rot=start;
 		for(int i=0; i<levels; i++){
 			for(int j=0; j<lines; j++){
@@ -28,31 +39,44 @@ public class Main{
 				front(address);
 				if(j<lines-1){
 					rotate(address, rot, true);
-					moveAndMine(address, 2);
+					moveAndMine(address, 2+lineSpace);
 					rotate(address, rot, true);
 					rot=-rot;
 				}else{
 					rotate(address, 2, true);
 				}
+				Inventory.combineStacks(address, "inventory", 3, "inventory", 4);
+				Inventory.combineStacks(address, "inventory", 2, "inventory", 3);
+				Inventory.combineStacks(address, "inventory", 1, "inventory", 2);
 			}
 			if(i<levels-1){
-				digDown(address, 4+floorDistance);
+				digDown(address, 4+floorSpace);
 				rotate(address, 2, true);
-				moveAndMine(address, 4+floorDistance);
+				moveAndMine(address, 4+floorSpace);
 				rot=-rot;
 			}
 		}
 	}
 	
 	public static void moveAndMine(int address, int distance){
-		while(distance>0){
+		int i=distance;
+		while(i>0){
 			digForward(address, true);
-			if(distance>2){
-				tunnelWOCeiling(address);
+			if(distance-i==1){
+				aboutToRotate=false;
+			}
+			if(i==1){
+				aboutToRotate=true;
+			}
+			if(!aboutToRotate){
+				tunnel(address);
 			}
 			moveForward(address, 1, true);
-
-			--distance;
+			moved++;
+			if(moved>8){
+				placeTorch(moved);
+			}
+			--i;
 		}
 	}
 	
@@ -60,16 +84,30 @@ public class Main{
 		while(distance>0){
 			digDownward(address, true);
 			moveForward(address, 1, true);
+			moved++;
+			if(moved>8){
+				placeTorch(moved);
+			}
 			left(address);
 			right(address);
 			--distance;
 		}
 	}
 	
+	public static void placeTorch(int address){
+		if(placeBlock(address, 1, 1, -1, -1, true))
+			moved = 0;
+	}
+	
 	public static void tunnelWOCeiling(int address){
 		floor(address);
 		left(address);
 		right(address);
+	}
+	
+	public static void tunnel(int address){
+		ceiling(address);
+		tunnelWOCeiling(address);
 	}
 	
 	public static void floor(int address){
@@ -79,6 +117,15 @@ public class Main{
 		placeBlock(address, 0, -1, -2, 1, true);
 		placeBlock(address, 0, 1, -2, -1, true);
 		placeBlock(address, 0, -1, -2, -1, true);
+	}
+	
+	public static void ceiling(int address){
+		placeBlock(address, 0, 1, 2, 2, true);
+		placeBlock(address, 0, -1, 2, 2, true);
+		placeBlock(address, 0, 1, 2, 1, true);
+		placeBlock(address, 0, -1, 2, 1, true);
+		placeBlock(address, 0, 1, 2, -1, true);
+		placeBlock(address, 0, -1, 2, -1, true);
 	}
 	
 	public static void left(int address){
