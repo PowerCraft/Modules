@@ -9,25 +9,45 @@ public class Main{
 	// no params and returns void
 	// and it has to be static
 	public static void main(){
-		// TODO write your program here
+		/*rotate(0,2, true);
+		moveForward(0, 4, true);
+		rotate(0,1, true);
+		moveForward(0, 4, true);
+		rotate(0,1, true);
+		moveForward(0, 4, true);
+		rotate(0,2, true);*/
+		area(0, 16, 4, 1, 0, -1);
 	}
+	public static int rot=0;
 	
-	public static void area(int address, int length, int lines, int levels, int start){
+	public static void area(int address, int length, int lines, int levels, int floorDistance, int start){
+		rot=start;
 		for(int i=0; i<levels; i++){
 			for(int j=0; j<lines; j++){
-				moveAndMine(address, length);
-				rotate(0, (j%2==0?1:-1), true);
+				moveAndMine(address, length-2);
+				front(address);
+				rotate(0, rot, true);
 				moveAndMine(address, 2);
-				rotate(0, (j%2==0?1:-1), true);
+				rotate(0, rot, true);
+				rot=-rot;
 			}
-			//DIG DOWN!!!!
+			if(i<levels-1){
+				digDown(address, 4+floorDistance);
+				rotate(address, 2, true);
+				moveAndMine(address, 4+floorDistance);
+				rot=-rot;
+			}
 		}
 	}
 	
 	public static void moveAndMine(int address, int distance){
 		while(distance>0){
 			digForward(address, true);
+			if(distance>2){
+				tunnelWOCeiling(address);
+			}
 			moveForward(address, 1, true);
+
 			--distance;
 		}
 	}
@@ -36,7 +56,55 @@ public class Main{
 		while(distance>0){
 			digDownward(address, true);
 			moveForward(address, 1, true);
+			left(address);
+			right(address);
 			--distance;
 		}
+	}
+	
+	public static void tunnelWOCeiling(int address){
+		floor(address);
+		left(address);
+		right(address);
+	}
+	
+	public static void floor(int address){
+		placeBlock(address, 0, 1, -2, 2, true);
+		placeBlock(address, 0, -1, -2, 2, true);
+		placeBlock(address, 0, 1, -2, 1, true);
+		placeBlock(address, 0, -1, -2, 1, true);
+		placeBlock(address, 0, 1, -2, -1, true);
+		placeBlock(address, 0, -1, -2, -1, true);
+	}
+	
+	public static void left(int address){
+		if(rot>0){
+			return;
+		}
+		placeBlock(address, 0, -2, 1, 2, true);
+		placeBlock(address, 0, -2, -1, 2, true);
+		placeBlock(address, 0, -2, 1, 1, true);
+		placeBlock(address, 0, -2, -1, 1, true);
+		placeBlock(address, 0, -2, 1, -1, true);
+		placeBlock(address, 0, -2, -1, -1, true);
+	}
+	
+	public static void right(int address){
+		if(rot<0){
+			return;
+		}
+		placeBlock(address, 0, 2, 1, 2, true);
+		placeBlock(address, 0, 2, -1, 2, true);
+		placeBlock(address, 0, 2, 1, 1, true);
+		placeBlock(address, 0, 2, -1, 1, true);
+		placeBlock(address, 0, 2, 1, -1, true);
+		placeBlock(address, 0, 2, -1, -1, true);
+	}
+	
+	public static void front(int address){
+		placeBlock(address, 0, 1, 1, 2, true);
+		placeBlock(address, 0, -1, -1, 2, true);
+		placeBlock(address, 0, 1, 1, 2, true);
+		placeBlock(address, 0, -1, -1, 2, true);
 	}
 }
