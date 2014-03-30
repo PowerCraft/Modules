@@ -9,14 +9,14 @@ public class Main{
 	// no params and returns void
 	// and it has to be static
 	public static void main(){
-		/*rotate(0,2, true);
-		moveForward(0, 4, true);
-		rotate(0,1, true);
-		moveForward(0, 4, true);
-		rotate(0,1, true);
-		moveForward(0, 4, true);
-		rotate(0,2, true);*/
-		area(0, 16, 4, 1, 0, -1);
+		//rotate(0,2, true);
+		//moveForward(0, 2, true);
+		//rotate(0,-1, true);
+		//moveForward(0, 2, true);
+		//rotate(0,-1, true);
+		//moveForward(0, 4, true);
+		//rotate(0,2, true);
+		area(0, 16, 8, 1, 0, 1);
 	}
 	public static int rot=0;
 	
@@ -26,10 +26,14 @@ public class Main{
 			for(int j=0; j<lines; j++){
 				moveAndMine(address, length-2);
 				front(address);
-				rotate(0, rot, true);
-				moveAndMine(address, 2);
-				rotate(0, rot, true);
-				rot=-rot;
+				if(j<lines-1){
+					rotate(address, rot, true);
+					moveAndMine(address, 2);
+					rotate(address, rot, true);
+					rot=-rot;
+				}else{
+					rotate(address, 2, true);
+				}
 			}
 			if(i<levels-1){
 				digDown(address, 4+floorDistance);
