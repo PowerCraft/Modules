@@ -1,0 +1,42 @@
+/*
+ * A Weasel powered Miner
+ */
+
+public class Main{
+	
+	// This is the entry point.
+	// It needs the name "main" in the Main class
+	// no params and returns void
+	// and it has to be static
+	public static void main(){
+		// TODO write your program here
+	}
+	
+	public static void area(int address, int length, int lines, int levels, int start){
+		for(int i=0; i<levels; i++){
+			for(int j=0; j<lines; j++){
+				moveAndMine(address, length);
+				rotate(0, (j%2==0?1:-1), true);
+				moveAndMine(address, 2);
+				rotate(0, (j%2==0?1:-1), true);
+			}
+			//DIG DOWN!!!!
+		}
+	}
+	
+	public static void moveAndMine(int address, int distance){
+		while(distance>0){
+			digForward(address, true);
+			moveForward(address, 1, true);
+			--distance;
+		}
+	}
+	
+	public static void digDown(int address, int distance){
+		while(distance>0){
+			digDownward(address, true);
+			moveForward(address, 1, true);
+			--distance;
+		}
+	}
+}
