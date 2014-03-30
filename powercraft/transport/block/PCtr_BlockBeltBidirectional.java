@@ -1,17 +1,20 @@
 package powercraft.transport.block;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import powercraft.api.PC_Utils;
 import powercraft.api.network.PC_PacketHandler;
+import powercraft.api.recipes.PC_Recipes;
 import powercraft.transport.PCtr_BeltHelper;
 
 public class PCtr_BlockBeltBidirectional extends PCtr_BlockBeltNormal {
 	
 	public PCtr_BlockBeltBidirectional() {
 		super();
-		//PC_Recipes.addShapedRecipe(new ItemStack(this, 2, 0), " P ", " D ", "OOO", 'O', Blocks.obsidian, 'D', Blocks.dispenser, 'P', Blocks.stone_pressure_plate);
+		PC_Recipes.addShapedRecipe(new ItemStack(this, 16, 0), "LLL", "GRG", 'G', Items.gold_ingot, 'L', Items.leather, 'R', Items.redstone);
 	}
 
 	@Override

@@ -3,6 +3,9 @@ package powercraft.transport.block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
@@ -12,6 +15,7 @@ import powercraft.api.PC_IconRegistry;
 import powercraft.api.PC_Utils;
 import powercraft.api.block.PC_Block;
 import powercraft.api.network.PC_PacketHandler;
+import powercraft.api.recipes.PC_Recipes;
 import powercraft.transport.PCtr_BeltHelper;
 
 public class PCtr_BlockBeltNormal extends PC_Block {
@@ -22,7 +26,7 @@ public class PCtr_BlockBeltNormal extends PC_Block {
 		super(Material.circuits);
 		setCreativeTab(CreativeTabs.tabTransport);
 		this.maxY = 1.0f/16.0f;
-		//PC_Recipes.addShapedRecipe(new ItemStack(this, 2, 0), " P ", " D ", "OOO", 'O', Blocks.obsidian, 'D', Blocks.dispenser, 'P', Blocks.stone_pressure_plate);
+		PC_Recipes.addShapedRecipe(new ItemStack(this, 16, 0), "LLL", "IRI", 'I', Items.iron_ingot, 'L', Items.leather, 'R', Items.redstone);
 	}
 	
 	@Override
