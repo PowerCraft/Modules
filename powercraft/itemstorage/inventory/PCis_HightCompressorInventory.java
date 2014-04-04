@@ -73,7 +73,7 @@ public class PCis_HightCompressorInventory extends PCis_NormalCompressorInventor
 	@SuppressWarnings("hiding")
 	@Override
 	public int getMaxStackSize(ItemStack itemStack, int slot) {
-		int maxStack = itemStack.stackSize*8;
+		int maxStack = itemStack.getMaxStackSize()*8;
 		int maxSlot = getSlotStackLimit(slot);
 		return maxStack>maxSlot?maxSlot:maxStack;
 	}
