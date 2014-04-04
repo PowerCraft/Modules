@@ -14,7 +14,7 @@ public class PCtr_BlockBeltBidirectional extends PCtr_BlockBeltNormal {
 	
 	public PCtr_BlockBeltBidirectional() {
 		super();
-		PC_Recipes.addShapedRecipe(new ItemStack(this, 16, 0), "LLL", "GRG", 'G', Items.gold_ingot, 'L', Items.leather, 'R', Items.redstone);
+		PC_Recipes.addShapedRecipe(new ItemStack(this, 16, 0), "LLL", "GRG", Character.valueOf('G'), Items.gold_ingot, Character.valueOf('L'), Items.leather, Character.valueOf('R'), Items.redstone);
 	}
 
 	@Override

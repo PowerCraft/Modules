@@ -38,8 +38,8 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 
 	public PCtf_MinerController(NBTTagCompound nbtTagCompound, Flag flag){
 		this.weasel = PC_NBTTagHandler.loadFromNBT(nbtTagCompound, "container", PC_WeaselContainer.class, flag);
-		isOccupied = nbtTagCompound.getBoolean("isOccupied");
-		address = nbtTagCompound.getInteger("address");
+		this.isOccupied = nbtTagCompound.getBoolean("isOccupied");
+		this.address = nbtTagCompound.getInteger("address");
 		registerNativeClasses();
 	}
 	
@@ -59,8 +59,8 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 	@Override
 	public void saveToNBT(NBTTagCompound nbtTagCompound, Flag flag) {
 		PC_NBTTagHandler.saveToNBT(nbtTagCompound, "container", this.weasel, flag);
-		nbtTagCompound.setBoolean("isOccupied", isOccupied);
-		nbtTagCompound.setInteger("address", address);
+		nbtTagCompound.setBoolean("isOccupied", this.isOccupied);
+		nbtTagCompound.setInteger("address", this.address);
 	}
 	
 	public void run(){
@@ -85,7 +85,7 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 				sourceClass.setSource(e.getValue());
 			}
 		}
-		boolean success = this.weasel.compileMarked(new String[]{"weasel.miner.Miner"}, new String[]{"weasel.miner"});
+		this.weasel.compileMarked(new String[]{"weasel.miner.Miner"}, new String[]{"weasel.miner"});
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		NBTTagCompound diagnostics = new NBTTagCompound();
 		this.weasel.saveDiagnosticsToNBT(diagnostics);
@@ -119,7 +119,7 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 			PC_Logger.severe("tried to interrupt the Miner using an invalid event-object!");
 			return;
 		}
-		weasel.onEvent(event);
+		this.weasel.onEvent(event);
 	}
 
 	@Override
@@ -129,22 +129,22 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 
 	@Override
 	public PC_WeaselGrid getGrid() {
-		return grid;
+		return this.grid;
 	}
 
 	@Override
 	public int getAddress() {
-		return address;
+		return this.address;
 	}
 
 	@Override
 	public void setAddressOccupied(boolean b) {
-		isOccupied = b;
+		this.isOccupied = b;
 	}
 
 	@Override
 	public void onEvent(PC_IWeaselEvent event) {
-		weasel.onEvent(event);
+		this.weasel.onEvent(event);
 	}
 
 	@Override
@@ -159,6 +159,7 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 
 	@Override
 	public void setRedstoneValue(int side, int value) {
+		//
 	}
 	
 

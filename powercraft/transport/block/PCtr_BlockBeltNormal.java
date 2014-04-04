@@ -3,7 +3,6 @@ package powercraft.transport.block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,7 +25,7 @@ public class PCtr_BlockBeltNormal extends PC_Block {
 		super(Material.circuits);
 		setCreativeTab(CreativeTabs.tabTransport);
 		this.maxY = 1.0f/16.0f;
-		PC_Recipes.addShapedRecipe(new ItemStack(this, 16, 0), "LLL", "IRI", 'I', Items.iron_ingot, 'L', Items.leather, 'R', Items.redstone);
+		PC_Recipes.addShapedRecipe(new ItemStack(this, 16, 0), "LLL", "IRI", Character.valueOf('L'), Items.iron_ingot, Character.valueOf('G'), Items.leather, Character.valueOf('R'), Items.redstone);
 	}
 	
 	@Override

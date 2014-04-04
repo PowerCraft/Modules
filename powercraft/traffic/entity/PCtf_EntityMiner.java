@@ -224,8 +224,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 						if(is!=null){
 							if(is.attemptDamageItem(1, new Random())){
 								setInventorySlotContents(SAWBLADE.offset(0), null);
-								if(!worldObj.isRemote)
-									minerController.makeInterrupt(new PC_WeaselEventInventorySlotEmpty(minerController.getAddress(), SAWBLADE.inventoryName, 0));
+								if(!this.worldObj.isRemote)
+									this.minerController.makeInterrupt(new PC_WeaselEventInventorySlotEmpty(this.minerController.getAddress(), SAWBLADE.inventoryName, 0));
 							}
 						}
 					}
@@ -888,7 +888,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		digPos(offset);
 	}
 	
-	public int offsetToMiningIndex(PC_Vec3I offset){
+	public static int offsetToMiningIndex(PC_Vec3I offset){
 		int x=offset.x, y=offset.y, z=offset.z;
 		if(x<-1 || x>1 || y>2 || y<-2 || z>2 || z<1 || (Math.abs(y)==1 && Math.abs(x)==z)) return -1;
 		if(x==-1) x=0;
@@ -897,7 +897,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		return 6-(y*2)+x;
 	}
 	
-	public PC_Vec3I miningIndexToOffset(int i){
+	public static PC_Vec3I miningIndexToOffset(int i){
 		int tmpY=0;
 		tmpY=(i>=4 && i<=7)?1:2;
 		if(i>=6) tmpY*=-1;
@@ -911,8 +911,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		this.operationErrored = !tryToPlace(is, pos);
 		if(is.stackSize==0){
 			this.setInventorySlotContents(inv.offset(invPlace), null);
-			if(!worldObj.isRemote)
-				minerController.makeInterrupt(new PC_WeaselEventInventorySlotEmpty(minerController.getAddress(), inv.inventoryName, invPlace));
+			if(!this.worldObj.isRemote)
+				this.minerController.makeInterrupt(new PC_WeaselEventInventorySlotEmpty(this.minerController.getAddress(), inv.inventoryName, invPlace));
 		}
 	}
 
