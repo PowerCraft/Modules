@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import powercraft.api.PC_Field.Flag;
 import powercraft.api.PC_INBT;
@@ -12,7 +11,6 @@ import powercraft.api.PC_Logger;
 import powercraft.api.PC_NBTTagHandler;
 import powercraft.api.inventory.PC_WeaselNativeInventoryInterface;
 import powercraft.api.script.weasel.PC_IWeaselEvent;
-import powercraft.api.script.weasel.PC_IWeaselInventory;
 import powercraft.api.script.weasel.PC_Weasel;
 import powercraft.api.script.weasel.PC_WeaselContainer;
 import powercraft.api.script.weasel.PC_WeaselSourceClass;
@@ -24,7 +22,7 @@ import xscript.runtime.nativemethod.XNativeClass.XNativeMethod;
 import xscript.runtime.nativemethod.XNativeClass.XParamSpecial;
 import xscript.runtime.nativemethod.XNativeClass.XParamSpecial.XParamTypes;
 
-public class PCtf_MinerController implements PC_INBT, PC_IWeaselInventory, PC_IWeaselGridTileAddressable{
+public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressable{
 	
 	private PCtf_EntityMiner miner;
 	private PC_WeaselContainer weasel;
@@ -125,11 +123,6 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselInventory, PC_IW
 	}
 
 	@Override
-	public IInventory[] getInventories() {
-		return this.miner.inventoryArray;
-	}
-
-	@Override
 	public void setGrid(PC_WeaselGrid grid) {
 		this.grid = grid;
 	}
@@ -208,10 +201,10 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselInventory, PC_IW
 		}
 		
 		@XNativeMethod
-		public static void placeBlock(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address, int invPlace, int x, int y, int z){
+		public static void placeBlock(@XParamSpecial(XParamTypes.USERDATA)PCtf_MinerController minerController, int address, String inventory, int invPlace, int x, int y, int z){
 			PCtf_EntityMiner miner = minerController.getMiner(address);
 			if(miner!=null){
-				miner.placeBlock(invPlace, x, y, z);
+				miner.placeBlock(inventory, invPlace, x, y, z);
 			}
 		}
 	

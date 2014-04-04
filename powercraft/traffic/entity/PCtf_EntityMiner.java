@@ -13,7 +13,6 @@ import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -36,15 +35,14 @@ import powercraft.api.gres.PC_GresBaseWithInventory;
 import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.inventory.PC_IInventory;
-import powercraft.api.inventory.PC_InventoryMask;
-import powercraft.api.inventory.PC_InventoryMaskRedirecting;
+import powercraft.api.inventory.PC_IWeaselInventory;
+import powercraft.api.inventory.PC_InventoryDescription;
 import powercraft.api.inventory.PC_InventoryUtils;
 import powercraft.api.recipes.PC_3DRecipe.StructStart;
 import powercraft.api.recipes.PC_I3DRecipeHandler;
 import powercraft.api.recipes.PC_Recipes;
 import powercraft.api.renderer.PC_EntityRenderer;
 import powercraft.api.renderer.model.PC_Model;
-import powercraft.api.script.weasel.PC_IWeaselInventory;
 import powercraft.api.script.weasel.events.PC_WeaselEventInventorySlotEmpty;
 import powercraft.traffic.PCtf_MinerController;
 import powercraft.traffic.container.PCtf_ContainerMiner;
@@ -52,8 +50,10 @@ import powercraft.traffic.gui.PCtf_GuiMiner;
 import powercraft.traffic.items.PCtf_ItemSawblade;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import static powercraft.traffic.entity.PCtf_EntityMiner.INVENTORIES.*;
 
-public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandler, PC_IInventory{
+
+public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandler, PC_IInventory, PC_IWeaselInventory{
 	
 	public static final int OPERATION_FINISHED = 0;
 	public static final int OPERATION_ERRORED = -1;
@@ -79,10 +79,19 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	@PC_Field
 	protected boolean operationErrored;
 	
-	public final PC_InventoryMask INVENTORY = new PC_InventoryMaskRedirecting(null, this, 0, 9*6-1, "inventory", false, null);
-	public final PC_InventoryMask SAWBLADE = new PC_InventoryMaskRedirecting(null, this, 9*6, 9*6, "sawblade", false, null);
-	
-	public final IInventory[] inventoryArray = {INVENTORY, SAWBLADE};
+	public static class INVENTORIES{
+		public static final PC_InventoryDescription GLOBAL = new PC_InventoryDescription(0, 9*6, "global");
+		public static final PC_InventoryDescription INVENTORY = new PC_InventoryDescription(0, 9*6-1, "inventory");
+		public static final PC_InventoryDescription SAWBLADE = new PC_InventoryDescription(9*6, 9*6, "sawblade");
+		
+		private static final PC_InventoryDescription array[] = {SAWBLADE, INVENTORY, GLOBAL};
+		public static PC_InventoryDescription byName(String name){
+			for(PC_InventoryDescription desc:array){
+				if(name.equalsIgnoreCase(GLOBAL.inventoryName)) return desc;
+			}
+			return null;
+		}
+	}
 	
 	public PCtf_EntityMiner(World world) {
 		super(world);
@@ -212,12 +221,12 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 					this.minings[i] = -1;
 				}else{
 					if((--this.minings[i])%10==0){
-						ItemStack is = SAWBLADE.getStackInSlot(0);
+						ItemStack is = getStackInSlot(SAWBLADE.offset(0));
 						if(is!=null){
 							if(is.attemptDamageItem(1, new Random())){
-								SAWBLADE.setInventorySlotContents(0, null);
+								setInventorySlotContents(SAWBLADE.offset(0), null);
 								if(!worldObj.isRemote)
-									minerController.makeInterrupt(new PC_WeaselEventInventorySlotEmpty(minerController.getAddress(), SAWBLADE.getInventoryName(), 0));
+									minerController.makeInterrupt(new PC_WeaselEventInventorySlotEmpty(minerController.getAddress(), SAWBLADE.inventoryName, 0));
 							}
 						}
 					}
@@ -757,7 +766,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		if(block.isAir(this.worldObj, pos.x, pos.y, pos.z))
 			return -1;
 		int metadata = PC_Utils.getMetadata(this.worldObj, pos);
-		ItemStack is = this.SAWBLADE.getStackInSlot(0);
+		ItemStack is = getStackInSlot(SAWBLADE.offset(0));
 		/*Material material = block.getMaterial();
 		if(!material.isToolNotRequired()){
 			int level = block.getHarvestLevel(metadata);
@@ -896,20 +905,26 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		return new PC_Vec3I((i%2==0)?-1:1, tmpY, (i<2 || i>9)?1:2);
 	}
 	
-	public void placeBlock(int invPlace, int x, int y, int z) {
+	public void placeBlock(String inventory, int invPlace, int x, int y, int z) {
+		PC_InventoryDescription inv = INVENTORIES.byName(inventory);
 		PC_Vec3I pos = getPosFor(new PC_Vec3I(x, y, z));
-		ItemStack is = this.INVENTORY.getStackInSlot(invPlace);
+		ItemStack is = this.getStackInSlot(inv.offset(invPlace));
 		this.operationErrored = !tryToPlace(is, pos);
 		if(is.stackSize==0){
-			this.INVENTORY.setInventorySlotContents(invPlace, null);
+			this.setInventorySlotContents(inv.offset(invPlace), null);
 			if(!worldObj.isRemote)
-				minerController.makeInterrupt(new PC_WeaselEventInventorySlotEmpty(minerController.getAddress(), INVENTORY.getInventoryName(), INVENTORY.globalToLocalIndex(invPlace)));
+				minerController.makeInterrupt(new PC_WeaselEventInventorySlotEmpty(minerController.getAddress(), inv.inventoryName, invPlace));
 		}
 	}
 
 	@Override
 	public boolean canBeDragged(int i) {
 		return true;
+	}
+
+	@Override
+	public PC_InventoryDescription getInventory(String name) {
+		return INVENTORIES.byName(name);
 	}
 	
 	
