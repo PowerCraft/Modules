@@ -23,6 +23,7 @@ import powercraft.itemstorage.PCis_ChannelChestSave;
 import powercraft.itemstorage.container.PCis_ContainerCompressor;
 import powercraft.itemstorage.gui.PCis_GuiChannelNotConnected;
 import powercraft.itemstorage.gui.PCis_GuiCompressor;
+import powercraft.itemstorage.inventory.PCis_CompressorInventory;
 import powercraft.itemstorage.inventory.PCis_EnderCompressorInventory;
 import powercraft.itemstorage.inventory.PCis_HightCompressorInventory;
 import powercraft.itemstorage.inventory.PCis_NormalCompressorInventory;
@@ -45,7 +46,7 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 	
 	@Override
 	public void registerIcons(PC_IconRegistry iconRegistry) {
-		for(int i=0; i<4; i++){
+		for(int i=0; i<this.icons.length; i++){
 			this.icons[i] = iconRegistry.registerIcon(id2Name[i]);
 		}
 	}
@@ -171,7 +172,8 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 			}
 		}
 		PC_InventoryUtils.onTick(compressorinv, world);
-		compressorinv.closeInventory();
+		if(compressorinv instanceof PCis_CompressorInventory)
+			compressorinv.closeInventory();
 	}
 	
 	@Override

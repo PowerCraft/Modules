@@ -35,8 +35,7 @@ public class PCtf_Traffic extends PC_Module {
 	
 	@Override
 	public ItemStack getCreativeTabItemStack() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ItemStack(SAWBLADE_OBSIDIAN);
 	}
 
 }

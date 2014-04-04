@@ -39,8 +39,7 @@ public class PCis_ItemStorage extends PC_Module {
 	
 	@Override
 	public ItemStack getCreativeTabItemStack() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ItemStack(CHANNEL_CHEST);
 	}
 
 	@SuppressWarnings({ "static-method", "unused" })

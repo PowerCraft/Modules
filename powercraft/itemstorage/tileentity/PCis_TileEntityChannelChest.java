@@ -1,30 +1,52 @@
 package powercraft.itemstorage.tileentity;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.model.ModelChest;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import powercraft.api.PC_3DRotationY;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Field;
+import powercraft.api.PC_Utils;
 import powercraft.api.PC_Field.Flag;
 import powercraft.api.block.PC_TileEntityRotateable;
 import powercraft.api.gres.PC_GresBaseWithInventory;
 import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
+import powercraft.api.renderer.PC_ITileEntityRenderer;
+import powercraft.api.renderer.PC_TileEntitySpecialRenderer;
 import powercraft.itemstorage.PCis_ChannelChestSave;
+import powercraft.itemstorage.PCis_ChannelChestSave.PCis_ChannelChestInventory;
 import powercraft.itemstorage.PCis_ItemStorage;
 import powercraft.itemstorage.container.PCis_ContainerChannelChest;
 import powercraft.itemstorage.gui.PCis_GuiChannelChest;
 import powercraft.itemstorage.item.PCis_ItemCompressor;
 
 
-public class PCis_TileEntityChannelChest extends PC_TileEntityRotateable implements IInventory, PC_IGresGuiOpenHandler {
+public class PCis_TileEntityChannelChest extends PC_TileEntityRotateable implements IInventory, PC_IGresGuiOpenHandler, PC_ITileEntityRenderer {
 
 	@PC_Field(name="channelID")
 	private int id;
-	private IInventory inventory;
+	private PCis_ChannelChestInventory inventory;
+	private float prevLidAngle;
+	private float lidAngle;
+	private boolean open;
+	
+	@SideOnly(Side.CLIENT)
+	private static class CLIENT{
+		static final ModelChest model = new ModelChest();
+		static final ResourceLocation texture = PC_Utils.getResourceLocation(PCis_ItemStorage.INSTANCE, "textures/blocks/ChannelChest/normal.png");
+	}
 	
 	public PCis_TileEntityChannelChest() {
 		
@@ -146,6 +168,95 @@ public class PCis_TileEntityChannelChest extends PC_TileEntityRotateable impleme
 	@Override
 	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
 		return null;
+	}
+
+	@Override
+	public int getComparatorInput(PC_Direction side) {
+		return Container.calcRedstoneFromInventory(this.inventory);
+	}
+	
+	@Override
+	public void onTick() {
+		if(this.worldObj.isRemote){
+			this.prevLidAngle = this.lidAngle;
+			if(this.open){
+				this.lidAngle+=0.1f;
+			}else{
+				this.lidAngle-=0.1f;
+			}
+			if(this.lidAngle>1){
+				this.lidAngle = 1;
+			}else if(this.lidAngle<0){
+				this.lidAngle = 0;
+			}
+		}else if(this.inventory!=null){
+			if(this.inventory.getPlayersAccessing()>0 != this.open){
+				this.open = !this.open;
+				NBTTagCompound nbtTagCompound = new NBTTagCompound();
+				nbtTagCompound.setInteger("type", 1);
+				nbtTagCompound.setBoolean("open", this.open);
+				sendMessage(nbtTagCompound);
+			}
+		}
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void onClientMessage(EntityPlayer player, NBTTagCompound nbtTagCompound) {
+		switch(nbtTagCompound.getInteger("type")){
+		case 1:
+			this.open = nbtTagCompound.getBoolean("open");
+			break;
+		default:
+			super.onClientMessage(player, nbtTagCompound);
+			break;
+		}
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void renderTileEntityAt(PC_TileEntitySpecialRenderer tileEntityRenderer, double x, double y, double z, float timeStamp) {
+		tileEntityRenderer.bindTexture(CLIENT.texture);
+        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        GL11.glTranslatef(0, 1, 1);
+        GL11.glScalef(1.0F, -1.0F, -1.0F);
+        GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+        
+        int rot = 0;
+        if(get3DRotation()!=null){
+	        PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.SOUTH);
+	        switch(dir){
+			case EAST:
+				rot = 90;
+				break;
+			case NORTH:
+				rot = 0;
+				break;
+			case SOUTH:
+				rot = 180;
+				break;
+			case WEST:
+				rot = 270;
+				break;
+			default:
+				break;
+	        }
+        }
+        GL11.glRotatef(rot, 0.0F, 1.0F, 0.0F);
+        GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+        float angle = this.prevLidAngle + (this.lidAngle - this.prevLidAngle) * timeStamp;
+
+        angle = 1.0F - angle;
+        angle = 1.0F - angle * angle * angle;
+        CLIENT.model.chestLid.rotateAngleX = -(angle * (float)Math.PI / 2.0F);
+        CLIENT.model.renderAll();
+        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public boolean renderWorldBlock(int modelId, RenderBlocks renderer) {
+		return true;
 	}
 	
 }

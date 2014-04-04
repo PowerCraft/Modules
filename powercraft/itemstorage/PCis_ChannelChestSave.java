@@ -7,7 +7,6 @@ import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -40,27 +39,27 @@ public class PCis_ChannelChestSave extends WorldSavedData {
 		return save;
 	}
 	
-	public static IInventory getInventoryForChannelChest(int id){
+	public static PCis_ChannelChestInventory getInventoryForChannelChest(int id){
 		return getSave().channels.get(Integer.valueOf(id));
 	}
 	
-	public static IInventory addRef(int id){
-		ChannelData inv = getSave().channels.get(Integer.valueOf(id));
+	public static PCis_ChannelChestInventory addRef(int id){
+		PCis_ChannelChestInventory inv = getSave().channels.get(Integer.valueOf(id));
 		if(inv==null){
-			save.channels.put(Integer.valueOf(id), inv = new ChannelData(9*3));
+			save.channels.put(Integer.valueOf(id), inv = new PCis_ChannelChestInventory(9*3));
 		}
 		inv.addRef();
 		return inv;
 	}
 	
 	public static void remove(int id){
-		ChannelData inv = getSave().channels.get(Integer.valueOf(id));
+		PCis_ChannelChestInventory inv = getSave().channels.get(Integer.valueOf(id));
 		if(inv!=null && inv.remove()){
 			save.channels.remove(Integer.valueOf(id));
 		}
 	}
 	
-	private Map<Integer, ChannelData> channels = new HashMap<Integer, ChannelData>();
+	private Map<Integer, PCis_ChannelChestInventory> channels = new HashMap<Integer, PCis_ChannelChestInventory>();
 	
 	public PCis_ChannelChestSave() {
 		super(NAME);
@@ -75,14 +74,14 @@ public class PCis_ChannelChestSave extends WorldSavedData {
 		NBTTagList list = (NBTTagList)nbtTagCompound.getTag("save");
 		for(int i=0; i<list.tagCount(); i++){
 			NBTTagCompound com = list.getCompoundTagAt(i);
-			this.channels.put(Integer.valueOf(com.getInteger("key")), new ChannelData(com));
+			this.channels.put(Integer.valueOf(com.getInteger("key")), new PCis_ChannelChestInventory(com));
 		}
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbtTagCompound) {
 		NBTTagList list = new NBTTagList();
-		for(Entry<Integer, ChannelData> e:this.channels.entrySet()){
+		for(Entry<Integer, PCis_ChannelChestInventory> e:this.channels.entrySet()){
 			NBTTagCompound com = new NBTTagCompound();
 			com.setInteger("key", e.getKey().intValue());
 			e.getValue().saveToNBT(com);
@@ -91,16 +90,23 @@ public class PCis_ChannelChestSave extends WorldSavedData {
 		nbtTagCompound.setTag("save", list);
 	}
 
-	private static class ChannelData implements IInventory, PC_IInventorySetNoMark{
+	public static class PCis_ChannelChestInventory implements IInventory, PC_IInventorySetNoMark{
 
 		private ItemStack[] inventoryContents;
 		private int refs;
+		private boolean isFake;
+		private int playersAccessing;
 		
-		ChannelData(int size){
+		PCis_ChannelChestInventory(int size){
 			this.inventoryContents = new ItemStack[size];
 		}
+		
+		PCis_ChannelChestInventory(int size, boolean isFake){
+			this.inventoryContents = new ItemStack[size];
+			this.isFake = isFake;
+		}
 
-		ChannelData(NBTTagCompound nbtTagCompound){
+		PCis_ChannelChestInventory(NBTTagCompound nbtTagCompound){
 			this.inventoryContents = new ItemStack[nbtTagCompound.getInteger("size")];
 			PC_InventoryUtils.loadInventoryFromNBT(this, nbtTagCompound, "inv");
 			this.refs = nbtTagCompound.getInteger("refs");
@@ -194,7 +200,8 @@ public class PCis_ChannelChestSave extends WorldSavedData {
 
 		@Override
 		public void markDirty() {
-			save.markDirty();
+			if(!this.isFake)
+				save.markDirty();
 		}
 
 		@Override
@@ -204,12 +211,14 @@ public class PCis_ChannelChestSave extends WorldSavedData {
 
 		@Override
 		public void openInventory() {
-			//
+			this.playersAccessing++;
 		}
 
 		@Override
 		public void closeInventory() {
-			//
+			this.playersAccessing--;
+			if(this.playersAccessing<0)
+				throw new AssertionError();
 		}
 
 		@Override
@@ -217,10 +226,14 @@ public class PCis_ChannelChestSave extends WorldSavedData {
 			return true;
 		}
 		
+		public int getPlayersAccessing(){
+			return this.playersAccessing;
+		}
+		
 	}
 
-	public static IInventory getFake() {
-		return new InventoryBasic("Channel Chest", true, 3*9);
+	public static PCis_ChannelChestInventory getFake() {
+		return new PCis_ChannelChestInventory(9*3, true);
 	}
 
 	public static int getNextFreeID() {

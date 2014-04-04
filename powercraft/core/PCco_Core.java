@@ -34,8 +34,7 @@ public class PCco_Core extends PC_Module {
 	
 	@Override
 	public ItemStack getCreativeTabItemStack() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ItemStack(NANOBOTS);
 	}
 
 }
