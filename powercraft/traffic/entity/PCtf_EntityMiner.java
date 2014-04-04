@@ -1,10 +1,13 @@
 package powercraft.traffic.entity;
 
+import static powercraft.traffic.entity.PCtf_EntityMiner.INVENTORIES.SAWBLADE;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
@@ -27,6 +30,7 @@ import powercraft.api.PC_Logger;
 import powercraft.api.PC_MathHelper;
 import powercraft.api.PC_NBTTagHandler;
 import powercraft.api.PC_Utils;
+import powercraft.api.PC_Vec3;
 import powercraft.api.PC_Vec3I;
 import powercraft.api.entity.PC_Entities;
 import powercraft.api.entity.PC_Entity;
@@ -47,10 +51,11 @@ import powercraft.api.script.weasel.events.PC_WeaselEventInventorySlotEmpty;
 import powercraft.traffic.PCtf_MinerController;
 import powercraft.traffic.container.PCtf_ContainerMiner;
 import powercraft.traffic.gui.PCtf_GuiMiner;
+import powercraft.traffic.items.PCtf_ItemEnergyConverter;
+import powercraft.traffic.items.PCtf_ItemEngine;
 import powercraft.traffic.items.PCtf_ItemSawblade;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import static powercraft.traffic.entity.PCtf_EntityMiner.INVENTORIES.*;
 
 
 public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandler, PC_IInventory, PC_IWeaselInventory{
@@ -60,7 +65,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	public static final int OPERATION_INWORK = 1;
 	
 	@PC_Field
-	protected ItemStack[] inventoryContents = new ItemStack[6*9+1];
+	protected ItemStack[] inventoryContents = new ItemStack[INVENTORIES.GLOBAL.lastIndex+1];
 	@PC_Field
 	protected PCtf_MinerController minerController;
 	@PC_Field
@@ -78,13 +83,22 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	protected int moveAfterMining;
 	@PC_Field
 	protected boolean operationErrored;
+	@PC_Field
+	protected int remainingEnergy=0;
 	
 	public static class INVENTORIES{
-		public static final PC_InventoryDescription GLOBAL = new PC_InventoryDescription(0, 9*6, "global");
+		public static final PC_InventoryDescription GLOBAL = new PC_InventoryDescription(0, 9*6+6, "global");
 		public static final PC_InventoryDescription INVENTORY = new PC_InventoryDescription(0, 9*6-1, "inventory");
-		public static final PC_InventoryDescription SAWBLADE = new PC_InventoryDescription(9*6, 9*6, "sawblade");
+		public static final PC_InventoryDescription SAWBLADE = new PC_InventoryDescription(9*6, "sawblade");
+		public static final PC_InventoryDescription ENGINE = new PC_InventoryDescription(9*6+1, "engine");
+		public static final PC_InventoryDescription SHIELD = new PC_InventoryDescription(9*6+2, "shield");
+		public static final PC_InventoryDescription CONVERTER = new PC_InventoryDescription(9*6+3, "converter");
+		public static final PC_InventoryDescription WORKBENCH = new PC_InventoryDescription(9*6+4, "workbench");
+		public static final PC_InventoryDescription RADIO = new PC_InventoryDescription(9*6+5, "radio");
+		public static final PC_InventoryDescription REMOTE_INVENTORY = new PC_InventoryDescription(9*6+6, "remoteInventory");
 		
-		private static final PC_InventoryDescription array[] = {SAWBLADE, INVENTORY, GLOBAL};
+		
+		private static final PC_InventoryDescription array[] = {INVENTORY, SAWBLADE, ENGINE, SHIELD, CONVERTER, WORKBENCH, RADIO, REMOTE_INVENTORY, GLOBAL};
 		public static PC_InventoryDescription byName(String name){
 			for(PC_InventoryDescription desc:array){
 				if(name.equalsIgnoreCase(GLOBAL.inventoryName)) return desc;
@@ -209,7 +223,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		pushEntities();
 		
 		moveEntity(this.motionX, this.motionY, this.motionZ);
-		
+
 		for(int i=0; i<this.minings.length; i++){
 			if(this.minings[i]>=0){
 				if(this.minings[i]==0){
@@ -219,6 +233,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 					}
 					this.minings[i] = -1;
 				}else{
+					consumeEnergy(1, false);
 					if((--this.minings[i])%10==0){
 						ItemStack is = getStackInSlot(SAWBLADE.offset(0));
 						if(is!=null){
@@ -230,6 +245,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 						}
 					}
 				}
+			}else if(this.minings[i]<-1){
+				this.operationErrored=true;
 			}
 		}
 		
@@ -631,7 +648,10 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-		return i==9*6?itemstack.getItem() instanceof PCtf_ItemSawblade:true;
+		if(i==INVENTORIES.SAWBLADE.firstIndex) return itemstack.getItem() instanceof PCtf_ItemSawblade;
+		if(i==INVENTORIES.CONVERTER.firstIndex) return itemstack.getItem() instanceof PCtf_ItemEnergyConverter;
+		if(i==INVENTORIES.ENGINE.firstIndex) return itemstack.getItem() instanceof PCtf_ItemEngine;
+		return true;
 	}
 
 	@Override
@@ -764,6 +784,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		Block block = PC_Utils.getBlock(this.worldObj, pos);
 		if(block.isAir(this.worldObj, pos.x, pos.y, pos.z))
 			return -1;
+		if(block instanceof BlockLiquid)
+			return -1;
 		int metadata = PC_Utils.getMetadata(this.worldObj, pos);
 		ItemStack is = getStackInSlot(SAWBLADE.offset(0));
 		/*Material material = block.getMaterial();
@@ -776,7 +798,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		}*/
 		float hardness = block.getBlockHardness(this.worldObj, pos.x, pos.y, pos.z);
 		if(hardness<0)
-			return -1;
+			return -2;
 		hardness *= 10;
 		if(is!=null){
 			PCtf_ItemSawblade sawblade = (PCtf_ItemSawblade)is.getItem();
@@ -853,7 +875,10 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	
 	public void digPos(PC_Vec3I offset){
 		PC_Vec3I realPos = getPosFor(offset);
-		this.minings[offsetToMiningIndex(offset)] = getTimeForBlockHarvest(realPos);
+		int time;
+		time = getTimeForBlockHarvest(realPos);
+		if(time<-1) this.operationErrored = true;
+		this.minings[offsetToMiningIndex(offset)] = time;
 	}
 	
 	public void digForward(){
@@ -904,7 +929,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		return new PC_Vec3I((i%2==0)?-1:1, tmpY, (i<2 || i>9)?1:2);
 	}
 	
-	public void placeBlock(String inventory, int invPlace, int x, int y, int z) {
+	public boolean placeBlock(String inventory, int invPlace, int x, int y, int z) {
+		if(!consumeEnergy(x+y+z, false)) return false;
 		PC_InventoryDescription inv = INVENTORIES.byName(inventory);
 		PC_Vec3I pos = getPosFor(new PC_Vec3I(x, y, z));
 		ItemStack is = this.getStackInSlot(inv.offset(invPlace));
@@ -914,6 +940,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			if(!this.worldObj.isRemote)
 				this.minerController.makeInterrupt(new PC_WeaselEventInventorySlotEmpty(this.minerController.getAddress(), inv.inventoryName, invPlace));
 		}
+		return this.operationErrored;
 	}
 
 	@Override
@@ -924,6 +951,29 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	@Override
 	public PC_InventoryDescription getInventory(String name) {
 		return INVENTORIES.byName(name);
+	}
+	
+	protected boolean consumeEnergy(int amount, boolean throwException){
+		while(remainingEnergy<amount && !convertFuelToEnergy()){}
+		if(remainingEnergy>=amount){
+			remainingEnergy-=amount;
+			return true;
+		}
+		if(throwException)
+			throw new RuntimeException("Not enough Energy");
+		return false;
+	}
+	
+	protected boolean convertFuelToEnergy(){
+		ItemStack is;
+		if((is=this.getStackInSlot(INVENTORIES.CONVERTER.offset(0)))==null)
+			return false;
+		int produced = PC_InventoryUtils.useFuel(this, PC_InventoryUtils.makeIndexList(INVENTORIES.INVENTORY.firstIndex, INVENTORIES.INVENTORY.lastIndex), this.worldObj, new PC_Vec3(this.posX, this.posY, this.posZ));
+		if(produced>0){
+			remainingEnergy+=produced;
+			return true;
+		}
+		return false;
 	}
 	
 	
