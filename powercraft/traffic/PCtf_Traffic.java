@@ -5,6 +5,8 @@ import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
 import powercraft.api.entity.PC_Entities;
 import powercraft.traffic.entity.PCtf_EntityMiner;
+import powercraft.traffic.items.PCtf_ItemEnergyConverter;
+import powercraft.traffic.items.PCtf_ItemEngine;
 import powercraft.traffic.items.PCtf_ItemSawblade;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.InstanceFactory;
@@ -22,6 +24,9 @@ public class PCtf_Traffic extends PC_Module {
 	public static final PCtf_ItemSawblade SAWBLADE_GOLD = new PCtf_ItemSawblade(PCtf_ItemSawblade.GOLD);
 	public static final PCtf_ItemSawblade SAWBLADE_DIAMOND = new PCtf_ItemSawblade(PCtf_ItemSawblade.DIAMOND);
 	public static final PCtf_ItemSawblade SAWBLADE_OBSIDIAN = new PCtf_ItemSawblade(PCtf_ItemSawblade.OBSIDIAN);
+	
+	public static final PCtf_ItemEnergyConverter CONVERTER = new PCtf_ItemEnergyConverter();
+	public static final PCtf_ItemEngine ENGINE = new PCtf_ItemEngine();
 	
 	@InstanceFactory
 	public static PCtf_Traffic factory() {
