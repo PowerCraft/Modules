@@ -179,7 +179,6 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			this.minerController.run();
 		super.onUpdate();
         
-        
 		float diff = (((getTargetRot()*90 - this.rotationYaw) % 360) + 360) % 360;
 		if(diff>180)
 			diff = -360.0f+diff;
@@ -240,7 +239,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			}
 			this.moveAfterMining = 0;
 		}
-		
+		PC_InventoryUtils.onTick(this, this.worldObj);
 	}
 
 	private void pickupItems(){
