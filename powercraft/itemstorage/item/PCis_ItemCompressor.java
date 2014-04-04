@@ -6,6 +6,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
@@ -53,8 +54,9 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 		return this.icons[type];
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void getItemStacks(List<ItemStack> list) {
+	public void getSubItems(Item item, CreativeTabs creativeTabs, List list) {
 		list.add(new ItemStack(this, 1, NORMAL));
 		list.add(new ItemStack(this, 1, ENDERACCESS));
 		list.add(new ItemStack(this, 1, HEIGHT));
