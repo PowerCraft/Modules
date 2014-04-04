@@ -19,9 +19,10 @@ import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.inventory.PC_InventoryUtils;
 import powercraft.api.item.PC_Item;
 import powercraft.api.network.PC_PacketHandler;
+import powercraft.itemstorage.PCis_ChannelChestSave;
 import powercraft.itemstorage.container.PCis_ContainerCompressor;
+import powercraft.itemstorage.gui.PCis_GuiChannelNotConnected;
 import powercraft.itemstorage.gui.PCis_GuiCompressor;
-import powercraft.itemstorage.inventory.PCis_CompressorInventory;
 import powercraft.itemstorage.inventory.PCis_EnderCompressorInventory;
 import powercraft.itemstorage.inventory.PCis_HightCompressorInventory;
 import powercraft.itemstorage.inventory.PCis_NormalCompressorInventory;
@@ -31,9 +32,9 @@ import powercraft.itemstorage.item.packet.PCis_PacketItemSetTakeStacks;
 
 public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandler {
 	
-	public static final int NORMAL = 0, ENDERACCESS = 1, HEIGHT = 2, BIG = 3;
-	public static final String id2Name[] = {"normal", "enderaccess", "height", "big"};
-	private IIcon[] icons = new IIcon[4];
+	public static final int NORMAL = 0, ENDERACCESS = 1, HEIGHT = 2, BIG = 3, CHANNEL = 4;
+	public static final String id2Name[] = {"normal", "enderaccess", "height", "big", "channel"};
+	private IIcon[] icons = new IIcon[5];
 	
 	public PCis_ItemCompressor() {
 		setMaxDamage(0);
@@ -61,6 +62,7 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 		list.add(new ItemStack(this, 1, ENDERACCESS));
 		list.add(new ItemStack(this, 1, HEIGHT));
 		list.add(new ItemStack(this, 1, BIG));
+		list.add(new ItemStack(this, 1, CHANNEL));
 	}
 	
 	@Override
@@ -118,14 +120,14 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 		IInventory inventory = PC_InventoryUtils.getInventoryFrom(entity);
 		boolean takeStacks = isTakeStacks(itemStack);
 		int putStacks = getPutStacks(itemStack);
-		PCis_CompressorInventory compressorinv = getInventoryFor(entity, slot);
+		IInventory compressorinv = getInventoryFor(world, entity, slot);
 		if(compressorinv==null)
 			return;
 		if(takeStacks){
 			for(int i=0; i<compressorinv.getSizeInventory(); i++){
 				ItemStack is = compressorinv.getStackInSlot(i);
 				if(is!=null){
-					int need = compressorinv.getSlotStackLimit(i)-is.stackSize;
+					int need = PC_InventoryUtils.getSlotStackLimit(compressorinv, i)-is.stackSize;
 					if(need>0){
 						int playerSlot = findSlotInPlayerInvFor(is, inventory, putStacks);
 						if(playerSlot!=-1){
@@ -176,14 +178,14 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 	public void onTick(ItemStack itemStack, World world, IInventory inventory, int slot) {
 		boolean takeStacks = isTakeStacks(itemStack);
 		int putStacks = getPutStacks(itemStack);
-		PCis_CompressorInventory compressorinv = getInventoryFor(inventory, slot);
+		IInventory compressorinv = getInventoryFor(world, inventory, slot);
 		if(compressorinv==null)
 			return;
 		if(takeStacks){
 			for(int i=0; i<compressorinv.getSizeInventory(); i++){
 				ItemStack is = compressorinv.getStackInSlot(i);
 				if(is!=null){
-					int need = compressorinv.getSlotStackLimit(i)-is.stackSize;
+					int need = PC_InventoryUtils.getSlotStackLimit(compressorinv, i)-is.stackSize;
 					if(need>0){
 						int playerSlot = findSlotInPlayerInvFor(is, inventory, putStacks);
 						if(playerSlot!=-1){
@@ -230,7 +232,7 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 		compressorinv.closeInventory();
 	}
 
-	public static PCis_CompressorInventory getInventoryFor(Object player, int equipment){
+	public static IInventory getInventoryFor(World world, Object player, int equipment){
 		IInventory inventory = PC_InventoryUtils.getInventoryFrom(player);
 		if(inventory==null)
 			return null;
@@ -251,6 +253,13 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 			return new PCis_HightCompressorInventory(inventory, slot);
 		case BIG:
 			return new PCis_NormalCompressorInventory(inventory, slot, new PC_Vec2I(9, 6));
+		case CHANNEL:
+			if(world.isRemote){
+				return PCis_ChannelChestSave.getFake();
+			}
+			if(compressor.hasTagCompound())
+				return PCis_ChannelChestSave.getInventoryForChannelChest(compressor.getTagCompound().getInteger("id"));
+			return null;
 		default:
 			return null;
 		}
@@ -326,18 +335,26 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 	@Override
 	public PC_IGresGui openClientGui(EntityPlayer player, NBTTagCompound serverData) {
 		int slot = serverData.getInteger("slot");
-		return new PCis_GuiCompressor(player, player.inventory.getStackInSlot(slot), slot, getInventoryFor(player, -1));
+		boolean linked = serverData.getBoolean("linked");
+		if(!linked){
+			return new PCis_GuiChannelNotConnected();
+		}
+		return new PCis_GuiCompressor(player, player.inventory.getStackInSlot(slot), slot, getInventoryFor(player.worldObj, player, -1));
 	}
 
 	@Override
 	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
-		return new PCis_ContainerCompressor(player, player.getHeldItem(), player.inventory.currentItem, getInventoryFor(player, -1));
+		IInventory inv = getInventoryFor(player.worldObj, player, -1);
+		if(inv==null)
+			return null;
+		return new PCis_ContainerCompressor(player, player.getHeldItem(), player.inventory.currentItem, inv);
 	}
 
 	@Override
 	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setInteger("slot", player.inventory.currentItem);
+		nbt.setBoolean("linked", getInventoryFor(player.worldObj, player, -1)!=null);
 		return nbt;
 	}
 	

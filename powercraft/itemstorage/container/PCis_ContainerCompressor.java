@@ -1,9 +1,9 @@
 package powercraft.itemstorage.container;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import powercraft.api.gres.PC_GresBaseWithInventory;
-import powercraft.itemstorage.inventory.PCis_CompressorInventory;
 
 public class PCis_ContainerCompressor extends PC_GresBaseWithInventory {
 	
@@ -11,7 +11,7 @@ public class PCis_ContainerCompressor extends PC_GresBaseWithInventory {
 	
 	private int slot;
 	
-	public PCis_ContainerCompressor(EntityPlayer player, ItemStack itemStack, int slot, PCis_CompressorInventory inv) {
+	public PCis_ContainerCompressor(EntityPlayer player, ItemStack itemStack, int slot, IInventory inv) {
 		super(player, inv);
 		this.itemStack = itemStack;
 		this.slot = slot;

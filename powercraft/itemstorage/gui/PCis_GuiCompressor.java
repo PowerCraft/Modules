@@ -2,6 +2,7 @@ package powercraft.itemstorage.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Vec2I;
 import powercraft.api.gres.PC_GresCheckBox;
@@ -31,7 +32,7 @@ public class PCis_GuiCompressor extends PCis_ContainerCompressor implements PC_I
 	public PC_GresCheckBox takeStacks;
 	public PC_GresTextEdit putStacks;
 	
-	public PCis_GuiCompressor(EntityPlayer player, ItemStack itemStack, int slot, PCis_CompressorInventory inv) {
+	public PCis_GuiCompressor(EntityPlayer player, ItemStack itemStack, int slot, IInventory inv) {
 		super(player, itemStack, slot, inv);
 	}
 
@@ -56,7 +57,12 @@ public class PCis_GuiCompressor extends PCis_ContainerCompressor implements PC_I
 		this.putStacks.addEventListener(this);
 		w.addSideTab(tab);
 		
-		PC_Vec2I size = ((PCis_CompressorInventory)this.inventory).getSize();
+		PC_Vec2I size;
+		if(this.inventory instanceof PCis_CompressorInventory){
+			size = ((PCis_CompressorInventory)this.inventory).getSize();
+		}else{
+			size = new PC_Vec2I(9, 3);
+		}
 		PC_GresInventory inventory = new PC_GresInventory(size.x, size.y);
 		inventory.setSlots(this.invSlots, 0);
 		w.add(inventory);
