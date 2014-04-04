@@ -54,10 +54,22 @@ public class PCtf_GuiMiner extends PCtf_ContainerMiner implements PC_IGresGui, P
 		tab.add("Inventory", gc);
 		gc = new PC_GresGroupContainer();
 		gc.setLayout(new PC_GresLayoutVertical());
-		PC_Slot slot = (PC_Slot) this.invSlots[9*6];
+		
+		PC_Slot slot = (PC_Slot) this.invSlots[PCtf_EntityMiner.INVENTORIES.SAWBLADE.firstIndex];
 		slot.setBackgroundStack(new ItemStack(PCtf_Traffic.SAWBLADE_IRON));
 		slot.setRenderGrayWhenEmpty(true);
 		gc.add(new PC_GresInventory(1, 1).setSlot(0, 0, slot));
+		
+		slot = (PC_Slot) this.invSlots[PCtf_EntityMiner.INVENTORIES.ENGINE.firstIndex];
+		slot.setBackgroundStack(new ItemStack(PCtf_Traffic.ENGINE));
+		slot.setRenderGrayWhenEmpty(true);
+		gc.add(new PC_GresInventory(1, 1).setSlot(0, 0, slot));
+		
+		slot = (PC_Slot) this.invSlots[PCtf_EntityMiner.INVENTORIES.CONVERTER.firstIndex];
+		slot.setBackgroundStack(new ItemStack(PCtf_Traffic.CONVERTER));
+		slot.setRenderGrayWhenEmpty(true);
+		gc.add(new PC_GresInventory(1, 1).setSlot(0, 0, slot));
+		
 		gc.add(new PC_GresPlayerInventory(this));
 		tab.add("Equipment", gc);
 		tab.add("Programm", this.edit = new PC_WeaselGresEdit(this.sources));
