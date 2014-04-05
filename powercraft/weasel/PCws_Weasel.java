@@ -18,6 +18,7 @@ import powercraft.api.script.weasel.PC_WeaselModule;
 import powercraft.weasel.block.PCws_BlockCore;
 import powercraft.weasel.engine.PCws_AutoCompleteHelper;
 import powercraft.weasel.engine.PCws_WeaselContainer;
+import powercraft.weasel.multiblock.PCws_MultiblockItemWeaselCable;
 import xscript.runtime.clazz.XClassLoader;
 import xscript.runtime.clazz.XZipClassLoader;
 import cpw.mods.fml.common.Mod;
@@ -39,6 +40,8 @@ public class PCws_Weasel extends PC_Module implements PC_WeaselModule {
 	public static final File weaselrt = PC_Utils.getPowerCraftFile("Weasel", "weasel.zip");
 	
 	public static final PCws_BlockCore CORE = new PCws_BlockCore();
+	
+	public static final PCws_MultiblockItemWeaselCable WEASEL_CABLE = new PCws_MultiblockItemWeaselCable();
 	
 	@InstanceFactory
 	public static PCws_Weasel factory() {

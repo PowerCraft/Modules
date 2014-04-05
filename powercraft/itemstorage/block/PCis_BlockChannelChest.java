@@ -9,10 +9,14 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_ItemBlock;
 import powercraft.api.block.PC_TileEntity;
+import powercraft.api.recipes.PC_Recipes;
 import powercraft.itemstorage.tileentity.PCis_TileEntityChannelChest;
 
 
@@ -27,13 +31,18 @@ public class PCis_BlockChannelChest extends PC_BlockTileEntity {
 	}
 	
 	@Override
+	public void initRecipes(){
+		 PC_Recipes.addShapedRecipe(new ItemStack(this), "WWW", "WPW", "WWW", 'W', Blocks.planks, 'P', Items.ender_pearl);
+	}
+	
+	@Override
 	public Class<? extends PC_TileEntity> getTileEntityClass() {
 		return PCis_TileEntityChannelChest.class;
 	}
 
 	@Override
 	public PC_TileEntity createNewTileEntity(World world, int metadata) {
-		return new PCis_TileEntityChannelChest(metadata);
+		return new PCis_TileEntityChannelChest(world, metadata);
 	}
 
 	@Override

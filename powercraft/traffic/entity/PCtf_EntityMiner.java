@@ -954,7 +954,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	}
 	
 	protected boolean consumeEnergy(int amount, boolean throwException){
-		while(remainingEnergy<amount && !convertFuelToEnergy()){}
+		while(remainingEnergy<amount && convertFuelToEnergy()){}
 		if(remainingEnergy>=amount){
 			remainingEnergy-=amount;
 			return true;

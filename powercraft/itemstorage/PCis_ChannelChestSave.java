@@ -44,6 +44,8 @@ public class PCis_ChannelChestSave extends WorldSavedData {
 	}
 	
 	public static PCis_ChannelChestInventory addRef(int id){
+		if(id==0)
+			return null;
 		PCis_ChannelChestInventory inv = getSave().channels.get(Integer.valueOf(id));
 		if(inv==null){
 			save.channels.put(Integer.valueOf(id), inv = new PCis_ChannelChestInventory(9*3));
@@ -239,7 +241,7 @@ public class PCis_ChannelChestSave extends WorldSavedData {
 	public static int getNextFreeID() {
 		Set<Integer> set = getSave().channels.keySet();
 		lastID++;
-		while(set.contains(Integer.valueOf(lastID))){
+		while(set.contains(Integer.valueOf(lastID)) || lastID==0){
 			lastID++;
 		}
 		return lastID;

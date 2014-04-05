@@ -37,7 +37,7 @@ public class PCtf_ItemSawblade extends PC_Item {
 	
 	@Override
 	public String getRegisterName() {
-		return super.getRegisterName()+"."+TEXTURE_NAMES[this.type];
+		return super.getRegisterName()+":"+TEXTURE_NAMES[this.type];
 	}
 
 	@Override

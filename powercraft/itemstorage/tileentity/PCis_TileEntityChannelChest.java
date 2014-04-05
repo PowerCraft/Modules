@@ -14,6 +14,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import powercraft.api.PC_3DRotationY;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Field;
@@ -52,9 +53,13 @@ public class PCis_TileEntityChannelChest extends PC_TileEntityRotateable impleme
 		
 	}
 	
-	public PCis_TileEntityChannelChest(int id) {
-		this.id = id;
-		this.inventory = PCis_ChannelChestSave.addRef(id);
+	public PCis_TileEntityChannelChest(World world, int id) {
+		if(!world.isRemote){
+			this.id = id;
+			this.inventory = PCis_ChannelChestSave.addRef(id);
+		}else{
+			this.inventory = PCis_ChannelChestSave.getFake();
+		}
 	}
 	
 	@Override
@@ -156,6 +161,7 @@ public class PCis_TileEntityChannelChest extends PC_TileEntityRotateable impleme
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public PC_IGresGui openClientGui(EntityPlayer player, NBTTagCompound serverData) {
 		return new PCis_GuiChannelChest(player, this);
 	}

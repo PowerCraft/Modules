@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,7 +20,9 @@ import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.inventory.PC_InventoryUtils;
 import powercraft.api.item.PC_Item;
 import powercraft.api.network.PC_PacketHandler;
+import powercraft.api.recipes.PC_Recipes;
 import powercraft.itemstorage.PCis_ChannelChestSave;
+import powercraft.itemstorage.PCis_ItemStorage;
 import powercraft.itemstorage.container.PCis_ContainerCompressor;
 import powercraft.itemstorage.gui.PCis_GuiChannelNotConnected;
 import powercraft.itemstorage.gui.PCis_GuiCompressor;
@@ -30,6 +33,8 @@ import powercraft.itemstorage.inventory.PCis_NormalCompressorInventory;
 import powercraft.itemstorage.item.packet.PCis_PacketItemSetName;
 import powercraft.itemstorage.item.packet.PCis_PacketItemSetPutStacks;
 import powercraft.itemstorage.item.packet.PCis_PacketItemSetTakeStacks;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandler {
 	
@@ -42,6 +47,14 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
         setMaxStackSize(1);
         setHasSubtypes(true);
         setCreativeTab(CreativeTabs.tabTools);
+	}
+	
+	public void initRecipes(){
+		PC_Recipes.addShapedRecipe(new ItemStack(this, 1, NORMAL), " L ", "LCL", " L ", 'L', Blocks.lever, 'C', Blocks.chest);
+        PC_Recipes.addShapedRecipe(new ItemStack(this, 1, ENDERACCESS), " L ", "LCL", " L ", 'L', Blocks.lever, 'C', Blocks.ender_chest);
+        PC_Recipes.addShapedRecipe(new ItemStack(this, 1, HEIGHT), "LCL", "LCL", "LCL", 'L', Blocks.lever, 'C', Blocks.chest);
+        PC_Recipes.addShapedRecipe(new ItemStack(this, 1, BIG), "LLL", "CCC", "LLL", 'L', Blocks.lever, 'C', Blocks.chest);
+        PC_Recipes.addShapedRecipe(new ItemStack(this, 1, CHANNEL), " L ", "LCL", " L ", 'L', Blocks.lever, 'C', PCis_ItemStorage.CHANNEL_CHEST);
 	}
 	
 	@Override
@@ -335,6 +348,7 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public PC_IGresGui openClientGui(EntityPlayer player, NBTTagCompound serverData) {
 		int slot = serverData.getInteger("slot");
 		boolean linked = serverData.getBoolean("linked");
