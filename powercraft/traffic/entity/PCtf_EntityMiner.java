@@ -54,9 +54,6 @@ import powercraft.traffic.gui.PCtf_GuiMiner;
 import powercraft.traffic.items.PCtf_ItemEnergyConverter;
 import powercraft.traffic.items.PCtf_ItemEngine;
 import powercraft.traffic.items.PCtf_ItemSawblade;
-
-import com.google.common.collect.ImmutableList;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
