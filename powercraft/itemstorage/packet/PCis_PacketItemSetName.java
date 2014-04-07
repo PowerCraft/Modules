@@ -1,7 +1,7 @@
 package powercraft.itemstorage.packet;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.world.World;
 import powercraft.api.network.PC_Packet;
@@ -32,7 +32,7 @@ public class PCis_PacketItemSetName extends PC_PacketClientToServer {
 	}
 
 	@Override
-	protected PC_Packet doAndReply(NetHandlerPlayServer playServer, World world, EntityPlayer player) {
+	protected PC_Packet doAndReply(NetHandlerPlayServer playServer, World world, EntityPlayerMP player) {
 		PCis_ItemCompressor.setName(player, this.name);
 		return null;
 	}
