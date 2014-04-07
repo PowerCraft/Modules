@@ -6,9 +6,11 @@ import powercraft.api.PC_Module;
 import powercraft.api.network.PC_PacketHandler;
 import powercraft.itemstorage.block.PCis_BlockChannelChest;
 import powercraft.itemstorage.item.PCis_ItemCompressor;
-import powercraft.itemstorage.item.packet.PCis_PacketItemSetName;
-import powercraft.itemstorage.item.packet.PCis_PacketItemSetPutStacks;
-import powercraft.itemstorage.item.packet.PCis_PacketItemSetTakeStacks;
+import powercraft.itemstorage.packet.PCis_PacketItemSetName;
+import powercraft.itemstorage.packet.PCis_PacketItemSetPutStacks;
+import powercraft.itemstorage.packet.PCis_PacketItemSetTakeStacks;
+import powercraft.itemstorage.packet.PCis_PacketSetSlot;
+import powercraft.itemstorage.packet.PCis_PacketWindowItems;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.InstanceFactory;
@@ -35,6 +37,8 @@ public class PCis_ItemStorage extends PC_Module {
 		PC_PacketHandler.registerPacket(PCis_PacketItemSetPutStacks.class);
 		PC_PacketHandler.registerPacket(PCis_PacketItemSetName.class);
 		PC_PacketHandler.registerPacket(PCis_PacketItemSetTakeStacks.class);
+		PC_PacketHandler.registerPacket(PCis_PacketSetSlot.class);
+		PC_PacketHandler.registerPacket(PCis_PacketWindowItems.class);
 	}
 	
 	@Override

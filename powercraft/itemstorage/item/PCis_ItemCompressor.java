@@ -30,9 +30,9 @@ import powercraft.itemstorage.inventory.PCis_CompressorInventory;
 import powercraft.itemstorage.inventory.PCis_EnderCompressorInventory;
 import powercraft.itemstorage.inventory.PCis_HightCompressorInventory;
 import powercraft.itemstorage.inventory.PCis_NormalCompressorInventory;
-import powercraft.itemstorage.item.packet.PCis_PacketItemSetName;
-import powercraft.itemstorage.item.packet.PCis_PacketItemSetPutStacks;
-import powercraft.itemstorage.item.packet.PCis_PacketItemSetTakeStacks;
+import powercraft.itemstorage.packet.PCis_PacketItemSetName;
+import powercraft.itemstorage.packet.PCis_PacketItemSetPutStacks;
+import powercraft.itemstorage.packet.PCis_PacketItemSetTakeStacks;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -49,6 +49,7 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
         setCreativeTab(CreativeTabs.tabTools);
 	}
 	
+	@Override
 	public void initRecipes(){
 		PC_Recipes.addShapedRecipe(new ItemStack(this, 1, NORMAL), " L ", "LCL", " L ", 'L', Blocks.lever, 'C', Blocks.chest);
         PC_Recipes.addShapedRecipe(new ItemStack(this, 1, ENDERACCESS), " L ", "LCL", " L ", 'L', Blocks.lever, 'C', Blocks.ender_chest);

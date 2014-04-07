@@ -1,4 +1,4 @@
-package powercraft.itemstorage.item.packet;
+package powercraft.itemstorage.packet;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -9,31 +9,31 @@ import powercraft.api.network.PC_PacketClientToServer;
 import powercraft.itemstorage.item.PCis_ItemCompressor;
 
 
-public class PCis_PacketItemSetName extends PC_PacketClientToServer {
+public class PCis_PacketItemSetPutStacks extends PC_PacketClientToServer {
 
-	private String name;
+	private int num;
 	
-	public PCis_PacketItemSetName(){
+	public PCis_PacketItemSetPutStacks(){
 		
 	}
 	
-	public PCis_PacketItemSetName(String name){
-		this.name = name;
+	public PCis_PacketItemSetPutStacks(int num){
+		this.num = num;
 	}
 	
 	@Override
 	protected void fromByteBuffer(ByteBuf buf) {
-		this.name = readStringFromBuf(buf);
+		this.num = buf.readInt();
 	}
 
 	@Override
 	protected void toByteBuffer(ByteBuf buf) {
-		writeStringToBuf(buf, this.name);
+		buf.writeInt(this.num);
 	}
 
 	@Override
 	protected PC_Packet doAndReply(NetHandlerPlayServer playServer, World world, EntityPlayer player) {
-		PCis_ItemCompressor.setName(player, this.name);
+		PCis_ItemCompressor.setPutStacks(player, this.num);
 		return null;
 	}
 	

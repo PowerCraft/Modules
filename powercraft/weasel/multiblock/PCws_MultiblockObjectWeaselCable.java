@@ -8,6 +8,7 @@ import powercraft.api.energy.PC_EnergyGrid;
 import powercraft.api.energy.PC_IEnergyGridConduit;
 import powercraft.api.energy.PC_IEnergyGridTile;
 import powercraft.api.grid.PC_GridHelper;
+import powercraft.api.multiblock.PC_MultiblockIndex;
 import powercraft.api.multiblock.cable.PC_MultiblockObjectCable;
 import powercraft.weasel.PCws_Weasel;
 
@@ -69,7 +70,9 @@ public class PCws_MultiblockObjectWeaselCable extends PC_MultiblockObjectCable i
 		int x = this.multiblock.xCoord;
 		int y = this.multiblock.yCoord;
 		int z = this.multiblock.zCoord;
-		PC_GridHelper.getGridIfNull(world, x, y, z, 0x3F, this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
+		if(!world.isRemote){
+			PC_GridHelper.getGridIfNull(world, x, y, z, -1, PC_MultiblockIndex.getFaceDir(this.index), this, PC_EnergyGrid.factory, PC_IEnergyGridTile.class);
+		}
 	}
 	
 	@Override

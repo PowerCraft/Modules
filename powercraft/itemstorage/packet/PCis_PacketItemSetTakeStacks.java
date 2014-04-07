@@ -1,4 +1,4 @@
-package powercraft.itemstorage.item.packet;
+package powercraft.itemstorage.packet;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;

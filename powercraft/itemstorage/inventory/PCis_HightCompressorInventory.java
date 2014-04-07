@@ -49,9 +49,7 @@ public class PCis_HightCompressorInventory extends PCis_NormalCompressorInventor
 	
 	@Override
 	public int getSlotStackLimit(int slotIndex) {
-		if(this.is[slotIndex]==null)
-			return 512;
-		return this.is[slotIndex].getMaxStackSize()*8;
+		return 512;
 	}
 	
 	@SuppressWarnings("hiding")

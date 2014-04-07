@@ -28,6 +28,8 @@ import powercraft.itemstorage.item.PCis_ItemCompressor;
 
 public class PCis_GuiCompressor extends PCis_ContainerCompressor implements PC_IGresGui, PC_IGresEventListener{
 
+	public static boolean SETTING_OK = false;
+	
 	public PC_GresTextEdit name;
 	public PC_GresCheckBox takeStacks;
 	public PC_GresTextEdit putStacks;
@@ -35,7 +37,22 @@ public class PCis_GuiCompressor extends PCis_ContainerCompressor implements PC_I
 	public PCis_GuiCompressor(EntityPlayer player, ItemStack itemStack, int slot, IInventory inv) {
 		super(player, itemStack, slot, inv);
 	}
+	
+	@SuppressWarnings("hiding")
+	@Override
+	public void putStackInSlot(int slot, ItemStack itemStack){
+		if(SETTING_OK){
+			super.putStackInSlot(slot, itemStack);
+		}
+    }
 
+    @Override
+	public void putStacksInSlots(ItemStack[] itemStacks){
+    	if(SETTING_OK){
+    		super.putStacksInSlots(itemStacks);
+    	}
+    }
+	
 	@SuppressWarnings("hiding")
 	@Override
 	public void initGui(PC_GresGuiHandler gui) {
