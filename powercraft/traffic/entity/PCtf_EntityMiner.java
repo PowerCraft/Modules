@@ -87,7 +87,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	protected int remainingEnergy=0;
 	
 	public static class INVENTORIES{
-		public static final PC_InventoryDescription GLOBAL = new PC_InventoryDescription(0, 9*6+6, "global");
+		public static final PC_InventoryDescription GLOBAL = new PC_InventoryDescription(0, 9*6+7, "global");
 		public static final PC_InventoryDescription INVENTORY = new PC_InventoryDescription(0, 9*6-1, "inventory");
 		public static final PC_InventoryDescription SAWBLADE = new PC_InventoryDescription(9*6, "sawblade");
 		public static final PC_InventoryDescription ENGINE = new PC_InventoryDescription(9*6+1, "engine");
@@ -96,12 +96,12 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		public static final PC_InventoryDescription WORKBENCH = new PC_InventoryDescription(9*6+4, "workbench");
 		public static final PC_InventoryDescription RADIO = new PC_InventoryDescription(9*6+5, "radio");
 		public static final PC_InventoryDescription REMOTE_INVENTORY = new PC_InventoryDescription(9*6+6, "remoteInventory");
+		public static final PC_InventoryDescription WEASEL_SLOT = new PC_InventoryDescription(9*6+7, "weaselSlot");
 		
-		
-		private static final PC_InventoryDescription array[] = {INVENTORY, SAWBLADE, ENGINE, SHIELD, CONVERTER, WORKBENCH, RADIO, REMOTE_INVENTORY, GLOBAL};
+		private static final PC_InventoryDescription array[] = {INVENTORY, SAWBLADE, ENGINE, SHIELD, CONVERTER, WORKBENCH, RADIO, REMOTE_INVENTORY, WEASEL_SLOT, GLOBAL};
 		public static PC_InventoryDescription byName(String name){
 			for(PC_InventoryDescription desc:array){
-				if(name.equalsIgnoreCase(GLOBAL.inventoryName)) return desc;
+				if(name.equalsIgnoreCase(desc.inventoryName)) return desc;
 			}
 			return null;
 		}
