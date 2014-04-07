@@ -54,6 +54,9 @@ import powercraft.traffic.gui.PCtf_GuiMiner;
 import powercraft.traffic.items.PCtf_ItemEnergyConverter;
 import powercraft.traffic.items.PCtf_ItemEngine;
 import powercraft.traffic.items.PCtf_ItemSawblade;
+
+import com.google.common.collect.ImmutableList;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -99,11 +102,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		public static final PC_InventoryDescription WEASEL_SLOT = new PC_InventoryDescription(9*6+7, "weaselSlot");
 		
 		private static final PC_InventoryDescription array[] = {INVENTORY, SAWBLADE, ENGINE, SHIELD, CONVERTER, WORKBENCH, RADIO, REMOTE_INVENTORY, WEASEL_SLOT, GLOBAL};
-		public static PC_InventoryDescription byName(String name){
-			for(PC_InventoryDescription desc:array){
-				if(name.equalsIgnoreCase(desc.inventoryName)) return desc;
-			}
-			return null;
+		public static final PC_InventoryDescription[] getArray(){
+			return array.clone();
 		}
 	}
 	
@@ -931,7 +931,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	
 	public boolean placeBlock(String inventory, int invPlace, int x, int y, int z) {
 		if(!consumeEnergy(x+y+z, false)) return false;
-		PC_InventoryDescription inv = INVENTORIES.byName(inventory);
+		PC_InventoryDescription inv = PC_InventoryDescription.byName(inventory, INVENTORIES.getArray());
 		PC_Vec3I pos = getPosFor(new PC_Vec3I(x, y, z));
 		ItemStack is = this.getStackInSlot(inv.offset(invPlace));
 		this.operationErrored = !tryToPlace(is, pos);
@@ -950,7 +950,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 
 	@Override
 	public PC_InventoryDescription getInventory(String name) {
-		return INVENTORIES.byName(name);
+		return PC_InventoryDescription.byName(name, INVENTORIES.getArray());
 	}
 	
 	protected boolean consumeEnergy(int amount, boolean throwException){
