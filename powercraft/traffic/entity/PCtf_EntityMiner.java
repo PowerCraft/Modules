@@ -194,6 +194,23 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
         
 		makeEnergy();
 		
+		
+		rotate();
+		
+		prepareMove();
+		
+		pickupItems();
+		
+		pushEntities();
+		
+		moveEntity(this.motionX, this.motionY, this.motionZ);
+
+		mine();
+		
+		PC_InventoryUtils.onTick(this, this.worldObj);
+	}
+	
+	private void rotate(){
 		float diff = (((getTargetRot()*90 - this.rotationYaw) % 360) + 360) % 360;
 		if(diff>180)
 			diff = -360.0f+diff;
@@ -204,10 +221,9 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		this.rotationYaw += diff;
 		yawToRange();
 		this.prevRotationYaw = this.rotationYaw-diff;
-		
-		
-		
-		
+	}
+
+	private void prepareMove(){
 		this.motionX = getTargetX()-this.posX;
 		this.motionY -= 0.03999999910593033D;
 		this.motionZ = getTargetZ()-this.posZ;
@@ -223,12 +239,9 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			this.motionX = 0;
 			this.motionZ = 0;
 		}
-		
-		pickupItems();
-		pushEntities();
-		
-		moveEntity(this.motionX, this.motionY, this.motionZ);
-
+	}
+	
+	private void mine(){
 		for(int i=0; i<this.minings.length; i++){
 			if(this.minings[i]>=0){
 				if(this.minings[i]==0){
@@ -254,16 +267,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 				this.operationErrored=true;
 			}
 		}
-		
-		if(!isMining() && this.moveAfterMining!=0){
-			if(!this.operationErrored){
-				moveForwardWithoutMining(this.moveAfterMining);
-			}
-			this.moveAfterMining = 0;
-		}
-		PC_InventoryUtils.onTick(this, this.worldObj);
 	}
-
+	
 	private void pickupItems(){
 		if(this.worldObj.isRemote)
 			return;
