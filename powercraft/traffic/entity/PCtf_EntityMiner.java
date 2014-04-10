@@ -84,6 +84,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	@PC_Field
 	protected boolean operationErrored;
 	@PC_Field
+	protected int remainingFuelTime=0;
+	@PC_Field
 	protected int remainingEnergy=0;
 	
 	public static class INVENTORIES{
@@ -190,6 +192,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			this.minerController.run();
 		super.onUpdate();
         
+		makeEnergy();
+		
 		float diff = (((getTargetRot()*90 - this.rotationYaw) % 360) + 360) % 360;
 		if(diff>180)
 			diff = -360.0f+diff;
@@ -208,13 +212,17 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		this.motionY -= 0.03999999910593033D;
 		this.motionZ = getTargetZ()-this.posZ;
 		double diffXZ = Math.sqrt(this.motionX*this.motionX+this.motionZ*this.motionZ);
-		if(diffXZ>MOTION_SPEED){
-			this.motionX /= diffXZ;
-			this.motionZ /= diffXZ;
-			this.motionX *= MOTION_SPEED;
-			this.motionZ *= MOTION_SPEED;
+		if(consumeEnergy((int)diffXZ)){
+			if(diffXZ>MOTION_SPEED){
+				this.motionX /= diffXZ;
+				this.motionZ /= diffXZ;
+				this.motionX *= MOTION_SPEED;
+				this.motionZ *= MOTION_SPEED;
+			}
+		}else{
+			this.motionX = 0;
+			this.motionZ = 0;
 		}
-		
 		
 		pickupItems();
 		pushEntities();
@@ -230,7 +238,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 					}
 					this.minings[i] = -1;
 				}else{
-					consumeEnergy(1, false);
+					consumeEnergy(1);
 					if((--this.minings[i])%10==0){
 						ItemStack is = getStackInSlot(SAWBLADE.offset(0));
 						if(is!=null){
@@ -496,7 +504,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		PC_InventoryUtils.dropInventoryContent(this, this.worldObj, this.posX, y+1, this.posZ);
 		
 		setDead();
-
+		
 	}
 	
 	@Override
@@ -927,7 +935,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	}
 	
 	public boolean placeBlock(String inventory, int invPlace, int x, int y, int z) {
-		if(!consumeEnergy(x+y+z, false)) return false;
+		if(!consumeEnergy(1)) return false;
 		PC_InventoryDescription inv = PC_InventoryDescription.byName(inventory, INVENTORIES.getArray());
 		PC_Vec3I pos = getPosFor(new PC_Vec3I(x, y, z));
 		ItemStack is = this.getStackInSlot(inv.offset(invPlace));
@@ -950,24 +958,36 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		return PC_InventoryDescription.byName(name, INVENTORIES.getArray());
 	}
 	
-	protected boolean consumeEnergy(int amount, boolean throwException){
-		while(remainingEnergy<amount && convertFuelToEnergy()){}
-		if(remainingEnergy>=amount){
-			remainingEnergy-=amount;
+	protected boolean consumeEnergy(int amount){
+		if(this.remainingEnergy>=amount){
+			this.remainingEnergy-=amount;
 			return true;
 		}
-		if(throwException)
-			throw new RuntimeException("Not enough Energy");
 		return false;
 	}
 	
+	protected void makeEnergy(){
+		if(this.remainingFuelTime<=0 && this.remainingEnergy<1000){
+			convertFuelToEnergy();
+		}
+		if(this.remainingFuelTime>0){
+			int min;
+			if(this.remainingFuelTime<5){
+				min = this.remainingFuelTime;
+			}else{
+				min = 5;
+			}
+			this.remainingFuelTime -= min;
+			this.remainingEnergy += min;
+		}
+	}
+	
 	protected boolean convertFuelToEnergy(){
-		ItemStack is;
-		if((is=this.getStackInSlot(INVENTORIES.CONVERTER.offset(0)))==null)
+		if((this.getStackInSlot(INVENTORIES.CONVERTER.offset(0)))==null)
 			return false;
 		int produced = PC_InventoryUtils.useFuel(this, PC_InventoryUtils.makeIndexList(INVENTORIES.INVENTORY.firstIndex, INVENTORIES.INVENTORY.lastIndex), this.worldObj, new PC_Vec3(this.posX, this.posY, this.posZ));
 		if(produced>0){
-			remainingEnergy+=produced;
+			this.remainingFuelTime+=produced;
 			return true;
 		}
 		return false;
