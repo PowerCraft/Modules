@@ -392,6 +392,9 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		if (list != null && list.size() > 0) {
 			for (int j1 = 0; j1 < list.size(); j1++) {
 				Entity entity = list.get(j1);
+				if(entity == this.riddenByEntity || entity== this.ridingEntity){
+					continue;
+				}
 				if (PC_Utils.isEntityFX(entity)|| entity instanceof EntityXPOrb) {
 					continue;
 				}
