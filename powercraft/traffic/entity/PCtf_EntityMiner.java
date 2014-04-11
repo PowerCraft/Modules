@@ -136,6 +136,20 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	}
 	
 	@Override
+	public double getMountedYOffset(){
+		return 0.4;
+	}
+	
+	@Override
+	public void updateRiderPosition(){
+        if (this.riddenByEntity != null){
+        	double xp = PC_MathHelper.sin((float) (-this.rotationYaw/180.0f*Math.PI))*0.6;
+        	double zp = PC_MathHelper.cos((float) (-this.rotationYaw/180.0f*Math.PI))*0.6;
+            this.riddenByEntity.setPosition(this.posX-xp, this.posY + this.getMountedYOffset() + this.riddenByEntity.getYOffset(), this.posZ-zp);
+        }
+    }
+	
+	@Override
 	protected void onLoadedFromNBT(Flag flag) {
 		if(!this.worldObj.isRemote){
 			this.minerController.setMiner(this);
@@ -230,13 +244,15 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		this.rotationYaw += diff;
 		yawToRange();
 		this.prevRotationYaw = this.rotationYaw-diff;
-		if(this.rotationYaw==getTargetRot()){
+		if(diff==0){
 			setTask(TASK_NOTHING);
 			prepareRotate();
 		}
 	}
 
 	private void prepareRotate(){
+		if(this.worldObj.isRemote)
+			return;
 		int steps = getSteps();
 		if(steps!=0 && getTask()==TASK_NOTHING){
 			setTask(TASK_ROTATE);
@@ -276,6 +292,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	}
 	
 	private void prepareMoveDig(){
+		if(this.worldObj.isRemote)
+			return;
 		if(getSteps()!=0 && getTask()==TASK_NOTHING){
 			if(this.miningEnabled){
 				digForward();
@@ -292,9 +310,11 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	}
 	
 	private void prepareMove(){
+		if(this.worldObj.isRemote)
+			return;
 		int steps = getSteps();
 		if(steps!=0 && getTask()==TASK_NOTHING){
-			setTask(TASK_MOVE_DIG);
+			setTask(TASK_MOVE);
 			int s;
 			if(steps>0){
 				steps--;
@@ -967,7 +987,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	}
 	
 	public int operationFinished() {
-		return getTask()==TASK_NOTHING?OPERATION_INWORK:this.operationErrored?OPERATION_ERRORED:OPERATION_FINISHED;
+		return getTask()!=TASK_NOTHING?OPERATION_INWORK:this.operationErrored?OPERATION_ERRORED:OPERATION_FINISHED;
 	}
 	
 	
@@ -1106,10 +1126,15 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	@Override
 	public boolean interactFirst(EntityPlayer player) {
 		if(player.isSneaking()){
-			player.mountEntity(this);
-			return true;
+			return super.interactFirst(player);
 		}
-		return super.interactFirst(player);
+		player.mountEntity(this);
+		return true;
+	}
+
+	@Override
+	public boolean shouldRenderRider() {
+		return false;
 	}
 	
 }
