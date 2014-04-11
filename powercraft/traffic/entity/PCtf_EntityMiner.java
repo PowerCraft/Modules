@@ -277,14 +277,16 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	
 	private void prepaireMoveDig(){
 		if(this.steps!=0 && this.task==TASK_NOTHING){
-			digForward();
-			this.task=TASK_MOVE_DIG;
-			for(int i:this.minings){
-				if(i!=-1){
-					return;
+			if(this.miningEnabled){
+				digForward();
+				this.task=TASK_MOVE_DIG;
+				for(int i:this.minings){
+					if(i!=-1){
+						return;
+					}
 				}
+				this.task=TASK_NOTHING;
 			}
-			this.task=TASK_NOTHING;
 			prepaireMove();
 		}
 	}
