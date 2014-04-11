@@ -1083,4 +1083,13 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		return false;
 	}
 	
+	@Override
+	public boolean interactFirst(EntityPlayer player) {
+		if(player.isSneaking()){
+			player.mountEntity(this);
+			return true;
+		}
+		return super.interactFirst(player);
+	}
+	
 }
