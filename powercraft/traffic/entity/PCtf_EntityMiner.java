@@ -206,7 +206,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		
 		rotate();
 		
-		prepareMove();
+		preMove();
 		
 		pickupItems();
 		
@@ -234,11 +234,11 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		this.prevRotationYaw = this.rotationYaw-diff;
 		if(this.rotationYaw==getTargetRot()){
 			this.task=TASK_NOTHING;
-			prepaireRotate();
+			prepareRotate();
 		}
 	}
 
-	private void prepaireRotate(){
+	private void prepareRotate(){
 		if(this.steps!=0 && this.task==TASK_NOTHING){
 			this.task=TASK_ROTATE;
 			if(this.steps>0){
@@ -251,7 +251,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		}
 	}
 	
-	private void prepareMove(){
+	private void preMove(){
 		this.motionY -= 0.03999999910593033D;
 		if(this.task!=TASK_MOVE)
 			return;
@@ -271,11 +271,11 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		}
 		if(diffXZ==0){
 			this.task=TASK_NOTHING;
-			prepaireMoveDig();
+			prepareMoveDig();
 		}
 	}
 	
-	private void prepaireMoveDig(){
+	private void prepareMoveDig(){
 		if(this.steps!=0 && this.task==TASK_NOTHING){
 			if(this.miningEnabled){
 				digForward();
@@ -287,11 +287,11 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 				}
 				this.task=TASK_NOTHING;
 			}
-			prepaireMove();
+			prepareMove();
 		}
 	}
 	
-	private void prepaireMove(){
+	private void prepareMove(){
 		if(this.steps!=0 && this.task==TASK_NOTHING){
 			this.task=TASK_MOVE_DIG;
 			int s;
@@ -354,7 +354,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		if(finished){
 			if(this.task==TASK_MOVE_DIG){
 				this.task = TASK_NOTHING;
-				prepaireMove();
+				prepareMove();
 			}else{
 				this.task = TASK_NOTHING;
 			}
@@ -928,7 +928,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		}
 		if(this.task==TASK_NOTHING){
 			this.steps = steps;
-			prepaireMoveDig();
+			prepareMoveDig();
 		}else{
 			this.steps += steps;
 		}
@@ -940,7 +940,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		}
 		if(this.task == TASK_NOTHING){
 			this.steps = dir;
-			prepaireRotate();
+			prepareRotate();
 		}else{
 			this.steps += dir;
 		}
