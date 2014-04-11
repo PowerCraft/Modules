@@ -97,7 +97,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	protected int task;
 	
 	public static class INVENTORIES{
-		public static final PC_InventoryDescription GLOBAL = new PC_InventoryDescription(0, 9*6+7, "global");
+		public static final PC_InventoryDescription GLOBAL = new PC_InventoryDescription(0, 9*6+9, "global");
 		public static final PC_InventoryDescription INVENTORY = new PC_InventoryDescription(0, 9*6-1, "inventory");
 		public static final PC_InventoryDescription SAWBLADE = new PC_InventoryDescription(9*6, "sawblade");
 		public static final PC_InventoryDescription ENGINE = new PC_InventoryDescription(9*6+1, "engine");
@@ -107,8 +107,10 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		public static final PC_InventoryDescription RADIO = new PC_InventoryDescription(9*6+5, "radio");
 		public static final PC_InventoryDescription REMOTE_INVENTORY = new PC_InventoryDescription(9*6+6, "remoteInventory");
 		public static final PC_InventoryDescription WEASEL_SLOT = new PC_InventoryDescription(9*6+7, "weaselSlot");
+		public static final PC_InventoryDescription GPS = new PC_InventoryDescription(9*6+8, "gps");
+		public static final PC_InventoryDescription BLOCK_PLACER = new PC_InventoryDescription(9*6+9, "blockPlacer");
 		// TODO add GPS
-		private static final PC_InventoryDescription array[] = {INVENTORY, SAWBLADE, ENGINE, SHIELD, CONVERTER, WORKBENCH, RADIO, REMOTE_INVENTORY, WEASEL_SLOT, GLOBAL};
+		private static final PC_InventoryDescription array[] = {INVENTORY, SAWBLADE, ENGINE, SHIELD, CONVERTER, WORKBENCH, RADIO, REMOTE_INVENTORY, WEASEL_SLOT, GPS, BLOCK_PLACER, GLOBAL};
 		public static final PC_InventoryDescription[] getArray(){
 			return array.clone();
 		}
@@ -215,6 +217,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 
 		mine();
 		
+		selectNextTask();
+		
 		PC_InventoryUtils.onTick(this, this.worldObj);
 	}
 	
@@ -280,6 +284,18 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			}else if(this.minings[i]<-1){
 				this.operationErrored=true;
 			}
+		}
+	}
+	
+	private void selectNextTask(){
+		if(this.task>0){
+			return;
+		}
+		switch(-this.task){
+		
+		case TASK_NOTHING:
+		default:
+			this.task=TASK_NOTHING;
 		}
 	}
 	
