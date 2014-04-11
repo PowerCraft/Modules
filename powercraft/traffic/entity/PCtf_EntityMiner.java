@@ -201,9 +201,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		if(!this.worldObj.isRemote)
 			this.minerController.run();
 		super.onUpdate();
-        
-		makeEnergy();
 		
+		makeEnergy();
 		
 		rotate();
 		
@@ -216,8 +215,6 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		moveEntity(this.motionX, this.motionY, this.motionZ);
 
 		mine();
-		
-		selectNextTask();
 		
 		PC_InventoryUtils.onTick(this, this.worldObj);
 	}
@@ -235,8 +232,25 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		this.rotationYaw += diff;
 		yawToRange();
 		this.prevRotationYaw = this.rotationYaw-diff;
+		if(this.rotationYaw==getTargetRot()){
+			this.task=TASK_NOTHING;
+			prepaireRotate();
+		}
 	}
 
+	private void prepaireRotate(){
+		if(this.steps!=0 && this.task==TASK_NOTHING){
+			this.task=TASK_ROTATE;
+			if(this.steps>0){
+				this.steps--;
+				setTargetRot(getTargetRot()+1);
+			}else{
+				this.steps++;
+				setTargetRot(getTargetRot()-1);
+			}
+		}
+	}
+	
 	private void prepareMove(){
 		this.motionY -= 0.03999999910593033D;
 		if(this.task!=TASK_MOVE)
@@ -255,11 +269,60 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			this.motionX = 0;
 			this.motionZ = 0;
 		}
+		if(diffXZ==0){
+			this.task=TASK_NOTHING;
+			prepaireMoveDig();
+		}
+	}
+	
+	private void prepaireMoveDig(){
+		if(this.steps!=0 && this.task==TASK_NOTHING){
+			digForward();
+			this.task=TASK_MOVE_DIG;
+			for(int i:this.minings){
+				if(i!=-1){
+					return;
+				}
+			}
+			this.task=TASK_NOTHING;
+			prepaireMove();
+		}
+	}
+	
+	private void prepaireMove(){
+		if(this.steps!=0 && this.task==TASK_NOTHING){
+			this.task=TASK_MOVE_DIG;
+			int s;
+			if(this.steps>0){
+				this.steps--;
+				s = 1;
+			}else{
+				this.steps++;
+				s = -1;
+			}
+			switch(getTargetRot()){
+			case 0:
+				setTargetZ(getTargetZ()-s);
+				break;
+			case 1:
+				setTargetX(getTargetX()+s);
+				break;
+			case 2:
+				setTargetZ(getTargetZ()+s);
+				break;
+			case 3:
+				setTargetX(getTargetX()-s);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 	
 	private void mine(){
 		if(this.task!=TASK_DIG && this.task!=TASK_MOVE_DIG)
 			return;
+		boolean finished = true;
 		for(int i=0; i<this.minings.length; i++){
 			if(this.minings[i]>=0){
 				if(this.minings[i]==0){
@@ -269,6 +332,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 					}
 					this.minings[i] = -1;
 				}else{
+					finished = false;
 					consumeEnergy(1);
 					if((--this.minings[i])%10==0){
 						ItemStack is = getStackInSlot(SAWBLADE.offset(0));
@@ -285,17 +349,13 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 				this.operationErrored=true;
 			}
 		}
-	}
-	
-	private void selectNextTask(){
-		if(this.task>0){
-			return;
-		}
-		switch(-this.task){
-		
-		case TASK_NOTHING:
-		default:
-			this.task=TASK_NOTHING;
+		if(finished){
+			if(this.task==TASK_MOVE_DIG){
+				this.task = TASK_NOTHING;
+				prepaireMove();
+			}else{
+				this.task = TASK_NOTHING;
+			}
 		}
 	}
 	
@@ -847,26 +907,6 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		return (int) hardness;
 	}
 	
-	public void moveForwardWithoutMining(int steps) {
-		this.operationErrored = false;
-		switch(getTargetRot()){
-		case 0:
-			setTargetZ(getTargetZ()-steps);
-			break;
-		case 1:
-			setTargetX(getTargetX()+steps);
-			break;
-		case 2:
-			setTargetZ(getTargetZ()+steps);
-			break;
-		case 3:
-			setTargetX(getTargetX()-steps);
-			break;
-		default:
-			break;
-		}
-	}
-	
 	public boolean isMining(){
 		return this.task==TASK_DIG;
 	}
@@ -886,7 +926,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		}
 		if(this.task==TASK_NOTHING){
 			this.steps = steps;
-			this.task = TASK_MOVE_DIG;
+			prepaireMoveDig();
 		}else{
 			this.steps += steps;
 		}
@@ -896,12 +936,16 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		if(this.task!=TASK_NOTHING && this.task!=TASK_ROTATE){
 			throw new RuntimeException("Cannot do two tasks at once");
 		}
-		this.steps += dir;
-		this.task = TASK_ROTATE;
+		if(this.task == TASK_NOTHING){
+			this.steps = dir;
+			prepaireRotate();
+		}else{
+			this.steps += dir;
+		}
 	}
 	
 	public int operationFinished() {
-		return isMining() || isRotating() || isMoving()?OPERATION_INWORK:this.operationErrored?OPERATION_ERRORED:OPERATION_FINISHED;
+		return this.task==TASK_NOTHING?OPERATION_INWORK:this.operationErrored?OPERATION_ERRORED:OPERATION_FINISHED;
 	}
 	
 	
@@ -924,6 +968,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	}
 	
 	public void digForward(){
+		if(!(this.task==TASK_NOTHING || this.task==TASK_DIG))
+			return;
 		this.operationErrored = false;
 		PC_Vec3I pos= new PC_Vec3I(1, 1, 2);
 		
@@ -931,9 +977,12 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			digPos(pos);
 			pos=pos.rotate(PC_Direction.SOUTH, 1);
 		}
+		this.task = TASK_DIG;
 	}
 	
 	public void digUpward() {
+		if(!(this.task==TASK_NOTHING || this.task==TASK_DIG))
+			return;
 		this.operationErrored = false;
 		digForward();
 		PC_Vec3I offset = new PC_Vec3I(1, 2, 2);
@@ -947,6 +996,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	}
 
 	public void digDownward() {
+		if(!(this.task==TASK_NOTHING || this.task==TASK_DIG))
+			return;
 		this.operationErrored = false;
 		digForward();
 		PC_Vec3I offset = new PC_Vec3I(1, -2, 2);
