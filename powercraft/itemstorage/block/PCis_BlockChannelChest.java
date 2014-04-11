@@ -32,7 +32,7 @@ public class PCis_BlockChannelChest extends PC_BlockTileEntity {
 	
 	@Override
 	public void initRecipes(){
-		 PC_Recipes.addShapedRecipe(new ItemStack(this), "WWW", "WPW", "WWW", 'W', Blocks.planks, 'P', Items.ender_pearl);
+		 PC_Recipes.addShapedRecipe(new ItemStack(this), "WWW", "WPW", "WWW", Character.valueOf('W'), Blocks.planks, Character.valueOf('P'), Items.ender_pearl);
 	}
 	
 	@Override

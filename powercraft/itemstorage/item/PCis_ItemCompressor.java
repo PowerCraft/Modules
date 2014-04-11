@@ -51,11 +51,11 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 	
 	@Override
 	public void initRecipes(){
-		PC_Recipes.addShapedRecipe(new ItemStack(this, 1, NORMAL), " L ", "LCL", " L ", 'L', Blocks.lever, 'C', Blocks.chest);
-        PC_Recipes.addShapedRecipe(new ItemStack(this, 1, ENDERACCESS), " L ", "LCL", " L ", 'L', Blocks.lever, 'C', Blocks.ender_chest);
-        PC_Recipes.addShapedRecipe(new ItemStack(this, 1, HEIGHT), "LCL", "LCL", "LCL", 'L', Blocks.lever, 'C', Blocks.chest);
-        PC_Recipes.addShapedRecipe(new ItemStack(this, 1, BIG), "LLL", "CCC", "LLL", 'L', Blocks.lever, 'C', Blocks.chest);
-        PC_Recipes.addShapedRecipe(new ItemStack(this, 1, CHANNEL), " L ", "LCL", " L ", 'L', Blocks.lever, 'C', PCis_ItemStorage.CHANNEL_CHEST);
+		PC_Recipes.addShapedRecipe(new ItemStack(this, 1, NORMAL), " L ", "LCL", " L ", Character.valueOf('L'), Blocks.lever, Character.valueOf('C'), Blocks.chest);
+        PC_Recipes.addShapedRecipe(new ItemStack(this, 1, ENDERACCESS), " L ", "LCL", " L ", Character.valueOf('L'), Blocks.lever, Character.valueOf('C'), Blocks.ender_chest);
+        PC_Recipes.addShapedRecipe(new ItemStack(this, 1, HEIGHT), "LCL", "LCL", "LCL", Character.valueOf('L'), Blocks.lever, Character.valueOf('C'), Blocks.chest);
+        PC_Recipes.addShapedRecipe(new ItemStack(this, 1, BIG), "LLL", "CCC", "LLL", Character.valueOf('L'), Blocks.lever, Character.valueOf('C'), Blocks.chest);
+        PC_Recipes.addShapedRecipe(new ItemStack(this, 1, CHANNEL), " L ", "LCL", " L ", Character.valueOf('L'), Blocks.lever, Character.valueOf('C'), PCis_ItemStorage.CHANNEL_CHEST);
 	}
 	
 	@Override
