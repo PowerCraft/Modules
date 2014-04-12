@@ -91,6 +91,10 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	protected int remainingFuelTime=0;
 	@PC_Field
 	protected int remainingEnergy=0;
+	@PC_Field
+	protected String consoleOut = "";
+	
+	private boolean flushConsole;
 	
 	public static class INVENTORIES{
 		public static final PC_InventoryDescription GLOBAL = new PC_InventoryDescription(0, 9*6+9, "global");
@@ -212,6 +216,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	public void onUpdate() {
 		if(!this.worldObj.isRemote)
 			this.minerController.run();
+		
 		super.onUpdate();
 		
 		makeEnergy();
@@ -229,6 +234,15 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		mine();
 		
 		PC_InventoryUtils.onTick(this, this.worldObj);
+		
+		if(!this.worldObj.isRemote && this.flushConsole){
+			this.flushConsole = false;
+			NBTTagCompound nbtTagCompound = new NBTTagCompound();
+			nbtTagCompound.setInteger("type", 2);
+			nbtTagCompound.setString("value", this.consoleOut);
+			sendMessage(nbtTagCompound);
+		}
+		
 	}
 	
 	private void rotate(){
@@ -658,7 +672,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		HashMap<String, String> sources = new HashMap<String, String>();
 		PC_NBTTagHandler.loadMapFromNBT(serverData, "sources", sources, String.class, String.class, Flag.SYNC);
 		NBTTagCompound diagnostics = serverData.getCompoundTag("diagnostics");
-		return new PCtf_GuiMiner(player, this, sources, diagnostics);
+		String out = serverData.getString("out");
+		return new PCtf_GuiMiner(player, this, sources, diagnostics, out);
 	}
 
 	@Override
@@ -671,6 +686,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		PC_NBTTagHandler.saveMapToNBT(nbtTagCompound, "sources", this.minerController.getSources(), Flag.SYNC);
 		nbtTagCompound.setTag("diagnostics", this.minerController.getDiagnostics());
+		nbtTagCompound.setString("out", this.consoleOut);
 		return nbtTagCompound;
 	}
 	
@@ -689,6 +705,9 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 			PC_NBTTagHandler.loadMapFromNBT(nbtTagCompound, "sources", sources, String.class, String.class, Flag.SYNC);
 			this.minerController.setClassesAndCompile(sources);
 			break;
+		case 3:
+			this.minerController.onConsoleInput(nbtTagCompound.getString("value"));
+			break;
 		case 1:
 		default:
 			break;
@@ -698,11 +717,16 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void onClientMessage(EntityPlayer player, NBTTagCompound nbtTagCompound) {
+		PCtf_GuiMiner gui = PC_Gres.getCurrentClientGui(PCtf_GuiMiner.class);
 		switch(nbtTagCompound.getInteger("type")){
 		case 1:
-			PCtf_GuiMiner gui = PC_Gres.getCurrentClientGui(PCtf_GuiMiner.class);
 			if(gui!=null){
 				gui.setErrors(this, nbtTagCompound.getCompoundTag("diagnostics"));
+			}
+			break;
+		case 2:
+			if(gui!=null){
+				gui.setConsoleOut(this, nbtTagCompound.getString("value"));
 			}
 			break;
 		default:
@@ -1135,6 +1159,26 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	@Override
 	public boolean shouldRenderRider() {
 		return false;
+	}
+
+	public void printToConsole(String s) {
+		this.consoleOut += s;
+		if(this.consoleOut.length()>1024){
+			this.consoleOut = this.consoleOut.substring(this.consoleOut.length()-1024);
+		}
+		this.flushConsole = true;
+	}
+
+	public void onConsoleInput(String text) {
+		NBTTagCompound nbtTagCompound = new NBTTagCompound();
+		nbtTagCompound.setInteger("type", 3);
+		nbtTagCompound.setString("value", text);
+		sendMessage(nbtTagCompound);
+	}
+
+	public void clearConsole() {
+		this.consoleOut = "";
+		this.flushConsole = true;
 	}
 	
 }

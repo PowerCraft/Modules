@@ -47,7 +47,7 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	public PCws_TileEntityCore(){
 		if(!isClient()){
 			this.container = PC_Weasel.createContainer("Core", 1024);
-			this.container.setHandler(this);
+			this.container.setTile(this);
 		}
 	}
 	
@@ -60,7 +60,7 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	@Override
 	public void onLoadedFromNBT(Flag flag) {
 		if(flag==Flag.SAVE && !isClient())
-			this.container.setHandler(this);
+			this.container.setTile(this);
 	}
 
 	@Override
@@ -275,6 +275,22 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	@Override
 	public boolean shouldCheckWeakPower(PC_Direction side) {
 		return false;
+	}
+
+	@SuppressWarnings("hiding")
+	@Override
+	public PC_IWeaselGridTileAddressable getTileByAddress(int address) {
+		return this.grid.getTileByAddress(this, address);
+	}
+
+	@Override
+	public void print(String out) {
+		//
+	}
+
+	@Override
+	public void cls() {
+		//
 	}
 	
 	

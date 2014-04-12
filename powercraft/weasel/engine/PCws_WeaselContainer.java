@@ -22,6 +22,7 @@ import powercraft.api.script.weasel.PC_IWeaselEvent;
 import powercraft.api.script.weasel.PC_Weasel;
 import powercraft.api.script.weasel.PC_WeaselContainer;
 import powercraft.api.script.weasel.PC_WeaselSourceClass;
+import powercraft.api.script.weasel.grid.PC_IWeaselGridTileAddressable;
 import powercraft.weasel.PCws_Weasel;
 import xscript.compiler.XCompiler;
 import xscript.compiler.XSourceProvider;
@@ -52,7 +53,7 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 	
 	private PrintStream errorStream;
 	
-	private Object handler;
+	private PC_IWeaselGridTileAddressable tile;
 	
 	private List<Class<?>> nativeClasses = new ArrayList<Class<?>>();
 	
@@ -87,6 +88,7 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 				this.virtualMachine.getThreadProvider().registerThreadErroredListener(this);
 				this.virtualMachine.getThreadProvider().registerInterruptTerminatedListener(this);
 				PCws_WeaselNative.registerNatives(this.virtualMachine);
+				this.virtualMachine.setUserData(this);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -94,11 +96,8 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 	}
 	
 	@Override
-	public void setHandler(Object handler){
-		this.handler = handler;
-		if(this.virtualMachine!=null){
-			this.virtualMachine.setUserData(this.handler);
-		}
+	public void setTile(PC_IWeaselGridTileAddressable tile){
+		this.tile = tile;
 	}
 	
 	private void setupVirtualMachine(){
@@ -109,7 +108,7 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 		this.virtualMachine.setTimer(PCws_Timer.INSTANCE);
 		this.virtualMachine.getThreadProvider().registerThreadErroredListener(this);
 		this.virtualMachine.getThreadProvider().registerInterruptTerminatedListener(this);
-		this.virtualMachine.setUserData(this.handler);
+		this.virtualMachine.setUserData(this);
 		for(Class<?>c:this.nativeClasses){
 			this.virtualMachine.getNativeProvider().addNativeClass(c);
 		}
@@ -484,6 +483,70 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 			}
 		}
 		return generics.toArray(new XGenericClass[generics.size()]);
+	}
+
+	@Override
+	public PC_IWeaselGridTileAddressable getTile() {
+		return this.tile;
+	}
+
+	public int getTypeUnsafe(int address) {
+		if(this.tile==null)
+			return -1;
+		PC_IWeaselGridTileAddressable t = this.tile.getTileByAddress(address);
+		if(t==null){
+			return -1;
+		}
+		return t.getType();
+	}
+
+	public boolean isDevicePresent(int address) {
+		if(this.tile==null)
+			return false;
+		return this.tile.getTileByAddress(address)!=null;
+	}
+
+	public int getRedstoneValueUnsafe(int address, int side) {
+		if(this.tile==null)
+			return -1;
+		PC_IWeaselGridTileAddressable t = this.tile.getTileByAddress(address);
+		if(t==null){
+			return -1;
+		}
+		return t.getRedstoneValue(side);
+	}
+
+	public boolean setRedstoneValueUnsafe(int address, int side, int value) {
+		if(this.tile==null)
+			return false;
+		PC_IWeaselGridTileAddressable t = this.tile.getTileByAddress(address);
+		if(t==null){
+			return false;
+		}
+		t.setRedstoneValue(side, value);
+		return true;
+	}
+
+	public boolean printUnsafe(int address, String out) {
+		if(this.tile==null)
+			return false;
+		PC_IWeaselGridTileAddressable t = this.tile.getTileByAddress(address);
+		if(t==null){
+			return false;
+		}
+		t.print(out);
+		return true;
+	}
+
+	public boolean clsUnsafe(int address) {
+		if(this.tile==null)
+			return false;
+		PC_IWeaselGridTileAddressable t = this.tile.getTileByAddress(address);
+		if(t==null){
+			return false;
+		}
+		t.cls();
+		return true;
 	}
 	
 }

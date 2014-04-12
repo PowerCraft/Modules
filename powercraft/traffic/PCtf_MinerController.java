@@ -1,5 +1,8 @@
 package powercraft.traffic;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,7 +30,7 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 	private PCtf_EntityMiner miner;
 	private PC_WeaselContainer weasel;
 	private boolean isOccupied;
-	private int address;
+	int address = 1;
 	private PC_WeaselGrid grid = PC_WeaselGrid.factory.make(this);
 	
 	public PCtf_MinerController(PCtf_EntityMiner miner){
@@ -43,9 +46,12 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 		registerNativeClasses();
 	}
 	
+	@SuppressWarnings("resource")
 	private void registerNativeClasses(){
-		this.weasel.setErrorOutput(System.err);
-		this.weasel.setHandler(this);
+		ConsoleOut consoleOut = new ConsoleOut();
+		PrintStream ps = new PrintStream(consoleOut, true);
+		this.weasel.setErrorOutput(ps);
+		this.weasel.setTile(this);
 		this.weasel.registerNativeClass(MinerNativeInterface.class);
 		this.weasel.registerNativeClass(PC_WeaselNativeInventoryInterface.class);
 	}
@@ -101,8 +107,16 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 		}
 	}
 	
+	@SuppressWarnings("hiding")
 	public PCtf_EntityMiner getMiner(int address){
-		return this.miner;
+		PC_IWeaselGridTileAddressable tile = getTileByAddress(address);
+		return tile instanceof PCtf_EntityMiner?(PCtf_EntityMiner)tile:null;
+	}
+	
+	@SuppressWarnings("hiding")
+	@Override
+	public PC_IWeaselGridTileAddressable getTileByAddress(int address) {
+		return this.grid.getTileByAddress(this, address);
 	}
 	
 	public Map<String, String> getSources() {
@@ -154,7 +168,7 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 
 	@Override
 	public int getRedstoneValue(int side) {
-		return 0;
+		return -1;
 	}
 
 	@Override
@@ -162,7 +176,38 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 		//
 	}
 	
+	@Override
+	public void print(String out) {
+		printToConsole(out);
+	}
+	
+	@Override
+	public void cls() {
+		this.miner.clearConsole();
+	}
+	
+	public void printToConsole(String s){
+		this.miner.printToConsole(s);
+	}
 
+	private class ConsoleOut extends OutputStream{
+
+		public ConsoleOut() {}
+
+		private String buff = "";
+		
+		@Override
+		public void write(int b) throws IOException {
+			this.buff += (char)b;
+		}
+
+		@Override
+		public void flush() throws IOException {
+			printToConsole(this.buff);
+			this.buff = "";
+		}
+		
+	}
 	
 	//Weasel Available Methods
 	@XNativeClass("weasel.miner.Miner")
@@ -242,6 +287,32 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 			}
 			return false;
 		}
+	}
+
+	public void onConsoleInput(final String text) {
+		System.out.println("onConsoleInput:"+text);
+		this.grid.sendEvent(new PC_IWeaselEvent() {
+			
+			@Override
+			public Object[] getParams() {
+				return new Object[]{Integer.valueOf(PCtf_MinerController.this.address), text};
+			}
+			
+			@Override
+			public String getEventName() {
+				return "Console Input";
+			}
+			
+			@Override
+			public String getEntryMethod() {
+				return "consoleInputInterruptEntryPoint(int, xscript.lang.String)void";
+			}
+			
+			@Override
+			public String getEntryClass() {
+				return "weasel.devices.Console";
+			}
+		});
 	}
 	
 }
