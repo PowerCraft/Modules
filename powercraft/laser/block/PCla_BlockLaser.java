@@ -118,7 +118,7 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 		PCla_TileEntityLaser tileEntity = (PCla_TileEntityLaser) world.getTileEntity(x, y, z);
 
 		tessellator.setColorRGBA(colorToDraw.x, colorToDraw.y, colorToDraw.z, colorToDraw.w);
-		for (PC_Vec3I posToDraw : tileEntity.calculator.validLaserPos)
+		for (PC_Vec3I posToDraw : tileEntity.calculator.beamCalc.validLaserPos)
 			switch (tileEntity.orientation) {
 			case EAST:
 				PC_ModelHelper.drawBox(new PC_Vec3(posToDraw.x - x, minLaserP, minLaserP), new PC_Vec3(posToDraw.x - x

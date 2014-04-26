@@ -44,9 +44,10 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 
 	@Override
 	public void onTick() {
-		if (counterForTick >= 25) {
+		if (counterForTick >= 20) {
 			counterForTick = 0;
 			calculator.performBlockUpdate(orientation);
+			calculator.performUpdateTick();
 			updateDisabledSlots();
 			renderUpdate();
 		}
@@ -115,26 +116,30 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 		for (ItemStack currUp : upgrades) {
 			if (currUp != null)
 				if (currUp.getItem() == PCla_Laser.laserUpgrade) {
-					newNumLas += ((PCla_ItemLaserUpgrade) currUp.getItem())
-							.getNewNumLaserThings(currUp.getItemDamage());
-					newNumUp += ((PCla_ItemLaserUpgrade) currUp.getItem()).getNewNumUpgrades(currUp.getItemDamage());
+					newNumLas += ((PCla_ItemLaserUpgrade) currUp.getItem()).getAddedNumLaserThings(currUp
+							.getItemDamage());
+					newNumUp += ((PCla_ItemLaserUpgrade) currUp.getItem()).getAddedNumUpgrades(currUp.getItemDamage());
 				}
 		}
-		if (newNumUp > 5)
+		if (newNumUp > 5) {
 			newNumUp = 5;
-		if (newNumLas > 4)
+		}
+		if (newNumLas > 4) {
 			newNumLas = 4;
+		}
 		for (int i = 0; i < 5; i++) {
 			if (newNumUp - 1 >= i) {
 				upgradeSlotsEnabled[i] = true;
-			} else
+			} else {
 				upgradeSlotsEnabled[i] = false;
+			}
 		}
 		for (int i = 0; i < 4; i++) {
 			if (newNumLas - 1 >= i) {
 				laserSlotsEnabled[i] = true;
-			} else
+			} else {
 				laserSlotsEnabled[i] = false;
+			}
 		}
 	}
 
@@ -149,6 +154,7 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 		return inventoryContents;
 	}
 
+	@Override
 	public World getWorldObj() {
 		return this.worldObj;
 	}

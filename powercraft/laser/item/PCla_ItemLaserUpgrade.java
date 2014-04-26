@@ -28,29 +28,29 @@ public class PCla_ItemLaserUpgrade extends PC_Item {
 		return new PC_Vec4I(255, 255, 255, 255);
 	}
 
-	public int getNewNumUpgrades(int meta) {
+	public int getAddedNumUpgrades(int meta) {
 		switch (meta) {
 		case 3:
-			return 2;
+			return 1;
 		case 4:
-			return 3;
+			return 2;
 		case 5:
-			return 4;
+			return 3;
 		case 6:
-			return 5;
+			return 4;
 		default:
 			return 0;
 		}
 	}
 
-	public int getNewNumLaserThings(int meta) {
+	public int getAddedNumLaserThings(int meta) {
 		switch (meta) {
 		case 0:
-			return 2;
+			return 1;
 		case 1:
-			return 3;
+			return 2;
 		case 2:
-			return 4;
+			return 3;
 		default:
 			return 0;
 		}
@@ -59,9 +59,9 @@ public class PCla_ItemLaserUpgrade extends PC_Item {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean bool) {
-		par3List.add("This is a §l§bLENS");
-		par3List.add("You can change the §bcolor§7");
-		par3List.add("of a laser with this Item");
+		par3List.add("This is a §l§bUPGRADE");
+		par3List.add("You §bupgrade§7 your");
+		par3List.add("laser with this Item");
 	}
 
 	@Override

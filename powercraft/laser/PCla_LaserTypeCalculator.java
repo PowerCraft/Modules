@@ -1,8 +1,9 @@
 package powercraft.laser;
 
-import java.util.Vector;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.IBlockAccess;
 import powercraft.api.PC_Direction;
@@ -17,6 +18,7 @@ import powercraft.laser.tileEntity.PCla_TileEntityLaser;
 public class PCla_LaserTypeCalculator {
 
 	private PCla_TileEntityLaser laserObj;
+	public PCla_LaserBeamCalculator beamCalc;
 	private ItemStack[] lens = new ItemStack[4];
 	private ItemStack[] catalysator1 = new ItemStack[4];
 	private ItemStack[] catalysator2 = new ItemStack[4];
@@ -24,12 +26,14 @@ public class PCla_LaserTypeCalculator {
 	private ItemStack[] upgrades = new ItemStack[5];
 	public PCla_EnumLaserEffects[] effects = new PCla_EnumLaserEffects[4];
 	public PCla_EnumLaserTargets[] targets = new PCla_EnumLaserTargets[8];
-	public Vector<PC_Vec3I> validLaserPos = new Vector<PC_Vec3I>(15);
-	private int maxLaserLength = 15;
 	private PC_Vec4I currColor = new PC_Vec4I(255, 255, 255, 255);
+	private int percentMined = 0;
+	private int percentMiningPerTick = 20;
+	private IInventory chestBehind;
 
 	public PCla_LaserTypeCalculator(PCla_TileEntityLaser laser) {
 		laserObj = laser;
+		beamCalc = new PCla_LaserBeamCalculator(laserObj, this);
 	}
 
 	public boolean hasEffect(PCla_EnumLaserEffects effect) {
@@ -51,9 +55,9 @@ public class PCla_LaserTypeCalculator {
 	public boolean hasAllEffects(PCla_EnumLaserEffects... effectsToLook) {
 		boolean retVal = false;
 		for (PCla_EnumLaserEffects ef : effectsToLook) {
-			if (this.hasEffect(ef))
+			if (this.hasEffect(ef)) {
 				retVal = true;
-			else
+			} else
 				return false;
 		}
 		return retVal;
@@ -78,9 +82,9 @@ public class PCla_LaserTypeCalculator {
 	public boolean hasAllTargets(PCla_EnumLaserTargets... targetsToLook) {
 		boolean retVal = false;
 		for (PCla_EnumLaserTargets tg : targetsToLook) {
-			if (this.hasTarget(tg))
+			if (this.hasTarget(tg)) {
 				retVal = true;
-			else
+			} else
 				return false;
 		}
 		return retVal;
@@ -175,39 +179,19 @@ public class PCla_LaserTypeCalculator {
 	}
 
 	public void performBlockUpdate(PC_Direction orientation) {
-		validLaserPos.clear();
-		switch (orientation) {
-		case WEST:
-			for (int xPos = laserObj.xCoord + 1; xPos < laserObj.xCoord + maxLaserLength; xPos++)
-				if (canLaserThrough(laserObj.getWorldObj(), xPos, laserObj.yCoord, laserObj.zCoord, laserObj
-						.getWorldObj().getBlock(xPos, laserObj.yCoord, laserObj.zCoord)))
-					validLaserPos.add(new PC_Vec3I(xPos, laserObj.yCoord, laserObj.zCoord));
-				else
-					return;
-			break;
-		case SOUTH:
-			for (int zPos = laserObj.zCoord - 1; zPos > laserObj.zCoord - maxLaserLength; zPos--)
-				if (canLaserThrough(laserObj.getWorldObj(), laserObj.xCoord, laserObj.yCoord, zPos, laserObj
-						.getWorldObj().getBlock(laserObj.xCoord, laserObj.yCoord, zPos)))
-					validLaserPos.add(new PC_Vec3I(laserObj.xCoord, laserObj.yCoord, zPos));
-				else
-					return;
+		beamCalc.calculate();
+		switch (laserObj.orientation) {
+		case EAST:
+			Block candidate = laserObj.getWorldObj().getBlock(laserObj.xCoord - 1, laserObj.yCoord, laserObj.zCoord);
+			if (candidate instanceof IInventory) {
+				System.out.println("valid");
+			}
 			break;
 		case NORTH:
-			for (int zPos = laserObj.zCoord + 1; zPos < laserObj.zCoord + maxLaserLength; zPos++)
-				if (canLaserThrough(laserObj.getWorldObj(), laserObj.xCoord, laserObj.yCoord, zPos, laserObj
-						.getWorldObj().getBlock(laserObj.xCoord, laserObj.yCoord, zPos)))
-					validLaserPos.add(new PC_Vec3I(laserObj.xCoord, laserObj.yCoord, zPos));
-				else
-					return;
 			break;
-		case EAST:
-			for (int xPos = laserObj.xCoord - 1; xPos > laserObj.xCoord - maxLaserLength; xPos--)
-				if (canLaserThrough(laserObj.getWorldObj(), xPos, laserObj.yCoord, laserObj.zCoord, laserObj
-						.getWorldObj().getBlock(xPos, laserObj.yCoord, laserObj.zCoord)))
-					validLaserPos.add(new PC_Vec3I(xPos, laserObj.yCoord, laserObj.zCoord));
-				else
-					return;
+		case SOUTH:
+			break;
+		case WEST:
 			break;
 		default:
 			break;
@@ -222,11 +206,58 @@ public class PCla_LaserTypeCalculator {
 		if (block.isAir(world, x, y, z))
 			return true;
 		if (block.getMaterial().equals(Material.carpet) || block.getMaterial().equals(Material.circuits)
-				|| block.getMaterial().equals(Material.glass) || block.getMaterial().equals(Material.dragonEgg)
+				|| block.getMaterial().equals(Material.glass) || block.getMaterial().equals(Material.fire)
 				|| block.getMaterial().equals(Material.fire) || block.getMaterial().equals(Material.ice)
 				|| block.getMaterial().equals(Material.plants) || block.getMaterial().equals(Material.vine)
 				|| block.getMaterial().equals(Material.water) || block.getMaterial().equals(Material.web))
 			return true;
 		return false;
 	}
+
+	public void performUpdateTick() {
+		if (!laserObj.getWorldObj().isRemote) {
+			if (hasEffect(PCla_EnumLaserEffects.BREAK)) {
+				if (hasTarget(PCla_EnumLaserTargets.PLANT)) {
+					doHarvesting();
+				}
+				if (hasTarget(PCla_EnumLaserTargets.BLOCK)) {
+					mineLastBlock();
+				}
+			}
+			if (hasAllEffects(PCla_EnumLaserEffects.BUILD)) {
+				if (hasTarget(PCla_EnumLaserTargets.PLANT)) {
+					doReplanting();
+				}
+				if (hasTarget(PCla_EnumLaserTargets.BLOCK)) {
+					doBlockPlacing();
+				}
+			}
+		}
+	}
+
+	private void doHarvesting() {
+	}
+
+	private void doReplanting() {
+
+	}
+
+	private void mineLastBlock() {
+		if (percentMined < 100) {
+			percentMined += percentMiningPerTick;
+		} else {
+			beamCalc.calculate();
+			PC_Vec3I vecToDestroy = beamCalc.targetingBlock;
+			if (vecToDestroy == null) {
+				vecToDestroy = new PC_Vec3I(0, 0, 0);
+			}
+			laserObj.getWorldObj().setBlock(vecToDestroy.x, vecToDestroy.y, vecToDestroy.z, Blocks.air, 0, 3);
+			percentMined = 0;
+		}
+	}
+
+	private void doBlockPlacing() {
+
+	}
+
 }
