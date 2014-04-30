@@ -46,7 +46,7 @@ public class PCtm_TileEntityEnergyConsumer extends PC_TileEntity implements PC_I
 
 	@Override
 	public void useEnergy(float energy) {
-		System.out.println("Energy:"+energy);
+		//System.out.println("Energy:"+energy);
 	}
 
 	@Override

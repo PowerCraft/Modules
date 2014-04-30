@@ -1,13 +1,18 @@
 package powercraft.test.gui;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import org.lwjgl.input.Keyboard;
 
+import powercraft.api.PC_Vec2I;
+import powercraft.api.gres.PC_GresAlign.Fill;
+import powercraft.api.gres.PC_GresButton;
+import powercraft.api.gres.PC_GresComboBox;
 import powercraft.api.gres.PC_GresComponent;
+import powercraft.api.gres.PC_GresContainer;
 import powercraft.api.gres.PC_GresGuiHandler;
-import powercraft.api.gres.PC_GresListBox;
+import powercraft.api.gres.PC_GresScrollAreaZoomable;
+import powercraft.api.gres.PC_GresSlider;
 import powercraft.api.gres.PC_GresWindow;
 import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.events.PC_GresEvent;
@@ -21,13 +26,18 @@ public class PCtm_GuiEnergyConsumer implements PC_IGresGui, PC_IGresEventListene
 	public void initGui(PC_GresGuiHandler gui) {
 		PC_GresWindow window = new PC_GresWindow("Test");
 		window.setLayout(new PC_GresLayoutVertical());
-		List<String> list = new ArrayList<String>();
-		list.add("Hallo");
-		list.add("Test");
-		for(int i=0; i<30; i++){
-			list.add("Element"+i);
-		}
-		window.add(new PC_GresListBox(list));
+		PC_GresScrollAreaZoomable zoomable = new PC_GresScrollAreaZoomable();
+		zoomable.setMinSize(new PC_Vec2I(400, 300));
+		zoomable.setPrefSize(new PC_Vec2I(400, 300));
+		zoomable.setSize(new PC_Vec2I(400, 300));
+		PC_GresContainer c = zoomable.getContainer();
+		c.setLayout(new PC_GresLayoutVertical());
+		c.add(new PC_GresButton("Test1"));
+		PC_GresSlider s = new PC_GresSlider();
+		s.setFill(Fill.HORIZONTAL);
+		c.add(s);
+		c.add(new PC_GresComboBox(Arrays.asList("S1", "S2", "S3"), 0));
+		window.add(zoomable);
 		gui.add(window);
 		gui.addEventListener(this);
 	}

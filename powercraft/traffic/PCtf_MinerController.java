@@ -290,7 +290,6 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 	}
 
 	public void onConsoleInput(final String text) {
-		System.out.println("onConsoleInput:"+text);
 		this.grid.sendEvent(new PC_IWeaselEvent() {
 			
 			@Override
