@@ -105,6 +105,14 @@ public final class PCtr_BeltHelper {
 		return block instanceof PCtr_BlockBeltScriptable || block instanceof PCtr_BlockBeltNormal;
 	}
 	
+	public static boolean isConveyorAt(World world, int x, int y, int z) {
+		Block block = PC_Utils.getBlock(world, x, y, z);
+		if(block instanceof PCtr_BlockBeltNormal){
+			return (PC_Utils.getMetadata(world, x, y, z)&3)!=3;
+		}
+		return block instanceof PCtr_BlockBeltScriptable;
+	}
+	
 	public static int tryToStoreEntity(Entity entity, World world, int x, int y, int z, PC_Direction dir){
 		if(entity instanceof EntityItem){
 			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(-0.6, -0.6, -0.6, 0.6, 0.6, 0.6).offset(x+dir.offsetX+0.5, y+dir.offsetY+0.5, z+dir.offsetZ+0.5);
@@ -125,15 +133,35 @@ public final class PCtr_BeltHelper {
 	}
 	
 	@SuppressWarnings("unused")
-	public static void moveEntity(Entity entity, World world, int x, int y, int z, boolean elevator, PC_Direction dir){
+	public static void moveEntity(Entity entity, World world, int x, int y, int z, boolean elevator, PC_Direction dir, int hill){
 		final double FAC = 0.5;
 		entity.motionX = dir.offsetX!=0?dir.offsetX*0.2:(x+0.5-entity.posX)*FAC;
 		if(elevator){
 			entity.motionY = dir.offsetY!=0?dir.offsetY*0.2:(y+0.5-entity.posY)*FAC;
-		}
+		}/*else if(hill!=0){
+			entity.onGround = false;
+			double s;
+			if(dir.offsetX!=0){
+				s = entity.posX-x;
+			}else{
+				s = entity.posZ-z;
+			}
+			if(dir.offsetX>0 || dir.offsetZ>0){
+				s = 1-s;
+			}
+			if(hill==2){
+				s = 1-s;
+			}
+			s += 1/16.0;
+			s = y+s-entity.posY;
+			System.out.println(s);
+			if(hill==1)
+				entity.motionY = 0.25;
+			if(hill==2)
+				entity.motionY = -0.2;
+		}*/
 		entity.motionZ = dir.offsetZ!=0?dir.offsetZ*0.2:(z+0.5-entity.posZ)*FAC;
 		entity.velocityChanged = true;
-		//entity.onGround = false;
 	}
 	
 	public static void preventDespawn(Entity entity, boolean preventPickup){
@@ -167,9 +195,12 @@ public final class PCtr_BeltHelper {
 		}
 	}
 	
-	public static boolean handleEntity(Entity entity, World world, int x, int y, int z, boolean elevator, boolean preventPickup){
+	public static boolean handleEntity(Entity entity, World world, int x, int y, int z, boolean elevator, boolean preventPickup, int hill){
 		if(isEntityIgnored(entity))
 			return false;
+		if(entity.stepHeight<1.0f/16.0f){
+			entity.stepHeight=1.0f/16.0f;
+		}
 		NBTTagCompound compound = PC_Utils.getNBTTagOf(entity);
 		if(compound!=null && compound.hasKey("dir")){
 			PC_Direction dir = PC_Direction.fromSide(compound.getInteger("dir"));
@@ -178,7 +209,7 @@ public final class PCtr_BeltHelper {
 				if(result!=0)
 					return result==2;
 			}
-			moveEntity(entity, world, x, y, z, elevator, dir);
+			moveEntity(entity, world, x, y, z, elevator, dir, hill);
 		}
 		preventDespawn(entity, preventPickup);
 		return false;
@@ -213,6 +244,14 @@ public final class PCtr_BeltHelper {
 				tagCompound1.getInteger("dir")==tagCompound2.getInteger("dir")){
 			entityitem1.combineItems(entityitem2);
 		}
+	}
+	
+	public static boolean hasValidGround(World world, int x, int y, int z){
+		return isValidGround(world, x, y-1, z);
+	}
+
+	public static boolean isValidGround(World world, int x, int y, int z){
+		return PC_Utils.isBlockSideSolid(world, x, y, z, PC_Direction.UP);
 	}
 	
 }

@@ -5,11 +5,13 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_IconRegistry;
 import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.api.recipes.PC_Recipes;
+import powercraft.transport.PCtr_BeltHelper;
 import powercraft.transport.tileentity.PCtr_TileEntityBeltScriptable;
 
 public class PCtr_BlockBeltScriptable extends PC_BlockTileEntity {
@@ -32,6 +34,16 @@ public class PCtr_BlockBeltScriptable extends PC_BlockTileEntity {
     public boolean isOpaqueCube(){
         return false;
     }
+	
+	@Override
+	public boolean canBlockStay(World world, int x, int y, int z) {
+		return PCtr_BeltHelper.hasValidGround(world, x, y, z);
+	}
+
+	@Override
+	public boolean canPlaceBlockAt(World world, int x, int y, int z){
+		return PCtr_BeltHelper.hasValidGround(world, x, y, z) && super.canPlaceBlockAt(world, x, y, z);
+	}
 	
 	@Override
 	public Class<? extends PC_TileEntity> getTileEntityClass() {
