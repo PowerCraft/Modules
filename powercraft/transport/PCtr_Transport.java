@@ -7,6 +7,7 @@ import powercraft.api.network.PC_PacketHandler;
 import powercraft.transport.block.PCtr_BlockBeltBidirectional;
 import powercraft.transport.block.PCtr_BlockBeltNormal;
 import powercraft.transport.block.PCtr_BlockBeltScriptable;
+import powercraft.transport.block.PCtr_BlockEjector;
 import powercraft.transport.block.PCtr_PacketSetEntitySpeed;
 import powercraft.transport.item.PCtr_ItemSlimeBoots;
 import cpw.mods.fml.common.Mod;
@@ -26,6 +27,8 @@ public class PCtr_Transport extends PC_Module {
 	public static final PCtr_BlockBeltNormal normalBelt = new PCtr_BlockBeltNormal();
 	
 	public static final PCtr_BlockBeltBidirectional bidirectionalBelt = new PCtr_BlockBeltBidirectional();
+	
+	public static final PCtr_BlockEjector EJECTOR = new PCtr_BlockEjector();
 	
 	public static final PCtr_ItemSlimeBoots SLIME_BOOTS = new PCtr_ItemSlimeBoots();
 	
