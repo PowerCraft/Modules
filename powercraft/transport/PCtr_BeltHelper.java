@@ -138,28 +138,8 @@ public final class PCtr_BeltHelper {
 		entity.motionX = dir.offsetX!=0?dir.offsetX*0.2:(x+0.5-entity.posX)*FAC;
 		if(elevator){
 			entity.motionY = dir.offsetY!=0?dir.offsetY*0.2:(y+0.5-entity.posY)*FAC;
-		}/*else if(hill!=0){
 			entity.onGround = false;
-			double s;
-			if(dir.offsetX!=0){
-				s = entity.posX-x;
-			}else{
-				s = entity.posZ-z;
-			}
-			if(dir.offsetX>0 || dir.offsetZ>0){
-				s = 1-s;
-			}
-			if(hill==2){
-				s = 1-s;
-			}
-			s += 1/16.0;
-			s = y+s-entity.posY;
-			System.out.println(s);
-			if(hill==1)
-				entity.motionY = 0.25;
-			if(hill==2)
-				entity.motionY = -0.2;
-		}*/
+		}
 		entity.motionZ = dir.offsetZ!=0?dir.offsetZ*0.2:(z+0.5-entity.posZ)*FAC;
 		entity.velocityChanged = true;
 	}
@@ -181,6 +161,7 @@ public final class PCtr_BeltHelper {
 		}else if (entity instanceof EntityXPOrb) {
 			EntityXPOrb xp = (EntityXPOrb)entity;
 			if(preventPickup){
+				xp.field_70532_c = 7;
 				PC_Reflection.setValue(EntityXPOrb.class, xp, 6, int.class, Integer.valueOf((xp.xpColor - 20 + xp.getEntityId() % 100) + 7));
 				PC_Reflection.setValue(EntityXPOrb.class, xp, 5, EntityPlayer.class, null);
 			}
