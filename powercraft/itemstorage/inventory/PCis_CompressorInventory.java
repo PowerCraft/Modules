@@ -56,7 +56,7 @@ public abstract class PCis_CompressorInventory implements PC_IInventory {
 	
 	@Override
 	public boolean isItemValidForSlot(int var1, ItemStack var2) {
-		return var2.getItem() != PCis_ItemStorage.compressor;
+		return var2.getItem() != PCis_ItemStorage.COMPRESSOR;
 	}
 	
 	@Override

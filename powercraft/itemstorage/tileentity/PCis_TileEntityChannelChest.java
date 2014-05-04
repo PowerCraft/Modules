@@ -148,7 +148,7 @@ public class PCis_TileEntityChannelChest extends PC_TileEntityRotateable impleme
 	@Override
 	public boolean onBlockActivated(EntityPlayer player, PC_Direction side) {
 		ItemStack is = player.getHeldItem();
-		if(is!=null && ((is.getItem()==PCis_ItemStorage.compressor && is.getItemDamage()==PCis_ItemCompressor.CHANNEL)
+		if(is!=null && ((is.getItem()==PCis_ItemStorage.COMPRESSOR && is.getItemDamage()==PCis_ItemCompressor.CHANNEL)
 				||(is.getItem() instanceof ItemBlock && ((ItemBlock)is.getItem()).field_150939_a==PCis_ItemStorage.CHANNEL_CHEST))){
 			NBTTagCompound tagCompound = is.getTagCompound();
 			if(tagCompound==null){

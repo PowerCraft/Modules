@@ -24,7 +24,7 @@ public class PCis_ItemStorage extends PC_Module {
 	
 	public static final PCis_ItemStorage INSTANCE = new PCis_ItemStorage();
 	public static final PCis_BlockChannelChest CHANNEL_CHEST = new PCis_BlockChannelChest();
-	public static final PCis_ItemCompressor compressor = new PCis_ItemCompressor();
+	public static final PCis_ItemCompressor COMPRESSOR = new PCis_ItemCompressor();
 	
 	@InstanceFactory
 	public static PCis_ItemStorage factory() {

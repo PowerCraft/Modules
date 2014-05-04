@@ -94,6 +94,13 @@ public class PCla_Beam implements PC_IBeam {
 		if(Double.isInfinite(l) || l<=0)
 			return false;
 		this.pos = this.pos.add(this.dir.mul(l));
+		if(add.x!=0){
+			this.pos.x = (int)(this.pos.x+0.5);
+		}else if(add.y!=0){
+			this.pos.y = (int)(this.pos.y+0.5);
+		}else if(add.z!=0){
+			this.pos.z = (int)(this.pos.z+0.5);
+		}
 		PC_Vec3 blockPos = this.pos.add(add);
 		List<Entity> entities = this.world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(this.pos.x, this.pos.y, this.pos.z, this.pos.x, this.pos.y, this.pos.z).expand(0.5, 0.5, 0.5));
 		PC_BeamHitResult result;
