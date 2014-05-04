@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IIcon;
+import powercraft.api.PC_3DRotation;
+import powercraft.api.PC_3DRotationY;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Field;
+import powercraft.api.PC_Field.Flag;
 import powercraft.api.PC_Utils;
 import powercraft.api.block.PC_TileEntityWithInventory;
 import powercraft.api.gres.PC_GresBaseWithInventory;
@@ -17,6 +22,7 @@ import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.inventory.PC_InventoryUtils;
 import powercraft.api.redstone.PC_RedstoneWorkType;
+import powercraft.transport.block.PCtr_BlockEjector;
 import powercraft.transport.gui.PCtr_GuiEjector;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -35,9 +41,14 @@ public class PCtr_TileEntityEjector extends PC_TileEntityWithInventory implement
 	private int numStacks = 1;
 	@PC_Field
 	private int numItems = 1;
+	@PC_Field(flags={Flag.SAVE, Flag.SYNC})
+	protected PC_3DRotation rotation;
 	
 	public PCtr_TileEntityEjector() {
 		super("Ejector", 1, new Group(true, 0));
+		for(int i=0; i<6; i++){
+			setSideGroup(i, 0);
+		}
 	}
 
 	@Override
@@ -54,7 +65,16 @@ public class PCtr_TileEntityEjector extends PC_TileEntityWithInventory implement
 		for(PC_Direction dir:PC_Direction.VALID_DIRECTIONS){
 			if(getIDForSide(dir)!=-1){
 				List<ItemStack> list = getInventoryDrops(dir);
-				PC_Utils.spawnItems(this.worldObj, x, y, z, list);
+				if(list!=null && !this.worldObj.isRemote){
+					for(ItemStack itemStack:list){
+						EntityItem entityitem = new EntityItem(this.worldObj, x+(rand.nextFloat()-0.5)*(d.offsetX==0?0.1:0.4), y+(rand.nextFloat()-0.5)*(d.offsetY==0?0.1:0.4), z+(rand.nextFloat()-0.5)*(d.offsetZ==0?0.1:0.4), itemStack);
+						entityitem.motionX += d.offsetX*0.2;
+						entityitem.motionY *= d.offsetY;
+						entityitem.motionZ += d.offsetZ*0.2;
+						entityitem.delayBeforeCanPickup = 10;
+						PC_Utils.spawnEntity(this.worldObj, entityitem);
+					}
+				}
 			}
 		}
 	}
@@ -69,6 +89,8 @@ public class PCtr_TileEntityEjector extends PC_TileEntityWithInventory implement
 	
 	private List<ItemStack> getInventoryDrops(PC_Direction side){
 		IInventory inv = PC_InventoryUtils.getInventoryAt(this.worldObj, this.xCoord+side.offsetX, this.yCoord+side.offsetY, this.zCoord+side.offsetZ);
+		if(inv==null)
+			return null;
 		int[] indices = PC_InventoryUtils.getInvIndexesForSide(inv, side);
 		int ejectionMode = getEjectionMode();
 		int selectionMode = getSelectionMode();
@@ -228,6 +250,43 @@ public class PCtr_TileEntityEjector extends PC_TileEntityWithInventory implement
 			this.numStacks =1;
 		if(this.numItems<1)
 			this.numItems =1;
+	}
+	
+	@Override
+	public void onAdded(EntityPlayer player) {
+		set3DRotation(new PC_3DRotationY(player));
+		super.onAdded(player);
+	}
+
+	@Override
+	public void onBlockPostSet(PC_Direction side, ItemStack stack, EntityPlayer player, float hitX, float hitY, float hitZ) {
+		if(this.rotation==null)
+			set3DRotation(new PC_3DRotationY(player));
+	}
+
+	@Override
+	public PC_3DRotation get3DRotation() {
+		return this.rotation;
+	}
+
+	@Override
+	public boolean set3DRotation(PC_3DRotation rotation) {
+		this.rotation = rotation;
+		sync();
+		return true;
+	}
+
+	@Override
+	public boolean canRotate() {
+		return true;
+	}
+
+	@Override
+	public IIcon getIcon(PC_Direction side) {
+		if(side==PC_Direction.NORTH){
+			return PCtr_BlockEjector.icons[0];
+		}
+		return PCtr_BlockEjector.icons[1];
 	}
 	
 }

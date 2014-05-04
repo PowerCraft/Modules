@@ -12,7 +12,7 @@ import powercraft.transport.tileentity.PCtr_TileEntityEjector;
 
 public class PCtr_BlockEjector extends PC_BlockTileEntity {
 
-	private IIcon[] icons = new IIcon[2];
+	public static IIcon[] icons = new IIcon[2];
 	
 	public PCtr_BlockEjector() {
 		super(Material.ground);
@@ -26,16 +26,21 @@ public class PCtr_BlockEjector extends PC_BlockTileEntity {
 
 	@Override
 	public IIcon getIcon(PC_Direction side, int metadata) {
-		if(side==PC_Direction.NORTH){
-			return this.icons[0];
+		if(side==PC_Direction.EAST){
+			return PCtr_BlockEjector.icons[0];
 		}
-		return this.icons[1];
+		return PCtr_BlockEjector.icons[1];
 	}
 	
 	@Override
 	public void registerIcons(PC_IconRegistry iconRegistry) {
-		this.icons[0] = iconRegistry.registerIcon("front");
-		this.icons[1] = iconRegistry.registerIcon("side");
+		PCtr_BlockEjector.icons[0] = iconRegistry.registerIcon("front");
+		PCtr_BlockEjector.icons[1] = iconRegistry.registerIcon("side");
+	}
+	
+	@Override
+	public boolean canRotate(){
+		return true;
 	}
 	
 }

@@ -13,7 +13,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCla_BlockLaser2 extends PC_BlockTileEntity {
 
-	public static IIcon[] icons = new IIcon[3];
+	public static IIcon side;
+	public static IIcon front;
 
 	public PCla_BlockLaser2() {
 		super(Material.wood);
@@ -26,20 +27,20 @@ public class PCla_BlockLaser2 extends PC_BlockTileEntity {
 		return PCla_TileEntityLaser2.class;
 	}
 
+	@SuppressWarnings("hiding")
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(PC_Direction side, int metadata) {
-		if (side.equals(PC_Direction.SOUTH))
-			return icons[1];
-		return icons[0];
+		if (side == PC_Direction.EAST)
+			return front;
+		return PCla_BlockLaser2.side;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(PC_IconRegistry iconRegistry) {
-		icons[0] = iconRegistry.registerIcon("side");
-		icons[1] = iconRegistry.registerIcon("front");
-		icons[2] = iconRegistry.registerIcon("beam");
+		side = iconRegistry.registerIcon("side");
+		front = iconRegistry.registerIcon("front");
 	}
 
 }

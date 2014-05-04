@@ -23,7 +23,9 @@ public final class PCla_Beams implements PC_ITickHandler {
 	}
 	
 	private PCla_Beams(){
-		
+		if(INSTANCE!=null){
+			PC_Utils.staticClassConstructor();
+		}
 	}
 	
 	private static final ThreadLocal<List<PCla_Beam>> beams = new ThreadLocal<List<PCla_Beam>>();

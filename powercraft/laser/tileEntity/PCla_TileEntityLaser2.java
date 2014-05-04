@@ -2,25 +2,28 @@ package powercraft.laser.tileEntity;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import powercraft.api.PC_MathHelper;
+import powercraft.api.PC_3DRotationY;
+import powercraft.api.PC_Direction;
 import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3;
-import powercraft.api.block.PC_TileEntity;
+import powercraft.api.block.PC_TileEntityRotateable;
 import powercraft.laser.PCla_Beam;
 import powercraft.laser.PCla_IBeamHandler;
+import powercraft.laser.block.PCla_BlockLaser2;
 
-public class PCla_TileEntityLaser2 extends PC_TileEntity implements PCla_IBeamHandler {
-
-	private float rot;
+public class PCla_TileEntityLaser2 extends PC_TileEntityRotateable implements PCla_IBeamHandler {
 	
 	@SuppressWarnings("unused")
 	@Override
 	public void onTick() {
 		super.onTick();
-		this.rot+=0.1;
-		PC_Vec3 dir = new PC_Vec3(PC_MathHelper.cos((float) (this.rot/180.0*Math.PI)), 0, PC_MathHelper.sin((float) (this.rot/180.0*Math.PI)));
-		new PCla_Beam(this.worldObj, this, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5), dir, new PC_Vec3(1, 0, 0));
+		PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.NORTH);
+		PC_Vec3 vec = new PC_Vec3(dir.offsetX, dir.offsetY, dir.offsetZ);
+		new PCla_Beam(this.worldObj, this, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5), vec, new PC_Vec3(1, 0, 0));
 	}
 
 	@Override
@@ -38,6 +41,26 @@ public class PCla_TileEntityLaser2 extends PC_TileEntity implements PCla_IBeamHa
 	@Override
 	public PC_Vec3 onRecolor(PC_Vec3 newColor, PCla_Beam beam) {
 		return newColor;
+	}
+	
+	@Override
+	public void onAdded(EntityPlayer player) {
+		set3DRotation(new PC_3DRotationY(player));
+		super.onAdded(player);
+	}
+	
+	@Override
+	public void onBlockPostSet(PC_Direction side, ItemStack stack, EntityPlayer player, float hitX, float hitY, float hitZ) {
+		if(this.rotation==null)
+			set3DRotation(new PC_3DRotationY(player));
+	}
+	
+	@Override
+	public IIcon getIcon(PC_Direction side) {
+		if(side==PC_Direction.NORTH){
+			return PCla_BlockLaser2.front;
+		}
+		return PCla_BlockLaser2.side;
 	}
 	
 }

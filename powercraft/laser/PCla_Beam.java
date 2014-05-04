@@ -66,7 +66,9 @@ public class PCla_Beam implements PC_IBeam {
 	}
 	
 	public void trace() {
-		while(this.startPos.distanceTo(this.pos)<this.maxLength&&nextStep());
+		while(this.startPos.distanceTo(this.pos)<this.maxLength)
+			if(!nextStep())
+				break;
 		if(this.startPos.distanceTo(this.pos)>this.maxLength){
 			this.pos = this.pos.sub(this.startPos).normalize().mul(this.maxLength).add(this.startPos);
 		}
