@@ -16,11 +16,6 @@ public class PCtr_BlockBeltBidirectional extends PCtr_BlockBeltNormal {
 		super();
 		PC_Recipes.addShapedRecipe(new ItemStack(this, 16, 0), "LLL", "GRG", Character.valueOf('G'), Items.gold_ingot, Character.valueOf('L'), Items.leather, Character.valueOf('R'), Items.redstone);
 	}
-
-	@Override
-	public boolean canRotate() {
-		return false;
-	}
 	
 	@Override
 	public boolean canBlockStay(World world, int x, int y, int z) {

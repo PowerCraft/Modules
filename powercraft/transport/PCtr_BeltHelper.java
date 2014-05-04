@@ -45,7 +45,7 @@ public final class PCtr_BeltHelper {
 	public static final float STORAGE_BORDER_V = 0.6F;
 	
 	private PCtr_BeltHelper(){
-		throw new InstantiationError();
+		PC_Utils.staticClassConstructor();
 	}
 	
 	public static boolean isStickyItem(ItemStack itemStack){

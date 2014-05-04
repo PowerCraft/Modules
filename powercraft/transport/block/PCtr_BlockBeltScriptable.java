@@ -51,11 +51,6 @@ public class PCtr_BlockBeltScriptable extends PC_BlockTileEntity {
 	}
 
 	@Override
-	public int getRenderType() {
-		return 0;
-	}
-
-	@Override
 	public void registerIcons(PC_IconRegistry iconRegistry) {
 		this.icons[0] = iconRegistry.registerIcon("top");
 		this.icons[1] = iconRegistry.registerIcon("side");
