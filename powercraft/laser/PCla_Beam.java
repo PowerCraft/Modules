@@ -2,17 +2,18 @@ package powercraft.laser;
 
 import java.util.List;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import powercraft.api.PC_ClientUtils;
 import powercraft.api.PC_MathHelper;
 import powercraft.api.PC_Vec3;
+import powercraft.api.PC_Vec3I;
 import powercraft.api.beam.PC_BeamHitResult;
 import powercraft.api.beam.PC_IBeam;
 import powercraft.laser.entity.PCla_LaserEntityFX;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class PCla_Beam implements PC_IBeam {
@@ -94,14 +95,8 @@ public class PCla_Beam implements PC_IBeam {
 		if(Double.isInfinite(l) || l<=0)
 			return false;
 		this.pos = this.pos.add(this.dir.mul(l));
-		if(add.x!=0){
-			this.pos.x = (int)(this.pos.x+0.5);
-		}else if(add.y!=0){
-			this.pos.y = (int)(this.pos.y+0.5);
-		}else if(add.z!=0){
-			this.pos.z = (int)(this.pos.z+0.5);
-		}
 		PC_Vec3 blockPos = this.pos.add(add);
+		PC_Vec3I blockPosI = new PC_Vec3I(PC_MathHelper.floor_double(blockPos.x), PC_MathHelper.floor_double(blockPos.y), PC_MathHelper.floor_double(blockPos.z));
 		List<Entity> entities = this.world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(this.pos.x, this.pos.y, this.pos.z, this.pos.x, this.pos.y, this.pos.z).expand(0.5, 0.5, 0.5));
 		PC_BeamHitResult result;
 		boolean stop = false;
@@ -122,13 +117,13 @@ public class PCla_Beam implements PC_IBeam {
 		}
 		if(stop)
 			return false;
-		result = PCla_Beams.onHitBlock(this.world, (int)blockPos.x, (int)blockPos.y, (int)blockPos.z, this);
+		result = PCla_Beams.onHitBlock(this.world, blockPosI.x, blockPosI.y, blockPosI.z, this);
 		switch(result){
 		case CONTINUE:
 			return true;
 		case INTERACT:
 		case STANDART:
-			return this.handler.onHitBlock(this.world, (int)blockPos.x, (int)blockPos.y, (int)blockPos.z, this);
+			return this.handler.onHitBlock(this.world, blockPosI.x, blockPosI.y, blockPosI.z, this);
 		case STOP:
 		default:
 			break;
