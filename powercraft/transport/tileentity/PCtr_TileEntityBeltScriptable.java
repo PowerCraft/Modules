@@ -55,6 +55,7 @@ import powercraft.api.gres.PC_GresBaseWithInventory;
 import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.network.PC_PacketHandler;
+import powercraft.api.redstone.PC_RedstoneWorkType;
 import powercraft.api.script.PC_FakeDiagnostic;
 import powercraft.api.script.miniscript.PC_Miniscript;
 import powercraft.transport.PCtr_BeltHelper;
@@ -397,6 +398,11 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		default:
 			break;
 		}
+	}
+	
+	@Override
+	public PC_RedstoneWorkType[] getAllowedRedstoneWorkTypes() {
+		return PC_RedstoneWorkType.all;
 	}
 	
 }
