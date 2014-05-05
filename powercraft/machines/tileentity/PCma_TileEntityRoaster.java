@@ -34,7 +34,7 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 	private boolean working;
 	
 	public PCma_TileEntityRoaster(){
-		this.workWhen = PC_RedstoneWorkType.EVER;
+		this.workWhen = PC_RedstoneWorkType.ALWAYS;
 	}
 	
 	@Override
@@ -206,7 +206,7 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 	
 	@Override
 	public PC_RedstoneWorkType[] getAllowedRedstoneWorkTypes() {
-		return new PC_RedstoneWorkType[]{null, PC_RedstoneWorkType.EVER, PC_RedstoneWorkType.ON_ON, PC_RedstoneWorkType.ON_OFF};
+		return new PC_RedstoneWorkType[]{null, PC_RedstoneWorkType.ALWAYS, PC_RedstoneWorkType.ON_ON, PC_RedstoneWorkType.ON_OFF};
 	}
 	
 }

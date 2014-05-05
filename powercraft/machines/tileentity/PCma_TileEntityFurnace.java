@@ -40,7 +40,7 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 	
 	public PCma_TileEntityFurnace() {
 		super("Furnace", 2, new Group(true, 0), new Group(false, 1));
-		this.workWhen = PC_RedstoneWorkType.EVER;
+		this.workWhen = PC_RedstoneWorkType.ALWAYS;
 	}
 
 	@Override
@@ -225,7 +225,7 @@ public class PCma_TileEntityFurnace extends PC_TileEntityWithInventory implement
 	
 	@Override
 	public PC_RedstoneWorkType[] getAllowedRedstoneWorkTypes() {
-		return new PC_RedstoneWorkType[]{null, PC_RedstoneWorkType.EVER, PC_RedstoneWorkType.ON_ON, PC_RedstoneWorkType.ON_OFF};
+		return new PC_RedstoneWorkType[]{null, PC_RedstoneWorkType.ALWAYS, PC_RedstoneWorkType.ON_ON, PC_RedstoneWorkType.ON_OFF};
 	}
 	
 }

@@ -32,7 +32,7 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 				PC_InventoryUtils.makeIndexList(4, 12)), new Group(true, PC_InventoryUtils.makeIndexList(12, 16)),
 				new Group(true, PC_InventoryUtils.makeIndexList(16, 21)));
 		orientation = PC_Direction.NORTH;
-		this.workWhen = PC_RedstoneWorkType.EVER;
+		this.workWhen = PC_RedstoneWorkType.ALWAYS;
 		markDirty();
 	}
 
@@ -145,7 +145,7 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 
 	@Override
 	public PC_RedstoneWorkType[] getAllowedRedstoneWorkTypes() {
-		return new PC_RedstoneWorkType[] { PC_RedstoneWorkType.EVER, PC_RedstoneWorkType.ON_ON,
+		return new PC_RedstoneWorkType[] { PC_RedstoneWorkType.ALWAYS, PC_RedstoneWorkType.ON_ON,
 				PC_RedstoneWorkType.ON_OFF, PC_RedstoneWorkType.ON_FLANK, PC_RedstoneWorkType.ON_HI_FLANK,
 				PC_RedstoneWorkType.ON_LOW_FLANK };
 	}

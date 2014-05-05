@@ -50,7 +50,7 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 	public PCma_TileEntityAutomaticWorkbench() {
 		super("AutomaticWorkbench", 29, new Group(true, PC_InventoryUtils.makeIndexList(10, 28)), new Group(false, 9));
 		// 0-8 => Grid, 9=>Out, 10-27=>In, 28=>Prod
-		this.workWhen = PC_RedstoneWorkType.EVER;
+		this.workWhen = PC_RedstoneWorkType.ALWAYS;
 	}
 
 	@Override
@@ -283,7 +283,7 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 	
 	@Override
 	public PC_RedstoneWorkType[] getAllowedRedstoneWorkTypes() {
-		return new PC_RedstoneWorkType[]{null, PC_RedstoneWorkType.EVER, PC_RedstoneWorkType.ON_ON, PC_RedstoneWorkType.ON_OFF, PC_RedstoneWorkType.ON_FLANK, PC_RedstoneWorkType.ON_HI_FLANK, PC_RedstoneWorkType.ON_LOW_FLANK};
+		return new PC_RedstoneWorkType[]{null, PC_RedstoneWorkType.ALWAYS, PC_RedstoneWorkType.ON_ON, PC_RedstoneWorkType.ON_OFF, PC_RedstoneWorkType.ON_FLANK, PC_RedstoneWorkType.ON_HI_FLANK, PC_RedstoneWorkType.ON_LOW_FLANK};
 	}
 
 	@Override
