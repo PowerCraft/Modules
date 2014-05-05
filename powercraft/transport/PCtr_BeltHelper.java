@@ -118,7 +118,7 @@ public final class PCtr_BeltHelper {
 			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(-0.6, -0.6, -0.6, 0.6, 0.6, 0.6).offset(x+dir.offsetX+0.5, y+dir.offsetY+0.5, z+dir.offsetZ+0.5);
 			if(aabb.isVecInside(Vec3.createVectorHelper(entity.posX, entity.posY, entity.posZ))){
 				ItemStack is = ((EntityItem)entity).getEntityItem();
-				IInventory inventory = PC_InventoryUtils.getBlockInventoryAt(world, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
+				IInventory inventory = PC_InventoryUtils.getInventoryAt(world, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ, false);
 				if(inventory!=null){
 					if(PC_InventoryUtils.storeItemStackToInventoryFrom(inventory, is, dir.getOpposite())){
 						entity.setDead();
