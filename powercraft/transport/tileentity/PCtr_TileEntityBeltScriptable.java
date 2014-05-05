@@ -402,7 +402,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 	
 	@Override
 	public PC_RedstoneWorkType[] getAllowedRedstoneWorkTypes() {
-		return PC_RedstoneWorkType.all;
+		return PC_RedstoneWorkType.ALL;
 	}
 	
 }
