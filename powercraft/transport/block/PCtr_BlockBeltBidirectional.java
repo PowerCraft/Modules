@@ -36,7 +36,7 @@ public class PCtr_BlockBeltBidirectional extends PCtr_BlockBeltNormal {
 		}
 		int diff = PCtr_BeltHelper.combineEntityItems(entity)?2:1;
 		if(world.isRemote){
-			PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true, 0);
+			PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true);
 			return;
 		}
 		NBTTagCompound compound = PC_Utils.getWritableNBTTagOf(entity);
@@ -50,7 +50,7 @@ public class PCtr_BlockBeltBidirectional extends PCtr_BlockBeltNormal {
 			if(lastTick==entity.ticksExisted)
 				return;
 			if(x==xx && y==yy && z==zz && (lastTick==entity.ticksExisted-diff || lastTick==entity.ticksExisted-1 || entity.ticksExisted==0)){
-				if(!PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true, 0)){
+				if(!PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true)){
 					compound.setInteger("lastTick", entity.ticksExisted);
 					return;
 				}
@@ -64,7 +64,7 @@ public class PCtr_BlockBeltBidirectional extends PCtr_BlockBeltNormal {
 		compound.setInteger("lastY", y);
 		compound.setInteger("lastZ", z);
 		compound.setInteger("lastTick", entity.ticksExisted);
-		PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true, 0);
+		PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true);
 	}
 	
 }

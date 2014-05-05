@@ -90,14 +90,12 @@ public class PCtr_BlockBeltNormal extends PC_Block {
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity) {
 		if(PCtr_BeltHelper.isEntityIgnored(entity))
 			return;
-		int metadata = PC_Utils.getMetadata(world, x, y, z);
-		int hill = metadata&3;
 		if(!(Math.floor(entity.posX)==x && (Math.floor(entity.posY)==y) && Math.floor(entity.posZ)==z)){
 			return;
 		}
 		int diff = PCtr_BeltHelper.combineEntityItems(entity)?2:1;
 		if(world.isRemote){
-			PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true, hill);
+			PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true);
 			return;
 		}
 		NBTTagCompound compound = PC_Utils.getWritableNBTTagOf(entity);
@@ -111,7 +109,8 @@ public class PCtr_BlockBeltNormal extends PC_Block {
 			if(lastTick==entity.ticksExisted)
 				return;
 			if(x==xx && y==yy && z==zz && (lastTick==entity.ticksExisted-diff || lastTick==entity.ticksExisted-1 || entity.ticksExisted==0)){
-				if(!PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true, hill)){
+				if(!PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true)){
+					System.out.println("handle1");
 					compound.setInteger("lastTick", entity.ticksExisted);
 					return;
 				}
@@ -125,7 +124,7 @@ public class PCtr_BlockBeltNormal extends PC_Block {
 		PC_3DRotation rotation = getRotation(world, x, y, z);
 		PC_Direction direction = rotation.getSidePosition(PC_Direction.SOUTH);
 		compound.setInteger("dir", direction.ordinal());
-		PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true, hill);
+		PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true);
 		if(prevDir!=direction.ordinal()){
 			PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity), world, x, y, z, 16);
 		}

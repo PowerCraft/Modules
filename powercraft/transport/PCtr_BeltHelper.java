@@ -3,8 +3,10 @@ package powercraft.transport;
 import java.util.Iterator;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRail;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -14,6 +16,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import powercraft.api.PC_Direction;
+import powercraft.api.PC_MathHelper;
 import powercraft.api.PC_Sound;
 import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3I;
@@ -21,6 +24,7 @@ import powercraft.api.inventory.PC_InventoryUtils;
 import powercraft.api.reflect.PC_Reflection;
 import powercraft.transport.block.PCtr_BlockBeltNormal;
 import powercraft.transport.block.PCtr_BlockBeltScriptable;
+import scala.reflect.internal.Trees.ShallowDuplicator;
 
 public final class PCtr_BeltHelper {
 	
@@ -113,6 +117,22 @@ public final class PCtr_BeltHelper {
 		return block instanceof PCtr_BlockBeltScriptable;
 	}
 	
+	/**
+	 * @param entity
+	 * @param world
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param dir
+	 * @return
+	 * <br>
+	 * <br>
+	 * 0 -> entity can't be stored (wrong type)<br>
+	 * 1 -> nothing found to store to (no inventory found in range)<br>
+	 * 2 -> entity entirely stored<br>
+	 * 3 -> entity partially stored<br>
+	 * 4 -> no slot found to store to (inv is full)
+	 */
 	public static int tryToStoreEntity(Entity entity, World world, int x, int y, int z, PC_Direction dir){
 		if(entity instanceof EntityItem){
 			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(-0.6, -0.6, -0.6, 0.6, 0.6, 0.6).offset(x+dir.offsetX+0.5, y+dir.offsetY+0.5, z+dir.offsetZ+0.5);
@@ -120,28 +140,53 @@ public final class PCtr_BeltHelper {
 				ItemStack is = ((EntityItem)entity).getEntityItem();
 				IInventory inventory = PC_InventoryUtils.getInventoryAt(world, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ, false);
 				if(inventory!=null){
-					if(PC_InventoryUtils.storeItemStackToInventoryFrom(inventory, is, dir.getOpposite())){
+					int storeResult = PC_InventoryUtils.storeItemStackToInventoryFrom(inventory, is, dir.getOpposite()); 
+					if(storeResult==0){
 						entity.setDead();
-						return 1;
+						return 2;
+					}else if(storeResult==1){
+						((EntityItem)entity).setEntityItemStack(is);
+						return 3;
 					}
-					((EntityItem)entity).setEntityItemStack(is);
-					return 2;
+					return 4;
 				}
+				return 1;
 			}
 		}
 		return 0;
 	}
 	
 	@SuppressWarnings("unused")
-	public static void moveEntity(Entity entity, World world, int x, int y, int z, boolean elevator, PC_Direction dir, int hill){
+	public static void moveEntity(Entity entity, World world, int x, int y, int z, boolean elevator, PC_Direction dir, double speed){
 		final double FAC = 0.5;
-		entity.motionX = dir.offsetX!=0?dir.offsetX*0.2:(x+0.5-entity.posX)*FAC;
+		int passing = canPassTo(world, new PC_Vec3I(x, y, z), dir);
+		boolean canPass = passing==0 || (passing==1 && (entity instanceof EntityMinecart));
+		entity.motionX = dir.offsetX!=0?dir.offsetX*speed:(x+0.5-entity.posX)*FAC;
 		if(elevator){
-			entity.motionY = dir.offsetY!=0?dir.offsetY*0.2:(y+0.5-entity.posY)*FAC;
+			entity.motionY = dir.offsetY!=0?dir.offsetY*speed:(y+0.5-entity.posY)*FAC;
 			entity.onGround = false;
 		}
-		entity.motionZ = dir.offsetZ!=0?dir.offsetZ*0.2:(z+0.5-entity.posZ)*FAC;
+		entity.motionZ = dir.offsetZ!=0?dir.offsetZ*speed:(z+0.5-entity.posZ)*FAC;
 		entity.velocityChanged = true;
+		if(canPass)
+			return;
+		double diff, tmp;
+		if(dir.isVertical() && (diff=PC_MathHelper.abs_double((y+0.5+dir.offsetY*0.5)-entity.posY))<2*speed){
+			entity.motionY = getSpeedForDiff(diff);
+		}else if(dir.isHorizontalX() && (diff=PC_MathHelper.abs_double((x+0.5+dir.offsetX*0.5)-entity.posX))<2*speed){
+			entity.motionX = getSpeedForDiff(diff);
+		}else if(dir.isHorizontalZ() && (diff=PC_MathHelper.abs_double((z+0.5+dir.offsetZ*0.5)-entity.posZ))<2*speed){
+			entity.motionZ = getSpeedForDiff(diff);
+		}
+	}
+	
+	private static double getSpeedForDiff(double diff){
+		if(diff<0.1) return 0;
+		if(diff<0.2) return 0.05;
+		if(diff<0.3) return 0.1;
+		if(diff<0.4) return 0.2;
+		if(diff<0.6) return 0.3;
+		return 0.5;
 	}
 	
 	public static void preventDespawn(Entity entity, boolean preventPickup){
@@ -176,7 +221,7 @@ public final class PCtr_BeltHelper {
 		}
 	}
 	
-	public static boolean handleEntity(Entity entity, World world, int x, int y, int z, boolean elevator, boolean preventPickup, int hill){
+	public static boolean handleEntity(Entity entity, World world, int x, int y, int z, boolean elevator, boolean preventPickup){
 		if(isEntityIgnored(entity))
 			return false;
 		if(entity.stepHeight<1.0f/16.0f){
@@ -190,10 +235,29 @@ public final class PCtr_BeltHelper {
 				if(result!=0)
 					return result==2;
 			}
-			moveEntity(entity, world, x, y, z, elevator, dir, hill);
+			moveEntity(entity, world, x, y, z, elevator, dir, 0.2);
 		}
 		preventDespawn(entity, preventPickup);
 		return false;
+	}
+	
+	/**
+	 * @param world
+	 * @param pos
+	 * @param dir
+	 * @return value that indicates what blocks the movement<br>
+	 * <br>
+	 * 0 -> no blocking<br>
+	 * 1 -> rails<br>
+	 * 2 -> anything else<br>
+	 */
+	public static int canPassTo(World world, PC_Vec3I pos, PC_Direction dir){
+		PC_Vec3I target = pos.offset(dir);
+		if(BlockRail.func_150051_a(PC_Utils.getBlock(world, target.x, target.y, target.z)))
+			return 1;
+		if(isBlocked(world, target))
+			return 2;
+		return 0;
 	}
 
 	public static boolean combineEntityItems(Entity entity) {
