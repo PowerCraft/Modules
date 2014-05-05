@@ -412,7 +412,7 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 
 				ItemStack itemStack = entity.getEntityItem();
 				
-				if(PC_InventoryUtils.storeItemStackToInventoryFrom(this, itemStack))
+				if(PC_InventoryUtils.storeItemStackToInventoryFrom(this, itemStack)==0)
 					entity.setDead();
 				
 			}
