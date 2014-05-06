@@ -21,11 +21,6 @@ public class PCtr_BlockBeltBidirectional extends PCtr_BlockBeltNormal {
 	public boolean canBlockStay(World world, int x, int y, int z) {
 		return PCtr_BeltHelper.hasValidGround(world, x, y, z);
 	}
-
-	@Override
-	public boolean canPlaceBlockAt(World world, int x, int y, int z){
-		return PCtr_BeltHelper.hasValidGround(world, x, y, z) && super.canPlaceBlockAt(world, x, y, z);
-	}
 	
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity) {

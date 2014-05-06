@@ -57,11 +57,6 @@ public class PCtr_BlockBeltNormal extends PC_Block {
 	public boolean canBlockStay(World world, int x, int y, int z) {
 		return PCtr_BeltHelper.hasValidGround(world, x, y, z);
 	}
-
-	@Override
-	public boolean canPlaceBlockAt(World world, int x, int y, int z){
-		return PCtr_BeltHelper.hasValidGround(world, x, y, z) && super.canPlaceBlockAt(world, x, y, z);
-	}
 	
 	@Override
 	public void registerIcons(PC_IconRegistry iconRegistry) {

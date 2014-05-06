@@ -41,11 +41,6 @@ public class PCtr_BlockBeltScriptable extends PC_BlockTileEntity {
 	}
 
 	@Override
-	public boolean canPlaceBlockAt(World world, int x, int y, int z){
-		return PCtr_BeltHelper.hasValidGround(world, x, y, z) && super.canPlaceBlockAt(world, x, y, z);
-	}
-	
-	@Override
 	public Class<? extends PC_TileEntity> getTileEntityClass() {
 		return PCtr_TileEntityBeltScriptable.class;
 	}
