@@ -118,7 +118,7 @@ public class PCms_BlockClimbingRope extends PC_Block {
 
 	@Override
 	public void initRecipes() {
-		PC_Recipes.addShapedRecipe(new ItemStack(this), "s", "s", "s", 's', Items.string);
+		PC_Recipes.addShapedRecipe(new ItemStack(this), "s", "s", "s", Character.valueOf('s'), Items.string);
 		PC_Recipes.addRecipe(new PC_IRecipe() {
 			
 			@Override
