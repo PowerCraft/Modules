@@ -91,6 +91,33 @@ public class PCrs_MultiblockObjectRedstoneBundleCable extends PC_MultiblockObjec
 	}
 	
 	@Override
+	public boolean canMixWith(PC_MultiblockObject multiblockObject) {
+		if(multiblockObject instanceof PCrs_MultiblockObjectRedstoneBundleCable){
+			PCrs_MultiblockObjectRedstoneBundleCable bundleCable = (PCrs_MultiblockObjectRedstoneBundleCable)multiblockObject;
+			return (bundleCable.getMask() & getMask())==0;
+		}
+		return super.canMixWith(multiblockObject);
+	}
+
+	@Override
+	public PC_MultiblockObject mixWith(PC_MultiblockObject multiblockObject) {
+		if(multiblockObject instanceof PCrs_MultiblockObjectRedstoneBundleCable){
+			PCrs_MultiblockObjectRedstoneBundleCable bundleCable = (PCrs_MultiblockObjectRedstoneBundleCable)multiblockObject;
+			this.mask |= bundleCable.getMask();
+			if(!isClient()){
+				for(int i=0; i<16; i++){
+					if((this.mask & 1<<i)!=0 && this.bundleWires[i]==null){
+						this.bundleWires[i] = new BundleWire(this);
+					}
+				}
+				onInternalChange();
+			}
+			return this;
+		}
+		return super.mixWith(multiblockObject);
+	}
+
+	@Override
 	protected void onLoadedFromNBT(Flag flag) {
 		if(flag==Flag.SAVE){
 			this.bundleWires = new BundleWire[16];
