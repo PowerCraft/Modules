@@ -5,7 +5,6 @@ import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
 import powercraft.api.multiblock.PC_BlockMultiblock;
 import powercraft.api.multiblock.PC_Multiblocks;
-import powercraft.api.redstone.multiblock.PC_MultiblockItemRedstoneCable;
 import powercraft.core.item.PCco_ItemNanobots;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.InstanceFactory;
@@ -23,8 +22,6 @@ public class PCco_Core extends PC_Module {
 	public static final PC_BlockMultiblock MULTIBLOCK = PC_Multiblocks.getMultiblock();
 	
 	public static final PCco_ItemNanobots NANOBOTS = new PCco_ItemNanobots();
-	
-	public static final PC_MultiblockItemRedstoneCable REDSTONE_CABLE = new PC_MultiblockItemRedstoneCable();
 	
 	@InstanceFactory
 	public static PCco_Core factory() {
