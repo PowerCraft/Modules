@@ -139,7 +139,7 @@ public class PCrs_MultiblockObjectRedstoneCable extends PC_MultiblockObjectCable
 	@Override
 	protected int canConnectToBlock(World world, int x, int y, int z, Block block, PC_Direction dir, PC_Direction dir2) {
 		if(block instanceof BlockRedstoneWire){
-			return this.index==PC_MultiblockIndex.FACEBOTTOM?1:0;
+			return this.index==PC_MultiblockIndex.FACEBOTTOM?0xFFFF:0;
 		}
 		return super.canConnectToBlock(world, x, y, z, block, dir, dir2);
 	}

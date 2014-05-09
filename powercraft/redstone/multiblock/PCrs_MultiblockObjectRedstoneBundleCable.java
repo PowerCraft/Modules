@@ -193,13 +193,13 @@ public class PCrs_MultiblockObjectRedstoneBundleCable extends PC_MultiblockObjec
 
 	@Override
 	public boolean canConnectRedstone(PC_Direction side) {
-		return this.index==PC_MultiblockIndex.FACEBOTTOM;
+		return canBeIO() && this.index==PC_MultiblockIndex.FACEBOTTOM;
 	}
 
 	@Override
 	protected int canConnectToBlock(World world, int x, int y, int z, Block block, PC_Direction dir, PC_Direction dir2) {
 		if(block instanceof BlockRedstoneWire){
-			return this.index==PC_MultiblockIndex.FACEBOTTOM?1:0;
+			return canBeIO() && this.index==PC_MultiblockIndex.FACEBOTTOM?0xFFFF:0;
 		}
 		return super.canConnectToBlock(world, x, y, z, block, dir, dir2);
 	}
@@ -263,7 +263,7 @@ public class PCrs_MultiblockObjectRedstoneBundleCable extends PC_MultiblockObjec
 	}
 	
 	public boolean canBeIO(){
-		return getSoloBundleWire()!=null;
+		return PC_Utils.countBits(this.mask)==1;
 	}
 	
 	public boolean isIO(){
