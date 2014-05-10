@@ -172,7 +172,7 @@ public class PCma_TileEntityRoaster extends PC_TileEntity implements PC_IGridSid
 	}
 
 	@Override
-	public <T extends PC_IGridTile<?, T, ?, ?>> T getTile(PC_Direction side, Class<T> tileClass) {
+	public <T extends PC_IGridTile<?, T, ?, ?>> T getTile(PC_Direction side, int flags, Class<T> tileClass) {
 		if(side==PC_Direction.UP)
 			return null;
 		if(tileClass==PC_IEnergyGridTile.class)

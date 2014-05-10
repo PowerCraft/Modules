@@ -10,6 +10,8 @@ import powercraft.api.PC_Field;
 import powercraft.api.PC_Field.Flag;
 import powercraft.api.PC_Utils;
 import powercraft.api.grid.PC_GridHelper;
+import powercraft.api.grid.PC_IGridHolder;
+import powercraft.api.grid.PC_IGridTile;
 import powercraft.api.multiblock.PC_MultiblockIndex;
 import powercraft.api.multiblock.PC_MultiblockObject;
 import powercraft.api.multiblock.PC_TileEntityMultiblock;
@@ -21,14 +23,17 @@ import powercraft.core.PCco_Core;
 
 public class PCrs_MultiblockObjectRedstoneBundleCable extends PC_MultiblockObjectCable{
 	
-	private static class BundleWire implements PC_IRedstoneGridTile{
+	private static class BundleWire implements PC_IRedstoneGridTile, PC_IGridHolder{
 
 		private PCrs_MultiblockObjectRedstoneBundleCable morbc;
 		
 		private PC_RedstoneGrid grid;
 		
-		BundleWire(PCrs_MultiblockObjectRedstoneBundleCable morbc){
+		private int index;
+		
+		BundleWire(PCrs_MultiblockObjectRedstoneBundleCable morbc, int index){
 			this.morbc = morbc;
+			this.index = index;
 		}
 		
 		@Override
@@ -57,19 +62,35 @@ public class PCrs_MultiblockObjectRedstoneBundleCable extends PC_MultiblockObjec
 		}
 
 		void update() {
-			//this.grid.update();
+			if(this.grid!=null)
+				this.grid.update();
 		}
 
 		int getRedstonePowerValue() {
-			return 0;//this.grid.getRedstonePowerValue();
+			return this.grid.getRedstonePowerValue();
 		}
 
-		void getGridIfNull(World world, int x, int y, int z) {
-			
+		void getGridIfNull(World world, int x, int y, int z, PC_Direction dir) {
+			PC_GridHelper.getGridIfNull(world, x, y, z, -1, this.index, dir, this, PC_RedstoneGrid.factory, PC_IRedstoneGridTile.class);
 		}
 		
 		void removeFromGrid(World world) {
 			PC_GridHelper.removeFromGrid(world, (PC_IRedstoneGridTile)this);
+		}
+
+		@Override
+		public void getGridIfNull() {
+			PC_TileEntityMultiblock multiblock = this.morbc.getMultiblock();
+			int x = multiblock.xCoord;
+			int y = multiblock.yCoord;
+			int z = multiblock.zCoord;
+			PC_Direction dir = this.morbc.getFaceDir();
+			getGridIfNull(this.morbc.getWorld(), x, y, z, dir);
+		}
+
+		@Override
+		public void removeFromGrid() {
+			removeFromGrid(this.morbc.getWorld());
 		}
 		
 	}
@@ -83,11 +104,19 @@ public class PCrs_MultiblockObjectRedstoneBundleCable extends PC_MultiblockObjec
 		super(2, 4);
 		this.mask |= 1<<i;
 		this.bundleWires = new BundleWire[16];
-		this.bundleWires[i] = new BundleWire(this);
+		this.bundleWires[i] = new BundleWire(this, i);
 	}
 
 	public PCrs_MultiblockObjectRedstoneBundleCable(NBTTagCompound tagCompound, Flag flag) {
 		super(tagCompound, flag);
+	}
+	
+	PC_Direction getFaceDir(){
+		return PC_MultiblockIndex.getFaceDir(this.index);
+	}
+	
+	PC_TileEntityMultiblock getMultiblock(){
+		return this.multiblock;
 	}
 	
 	@Override
@@ -107,7 +136,7 @@ public class PCrs_MultiblockObjectRedstoneBundleCable extends PC_MultiblockObjec
 			if(!isClient()){
 				for(int i=0; i<16; i++){
 					if((this.mask & 1<<i)!=0 && this.bundleWires[i]==null){
-						this.bundleWires[i] = new BundleWire(this);
+						this.bundleWires[i] = new BundleWire(this, i);
 					}
 				}
 				onInternalChange();
@@ -123,7 +152,7 @@ public class PCrs_MultiblockObjectRedstoneBundleCable extends PC_MultiblockObjec
 			this.bundleWires = new BundleWire[16];
 			for(int i=0; i<16; i++){
 				if((this.mask & 1<<i)!=0){
-					this.bundleWires[i] = new BundleWire(this);
+					this.bundleWires[i] = new BundleWire(this, i);
 				}
 			}
 		}
@@ -137,9 +166,10 @@ public class PCrs_MultiblockObjectRedstoneBundleCable extends PC_MultiblockObjec
 		int y = this.multiblock.yCoord;
 		int z = this.multiblock.zCoord;
 		if(!world.isRemote){
+			PC_Direction dir = PC_MultiblockIndex.getFaceDir(this.index);
 			for(BundleWire bundleWire:this.bundleWires){
 				if(bundleWire!=null){
-					bundleWire.getGridIfNull(world, x, y, z);
+					bundleWire.getGridIfNull(world, x, y, z, dir);
 				}
 			}
 		}
@@ -308,6 +338,19 @@ public class PCrs_MultiblockObjectRedstoneBundleCable extends PC_MultiblockObjec
 			return max;
 		}
 		return 0;
+	}
+
+	@Override
+	public <T extends PC_IGridTile<?, T, ?, ?>> T getGridTile(int flags, Class<T> tileClass) {
+		if(flags==-1){
+			BundleWire bw = getSoloBundleWire();
+			if(bw!=null && tileClass.isAssignableFrom(BundleWire.class)){
+				return tileClass.cast(bw);
+			}
+		}else if(tileClass.isAssignableFrom(BundleWire.class) && this.bundleWires[flags]!=null){
+			return tileClass.cast(this.bundleWires[flags]);
+		}
+		return super.getGridTile(flags, tileClass);
 	}
 	
 }
