@@ -3,7 +3,7 @@ package powercraft.transport;
 import java.util.Iterator;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRail;
+import net.minecraft.block.BlockRailBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecart;
@@ -24,7 +24,6 @@ import powercraft.api.inventory.PC_InventoryUtils;
 import powercraft.api.reflect.PC_Reflection;
 import powercraft.transport.block.PCtr_BlockBeltNormal;
 import powercraft.transport.block.PCtr_BlockBeltScriptable;
-import scala.reflect.internal.Trees.ShallowDuplicator;
 
 public final class PCtr_BeltHelper {
 	
@@ -253,7 +252,7 @@ public final class PCtr_BeltHelper {
 	 */
 	public static int canPassTo(World world, PC_Vec3I pos, PC_Direction dir){
 		PC_Vec3I target = pos.offset(dir);
-		if(BlockRail.func_150051_a(PC_Utils.getBlock(world, target.x, target.y, target.z)))
+		if(BlockRailBase.func_150051_a(PC_Utils.getBlock(world, target.x, target.y, target.z)))
 			return 1;
 		if(isBlocked(world, target))
 			return 2;
