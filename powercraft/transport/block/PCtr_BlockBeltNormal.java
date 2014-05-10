@@ -105,7 +105,6 @@ public class PCtr_BlockBeltNormal extends PC_Block {
 				return;
 			if(x==xx && y==yy && z==zz && (lastTick==entity.ticksExisted-diff || lastTick==entity.ticksExisted-1 || entity.ticksExisted==0)){
 				if(!PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true)){
-					System.out.println("handle1");
 					compound.setInteger("lastTick", entity.ticksExisted);
 					return;
 				}
