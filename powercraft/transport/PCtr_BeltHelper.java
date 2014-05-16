@@ -13,7 +13,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_MathHelper;
@@ -135,7 +134,7 @@ public final class PCtr_BeltHelper {
 	public static int tryToStoreEntity(Entity entity, World world, int x, int y, int z, PC_Direction dir){
 		if(entity instanceof EntityItem){
 			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(-0.6, -0.6, -0.6, 0.6, 0.6, 0.6).offset(x+dir.offsetX+0.5, y+dir.offsetY+0.5, z+dir.offsetZ+0.5);
-			if(aabb.isVecInside(Vec3.createVectorHelper(entity.posX, entity.posY, entity.posZ))){
+			if(aabb.intersectsWith(entity.boundingBox)){
 				ItemStack is = ((EntityItem)entity).getEntityItem();
 				IInventory inventory = PC_InventoryUtils.getInventoryAt(world, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ, false);
 				if(inventory!=null){
@@ -149,16 +148,16 @@ public final class PCtr_BeltHelper {
 					}
 					return 4;
 				}
-				return 1;
 			}
+			return 1;
 		}
 		return 0;
 	}
 	
 	@SuppressWarnings("unused")
-	public static void moveEntity(Entity entity, World world, int x, int y, int z, boolean elevator, PC_Direction dir, double speed){
+	public static void moveEntity(Entity entity, World world, int x, int y, int z, boolean elevator, PC_Direction dir, double speed, boolean upwards){
 		final double FAC = 0.5;
-		int passing = canPassTo(world, new PC_Vec3I(x, y, z), dir);
+		int passing = canPassTo(world, new PC_Vec3I(x, y+(upwards?1:0), z), dir);
 		boolean canPass = passing==0 || (passing==1 && (entity instanceof EntityMinecart));
 		entity.motionX = dir.offsetX!=0?dir.offsetX*speed:(x+0.5-entity.posX)*FAC;
 		if(elevator){
@@ -220,7 +219,7 @@ public final class PCtr_BeltHelper {
 		}
 	}
 	
-	public static boolean handleEntity(Entity entity, World world, int x, int y, int z, boolean elevator, boolean preventPickup){
+	public static boolean handleEntity(Entity entity, World world, int x, int y, int z, boolean elevator, boolean preventPickup, boolean upwards){
 		if(isEntityIgnored(entity))
 			return false;
 		if(entity.stepHeight<1.0f/16.0f){
@@ -231,10 +230,10 @@ public final class PCtr_BeltHelper {
 			PC_Direction dir = PC_Direction.fromSide(compound.getInteger("dir"));
 			if(!world.isRemote){
 				int result = tryToStoreEntity(entity, world, x, y, z, dir);
-				if(result!=0)
+				if(result>=2)
 					return result==2;
 			}
-			moveEntity(entity, world, x, y, z, elevator, dir, 0.2);
+			moveEntity(entity, world, x, y, z, elevator, dir, 0.2, upwards);
 		}
 		preventDespawn(entity, preventPickup);
 		return false;

@@ -185,7 +185,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		}
 		int diff = PCtr_BeltHelper.combineEntityItems(entity)?2:1;
 		if(isClient()){
-			PCtr_BeltHelper.handleEntity(entity, this.worldObj, this.xCoord, this.yCoord, this.zCoord, false, true);
+			PCtr_BeltHelper.handleEntity(entity, this.worldObj, this.xCoord, this.yCoord, this.zCoord, false, true, false);
 			return;
 		}
 		NBTTagCompound compound = PC_Utils.getWritableNBTTagOf(entity);
@@ -200,7 +200,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 			if(lastTick==entity.ticksExisted)
 				return;
 			if(x==this.xCoord && y==this.yCoord && z==this.zCoord && (lastTick==entity.ticksExisted-diff || lastTick==entity.ticksExisted-1 || entity.ticksExisted==0)){
-				if(!PCtr_BeltHelper.handleEntity(entity, this.worldObj, this.xCoord, this.yCoord, this.zCoord, false, true)){
+				if(!PCtr_BeltHelper.handleEntity(entity, this.worldObj, this.xCoord, this.yCoord, this.zCoord, false, true, false)){
 					compound.setInteger("lastTick", entity.ticksExisted);
 					return;
 				}
@@ -279,7 +279,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 		}
 		direction=PC_Direction.fromRotationY(direction).ordinal();
 		compound.setInteger("dir", direction);
-		PCtr_BeltHelper.handleEntity(entity, this.worldObj, this.xCoord, this.yCoord, this.zCoord, false, true);
+		PCtr_BeltHelper.handleEntity(entity, this.worldObj, this.xCoord, this.yCoord, this.zCoord, false, true, false);
 		if(prevDir!=direction){
 			PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity), this.worldObj, this.xCoord, this.yCoord, this.zCoord, 16);
 		}

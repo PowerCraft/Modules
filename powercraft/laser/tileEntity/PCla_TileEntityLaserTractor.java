@@ -10,12 +10,13 @@ import powercraft.api.PC_3DRotationY;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3;
+import powercraft.api.beam.PC_LightValue;
 import powercraft.api.block.PC_TileEntityRotateable;
 import powercraft.laser.PCla_Beam;
 import powercraft.laser.PCla_IBeamHandler;
-import powercraft.laser.block.PCla_BlockLaser2;
+import powercraft.laser.block.PCla_BlockLaserTractor;
 
-public class PCla_TileEntityLaser2 extends PC_TileEntityRotateable implements PCla_IBeamHandler {
+public class PCla_TileEntityLaserTractor extends PC_TileEntityRotateable implements PCla_IBeamHandler {
 	
 	@SuppressWarnings("unused")
 	@Override
@@ -23,7 +24,7 @@ public class PCla_TileEntityLaser2 extends PC_TileEntityRotateable implements PC
 		super.onTick();
 		PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.NORTH);
 		PC_Vec3 vec = new PC_Vec3(dir.offsetX, dir.offsetY, dir.offsetZ);
-		new PCla_Beam(this.worldObj, this, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5), vec, new PC_Vec3(1, 0, 0));
+		new PCla_Beam(this.worldObj, this, 20, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5), vec, new PC_LightValue(650*PC_LightValue.THz, 1));
 	}
 
 	@Override
@@ -34,15 +35,18 @@ public class PCla_TileEntityLaser2 extends PC_TileEntityRotateable implements PC
 
 	@Override
 	public boolean onHitEntity(World world, Entity entity, PCla_Beam beam) {
-		// TODO Auto-generated method stub
+		PC_Vec3 dir = beam.getDirection();
+		entity.motionX -= dir.x/10;
+		entity.motionY -= dir.y/10;
+		entity.motionZ -= dir.z/10;
 		return true;
 	}
 
 	@Override
-	public PC_Vec3 onRecolor(PC_Vec3 newColor, PCla_Beam beam) {
-		return newColor;
+	public void onFinished(PCla_Beam beam) {
+		
 	}
-	
+
 	@Override
 	public void onAdded(EntityPlayer player) {
 		set3DRotation(new PC_3DRotationY(player));
@@ -58,9 +62,9 @@ public class PCla_TileEntityLaser2 extends PC_TileEntityRotateable implements PC
 	@Override
 	public IIcon getIcon(PC_Direction side) {
 		if(side==PC_Direction.NORTH){
-			return PCla_BlockLaser2.front;
+			return PCla_BlockLaserTractor.front;
 		}
-		return PCla_BlockLaser2.side;
+		return PCla_BlockLaserTractor.side;
 	}
 	
 }

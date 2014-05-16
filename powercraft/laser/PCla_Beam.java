@@ -1,9 +1,12 @@
 package powercraft.laser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import powercraft.api.PC_ClientUtils;
 import powercraft.api.PC_MathHelper;
@@ -11,6 +14,8 @@ import powercraft.api.PC_Vec3;
 import powercraft.api.PC_Vec3I;
 import powercraft.api.beam.PC_BeamHitResult;
 import powercraft.api.beam.PC_IBeam;
+import powercraft.api.beam.PC_LightFilter;
+import powercraft.api.beam.PC_LightValue;
 import powercraft.laser.entity.PCla_LaserEntityFX;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -23,16 +28,25 @@ public class PCla_Beam implements PC_IBeam {
 	private PC_Vec3 startPos;
 	private PC_Vec3 pos;
 	private PC_Vec3 dir;
-	private PC_Vec3 color;
-	private double maxLength=20;
+	private PC_LightValue lightValue;
+	private double maxLength;
+	private double startLength;
+	private List<Entity> handledEntities;
 	
-	public PCla_Beam(World world, PCla_IBeamHandler handler, PC_Vec3 startPos, PC_Vec3 dir, PC_Vec3 color){
+	public PCla_Beam(World world, PCla_IBeamHandler handler, double maxLength, PC_Vec3 startPos, PC_Vec3 dir, PC_LightValue lightValue){
+		this(world, handler, new ArrayList<Entity>(), maxLength, 0, startPos, dir, lightValue);
+	}
+	
+	public PCla_Beam(World world, PCla_IBeamHandler handler, List<Entity> handledEntities, double maxLength, double startLength, PC_Vec3 startPos, PC_Vec3 dir, PC_LightValue lightValue){
 		this.world = world;
 		this.handler = handler;
+		this.handledEntities = handledEntities;
+		this.maxLength = maxLength;
+		this.startLength = startLength;
 		this.startPos = startPos;
 		this.pos = new PC_Vec3(startPos);
 		this.dir = dir.normalize();
-		this.color = color;
+		this.lightValue = lightValue;
 		PCla_Beams.addBeam(this);
 	}
 	
@@ -52,26 +66,35 @@ public class PCla_Beam implements PC_IBeam {
 	}
 	
 	@Override
-	public PC_Vec3 getColor() {
-		return this.color;
+	public PC_LightValue getLightValue(){
+		return lightValue;
 	}
 	
-	@SuppressWarnings("hiding")
 	@Override
-	public PC_IBeam getNewBeam(PC_Vec3 startPos, PC_Vec3 newDirection, PC_Vec3 newColor) {
-		return new PCla_Beam(this.world, this.handler, startPos==null?this.pos:startPos, newDirection==null?this.dir:newDirection, newColor==null?this.color:onRecolor(newColor));
+	public PC_Vec3 getColor() {
+		return lightValue.toColor();
+	}
+	
+	@Override
+	public double getLength() {
+		return this.startPos.distanceTo(this.pos)+startLength;
 	}
 
-	private PC_Vec3 onRecolor(PC_Vec3 newColor){
-		return this.handler.onRecolor(newColor, this);
+	@Override
+	public PC_IBeam getNewBeam(double maxLength, PC_Vec3 startPos, PC_Vec3 newDirection, PC_LightFilter filter) {
+		PC_LightValue lv = lightValue.filterBy(filter);
+		double nml = maxLength<0?this.maxLength:maxLength;
+		if(lv==null || nml<=0)
+			return null;
+		return new PCla_Beam(this.world, this.handler, handledEntities, nml, getLength(), startPos==null?this.pos:startPos, newDirection==null?this.dir:newDirection, lv);
 	}
 	
 	public void trace() {
-		while(this.startPos.distanceTo(this.pos)<this.maxLength)
+		while(getLength()<this.maxLength)
 			if(!nextStep())
 				break;
-		if(this.startPos.distanceTo(this.pos)>this.maxLength){
-			this.pos = this.pos.sub(this.startPos).normalize().mul(this.maxLength).add(this.startPos);
+		if(getLength()>this.maxLength){
+			this.pos = this.pos.sub(this.startPos).normalize().mul(this.maxLength-this.startLength).add(this.startPos);
 		}
 	}
 	
@@ -95,34 +118,50 @@ public class PCla_Beam implements PC_IBeam {
 		if(Double.isInfinite(l) || l<=0)
 			return false;
 		this.pos = this.pos.add(this.dir.mul(l));
-		PC_Vec3 blockPos = this.pos.add(add);
-		PC_Vec3I blockPosI = new PC_Vec3I(PC_MathHelper.floor_double(blockPos.x), PC_MathHelper.floor_double(blockPos.y), PC_MathHelper.floor_double(blockPos.z));
-		List<Entity> entities = this.world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(this.pos.x, this.pos.y, this.pos.z, this.pos.x, this.pos.y, this.pos.z).expand(0.5, 0.5, 0.5));
+		boolean toLong = getLength()>this.maxLength;
+		if(toLong){
+			this.pos = this.pos.sub(this.startPos).normalize().mul(this.maxLength-this.startLength).add(this.startPos);
+		}
+		List<Entity> entities = this.world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(this.pos.x, this.pos.y, this.pos.z, this.pos.x, this.pos.y, this.pos.z).expand(0.6, 0.6, 0.6));
 		PC_BeamHitResult result;
 		boolean stop = false;
+		Vec3 v3pos = Vec3.createVectorHelper(this.pos.x, this.pos.y, this.pos.z);
+		Vec3 v3dir = Vec3.createVectorHelper(this.dir.x, this.dir.y, this.dir.z);
 		for(Entity entity:entities){
-			result = PCla_Beams.onHitEntity(this.world, entity, this);
-			switch(result){
-			case CONTINUE:
-				break;
-			case INTERACT:
-			case STANDART:
-				stop |= !this.handler.onHitEntity(this.world, entity, this);
-				break;
-			case STOP:
-			default:
-				stop = true;
-				break;
+			if(!handledEntities.contains(entity)){
+				double expand = 0.2;
+				if(entity instanceof EntityItem){
+					expand = 0.4;
+				}
+				AxisAlignedBB aabb = entity.boundingBox.expand(expand, expand, expand);
+				if(aabb.isVecInside(v3pos) || aabb.calculateIntercept(v3pos, v3dir)!=null){
+					handledEntities.add(entity);
+					result = PCla_Beams.onHitEntity(this.world, entity, this);
+					switch(result){
+					case CONTINUE:
+						break;
+					case INTERACT:
+					case STANDARD:
+						stop |= !this.handler.onHitEntity(this.world, entity, this);
+						break;
+					case STOP:
+					default:
+						stop = true;
+						break;
+					}
+				}
 			}
 		}
-		if(stop)
+		if(stop || toLong)
 			return false;
+		PC_Vec3 blockPos = this.pos.add(add);
+		PC_Vec3I blockPosI = new PC_Vec3I(PC_MathHelper.floor_double(blockPos.x), PC_MathHelper.floor_double(blockPos.y), PC_MathHelper.floor_double(blockPos.z));
 		result = PCla_Beams.onHitBlock(this.world, blockPosI.x, blockPosI.y, blockPosI.z, this);
 		switch(result){
 		case CONTINUE:
 			return true;
 		case INTERACT:
-		case STANDART:
+		case STANDARD:
 			return this.handler.onHitBlock(this.world, blockPosI.x, blockPosI.y, blockPosI.z, this);
 		case STOP:
 		default:
@@ -146,7 +185,11 @@ public class PCla_Beam implements PC_IBeam {
 
 	@SideOnly(Side.CLIENT)
 	public void generate() {
-		PC_ClientUtils.spawnParicle(new PCla_LaserEntityFX(this.world, this.startPos, this.pos, this.color));
+		PC_ClientUtils.spawnParicle(new PCla_LaserEntityFX(this.world, this.startPos, this.pos, getColor()));
+	}
+
+	public void onFinished() {
+		handler.onFinished(this);
 	}
 	
 }

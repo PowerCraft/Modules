@@ -4,7 +4,13 @@ import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
 import powercraft.laser.block.PCla_BlockLaser;
-import powercraft.laser.block.PCla_BlockLaser2;
+import powercraft.laser.block.PCla_BlockLaserBuilder;
+import powercraft.laser.block.PCla_BlockLaserDamage;
+import powercraft.laser.block.PCla_BlockLaserDetector;
+import powercraft.laser.block.PCla_BlockLaserHarvester;
+import powercraft.laser.block.PCla_BlockLaserTractor;
+import powercraft.laser.block.PCla_BlockMirror;
+import powercraft.laser.block.PCla_BlockMirrorCube;
 import powercraft.laser.item.PCla_ItemCatalysator;
 import powercraft.laser.item.PCla_ItemLaserEmitter;
 import powercraft.laser.item.PCla_ItemLaserUpgrade;
@@ -28,7 +34,19 @@ public class PCla_Laser extends PC_Module {
 	public static final PCla_ItemLaserEmitter laserEmitter = new PCla_ItemLaserEmitter();
 	public static final PCla_ItemLaserUpgrade laserUpgrade = new PCla_ItemLaserUpgrade();
 
-	public static final PCla_BlockLaser2 laser2 = new PCla_BlockLaser2();
+	public static final PCla_BlockLaserHarvester laser2 = new PCla_BlockLaserHarvester();
+	
+	public static final PCla_BlockLaserDamage laserDamage = new PCla_BlockLaserDamage();
+	
+	public static final PCla_BlockLaserTractor laserTractor = new PCla_BlockLaserTractor();
+	
+	public static final PCla_BlockLaserDetector laserDetector = new PCla_BlockLaserDetector();
+	
+	public static final PCla_BlockLaserBuilder laserBuilder = new PCla_BlockLaserBuilder();
+	
+	public static final PCla_BlockMirrorCube MIRROR_CUBE = new PCla_BlockMirrorCube();
+	
+	public static final PCla_BlockMirror MIRROR = new PCla_BlockMirror();
 	
 	@InstanceFactory
 	public static PCla_Laser factory() {

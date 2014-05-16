@@ -42,6 +42,7 @@ public final class PCla_Beams implements PC_ITickHandler {
 		List<PCla_Beam> list = beams.get();
 		if(list==null)
 			return;
+		List<PCla_Beam> firsts = new ArrayList<PCla_Beam>(list);
 		for(int i=0; i<list.size(); i++){
 			list.get(i).trace();
 		}
@@ -49,6 +50,9 @@ public final class PCla_Beams implements PC_ITickHandler {
 			for(int i=0; i<list.size(); i++){
 				list.get(i).generate();
 			}
+		}
+		for(int i=0; i<firsts.size(); i++){
+			firsts.get(i).onFinished();
 		}
 		list.clear();
 	}
@@ -58,12 +62,14 @@ public final class PCla_Beams implements PC_ITickHandler {
 		if(block instanceof PC_AbstractBlockBase){
 			return ((PC_AbstractBlockBase)block).onHitByBeam(world, x, y, z, beam);
 		}
-		return PC_BeamHitResult.STANDART;
+		if(block.getBlockHardness(world, x, y, z)<0)
+			return PC_BeamHitResult.STOP;
+		return PC_BeamHitResult.STANDARD;
 	}
 
 	@SuppressWarnings("unused")
 	public static PC_BeamHitResult onHitEntity(World world, Entity entity, PCla_Beam beam) {
-		return PC_BeamHitResult.STANDART;
+		return PC_BeamHitResult.STANDARD;
 	}
 
 	@Override

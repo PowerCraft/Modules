@@ -3,24 +3,19 @@ package powercraft.laser.entity;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
 import powercraft.api.PC_ClientUtils;
 import powercraft.api.PC_MathHelper;
-import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3;
-import powercraft.laser.PCla_Laser;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class PCla_LaserEntityFX extends EntityFX {
 
-	private static final ResourceLocation texture = PC_Utils.getResourceLocation(PCla_Laser.INSTANCE, "textures/blocks/Laser2/beam.png");
-	
 	private PC_Vec3 endPos;
 	
 	public PCla_LaserEntityFX(World world, PC_Vec3 startPos, PC_Vec3 endPos, PC_Vec3 color) {
@@ -62,10 +57,12 @@ public class PCla_LaserEntityFX extends EntityFX {
 		tessellator.startDrawingQuads();
 		tessellator.setColorOpaque_F(this.particleRed/2, this.particleGreen/2, this.particleBlue/2);
 		tessellator.setBrightness(65535);
-		drawTube(startPosX, startPosY, startPosZ, endPosX, endPosY, endPosZ, 0.2, 8, 0, tessellator);
-		drawTube(startPosX, startPosY, startPosZ, endPosX, endPosY, endPosZ, 0.15, 8, 0, tessellator);
 		drawTube(startPosX, startPosY, startPosZ, endPosX, endPosY, endPosZ, 0.1, 8, 0, tessellator);
 		drawTube(startPosX, startPosY, startPosZ, endPosX, endPosY, endPosZ, 0.05, 8, 0, tessellator);
+		tessellator.setColorOpaque_F(this.particleRed, this.particleGreen, this.particleBlue);
+		drawTube(startPosX, startPosY, startPosZ, endPosX, endPosY, endPosZ, 0.02, 8, 0, tessellator);
+		drawTube(startPosX, startPosY, startPosZ, endPosX, endPosY, endPosZ, 0.015, 8, 0, tessellator);
+		drawTube(startPosX, startPosY, startPosZ, endPosX, endPosY, endPosZ, 0.0125, 8, 0, tessellator);
 		tessellator.draw();
 		GL11.glDepthMask(true);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);

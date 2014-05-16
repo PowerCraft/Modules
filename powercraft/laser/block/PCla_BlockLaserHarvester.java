@@ -7,16 +7,16 @@ import powercraft.api.PC_Direction;
 import powercraft.api.PC_IconRegistry;
 import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_TileEntity;
-import powercraft.laser.tileEntity.PCla_TileEntityLaser2;
+import powercraft.laser.tileEntity.PCla_TileEntityLaserHarvester;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PCla_BlockLaser2 extends PC_BlockTileEntity {
+public class PCla_BlockLaserHarvester extends PC_BlockTileEntity {
 
 	public static IIcon side;
 	public static IIcon front;
 
-	public PCla_BlockLaser2() {
+	public PCla_BlockLaserHarvester() {
 		super(Material.wood);
 		setCreativeTab(CreativeTabs.tabBlock);
 		setBlockName("Laser");
@@ -24,7 +24,7 @@ public class PCla_BlockLaser2 extends PC_BlockTileEntity {
 
 	@Override
 	public Class<? extends PC_TileEntity> getTileEntityClass() {
-		return PCla_TileEntityLaser2.class;
+		return PCla_TileEntityLaserHarvester.class;
 	}
 
 	@SuppressWarnings("hiding")
@@ -33,7 +33,7 @@ public class PCla_BlockLaser2 extends PC_BlockTileEntity {
 	public IIcon getIcon(PC_Direction side, int metadata) {
 		if (side == PC_Direction.EAST)
 			return front;
-		return PCla_BlockLaser2.side;
+		return PCla_BlockLaserHarvester.side;
 	}
 
 	@Override
