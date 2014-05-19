@@ -1,11 +1,11 @@
 package powercraft.machines.block;
 
-import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.IIcon;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_IconRegistry;
 import powercraft.api.block.PC_BlockTileEntity;
+import powercraft.api.block.PC_BlockType;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.machines.tileentity.PCma_TileEntityFurnace;
 
@@ -16,7 +16,7 @@ public class PCma_BlockFurnace extends PC_BlockTileEntity {
 	public static IIcon side;
 	
 	public PCma_BlockFurnace() {
-		super(Material.ground);
+		super(PC_BlockType.MACHINE);
 		setCreativeTab(CreativeTabs.tabDecorations);
 	}
 

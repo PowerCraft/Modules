@@ -2,9 +2,6 @@ package powercraft.laser.block;
 
 import java.util.Random;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -15,6 +12,9 @@ import powercraft.api.PC_Utils;
 import powercraft.api.beam.PC_BeamHitResult;
 import powercraft.api.beam.PC_IBeam;
 import powercraft.api.block.PC_Block;
+import powercraft.api.block.PC_BlockType;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class PCla_BlockLaserDetector extends PC_Block {
@@ -22,7 +22,7 @@ public class PCla_BlockLaserDetector extends PC_Block {
 	public static IIcon side;
 	
 	public PCla_BlockLaserDetector() {
-		super(Material.ground);
+		super(PC_BlockType.MACHINE);
 		setCreativeTab(CreativeTabs.tabBlock);
 	}
 

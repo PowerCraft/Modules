@@ -1,11 +1,11 @@
 package powercraft.machines.block;
 
-import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.IIcon;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_IconRegistry;
 import powercraft.api.block.PC_BlockTileEntity;
+import powercraft.api.block.PC_BlockType;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.machines.tileentity.PCma_TileEntityRoaster;
 
@@ -16,7 +16,7 @@ public class PCma_BlockRoaster extends PC_BlockTileEntity {
 	public static IIcon top;
 	
 	public PCma_BlockRoaster() {
-		super(Material.ground);
+		super(PC_BlockType.MACHINE);
 		this.maxY = 12.0f/16.0f;
 		setCreativeTab(CreativeTabs.tabDecorations);
 		setTickRandomly(true);

@@ -1,17 +1,17 @@
 package powercraft.laser.block;
 
-import net.minecraft.block.material.Material;
 import net.minecraft.world.World;
 import powercraft.api.PC_Vec3;
 import powercraft.api.beam.PC_BeamHitResult;
 import powercraft.api.beam.PC_IBeam;
 import powercraft.api.block.PC_Block;
+import powercraft.api.block.PC_BlockType;
 
 
 public class PCla_BlockPrism extends PC_Block {
 
-	public PCla_BlockPrism(Material material) {
-		super(material);
+	public PCla_BlockPrism() {
+		super(PC_BlockType.MACHINE);
 		// TODO Auto-generated constructor stub
 	}
 

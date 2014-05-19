@@ -1,11 +1,11 @@
 package powercraft.energy.block;
 
-import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.IIcon;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_IconRegistry;
 import powercraft.api.block.PC_BlockTileEntity;
+import powercraft.api.block.PC_BlockType;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.energy.tileentity.PCeg_TileEntitySolarPanel;
 
@@ -15,7 +15,7 @@ public class PCeg_BlockSolarPanel extends PC_BlockTileEntity {
 	private IIcon top;
 	
 	public PCeg_BlockSolarPanel() {
-		super(Material.ground);
+		super(PC_BlockType.MACHINE);
 		this.maxY = 15.0f/16.0f;
 		setCreativeTab(CreativeTabs.tabRedstone);
 	}
