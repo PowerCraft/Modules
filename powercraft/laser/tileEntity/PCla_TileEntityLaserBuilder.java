@@ -44,6 +44,10 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 	
 	private static class C implements Comparator<BlockPosAndDist>{
 
+		public C() {
+			
+		}
+
 		@Override
 		public int compare(BlockPosAndDist o1, BlockPosAndDist o2) {
 			return o1.dist>o2.dist?-1:o1.dist<o2.dist?1:0;
@@ -73,7 +77,7 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 		super.onTick();
 		PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.NORTH);
 		PC_Vec3 vec = new PC_Vec3(dir.offsetX, dir.offsetY, dir.offsetZ);
-		blockList.clear();
+		this.blockList.clear();
 		new PCla_Beam(this.worldObj, this, 20, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5), vec, new PC_LightValue(525*PC_LightValue.THz, 1));
 	}
 
@@ -81,7 +85,7 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 	public boolean onHitBlock(World world, int x, int y, int z, PCla_Beam beam) {
 		Block block = PC_Utils.getBlock(world, x, y, z);
 		if(block==null||!block.isNormalCube()){
-			blockList.add(new BlockPosAndDist(beam.getLength(), new PC_Vec3I(x, y, z)));
+			this.blockList.add(new BlockPosAndDist(beam.getLength(), new PC_Vec3I(x, y, z)));
 			return true;
 		}
 		return false;
@@ -95,27 +99,27 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 
 	@Override
 	public void onFinished(PCla_Beam beam) {
-		BlockPosAndDist[] blocks = blockList.toArray(new BlockPosAndDist[blockList.size()]);
+		BlockPosAndDist[] blocks = this.blockList.toArray(new BlockPosAndDist[this.blockList.size()]);
 		Arrays.sort(blocks, C);
 		for(BlockPosAndDist blockPos:blocks){
 			if(tryBuildHere(blockPos.pos)){
 				break;
 			}
 		}
-		blockList.clear();
+		this.blockList.clear();
 	}
 	
 	private boolean tryBuildHere(PC_Vec3I pos){
 		int i = -1;
 		int j = 1;
-		for (int k = 0; k < inventoryContents.length; k++) {
-			if (inventoryContents[k] != null && rand.nextInt(j++) == 0) {
+		for (int k = 0; k < this.inventoryContents.length; k++) {
+			if (this.inventoryContents[k] != null && rand.nextInt(j++) == 0) {
 				i = k;
 			}
 		}
 		if (i >= 0) {
 			ItemStack itemStack = getStackInSlot(i);
-			if(itemStack!=null && PC_Build.tryUseItem(worldObj, pos.x, pos.y, pos.z, itemStack)){
+			if(itemStack!=null && PC_Build.tryUseItem(this.worldObj, pos.x, pos.y, pos.z, itemStack)){
 				if(itemStack.stackSize<=0){
 					itemStack = null;
 				}

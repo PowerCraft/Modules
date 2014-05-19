@@ -44,7 +44,7 @@ public class PCla_TileEntityLaserTractor extends PC_TileEntityRotateable impleme
 
 	@Override
 	public void onFinished(PCla_Beam beam) {
-		
+		//
 	}
 
 	@Override

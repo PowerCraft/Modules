@@ -50,7 +50,7 @@ public class PCla_TileEntityLaserHarvester extends PC_TileEntityRotateable imple
 
 	@Override
 	public void onFinished(PCla_Beam beam) {
-		
+		//
 	}
 	
 	@Override

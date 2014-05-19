@@ -38,6 +38,7 @@ public class PCla_BlockLaserDetector extends PC_Block {
 		return true;
 	}
 
+	@SuppressWarnings("hiding")
 	@Override
 	public int getRedstonePowerValue(IBlockAccess world, int x, int y, int z, PC_Direction side, int faceSide) {
 		return PC_Utils.getMetadata(world, x, y, z)>0?15:0;

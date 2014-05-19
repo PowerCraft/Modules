@@ -67,26 +67,27 @@ public class PCla_Beam implements PC_IBeam {
 	
 	@Override
 	public PC_LightValue getLightValue(){
-		return lightValue;
+		return this.lightValue;
 	}
 	
 	@Override
 	public PC_Vec3 getColor() {
-		return lightValue.toColor();
+		return this.lightValue.toColor();
 	}
 	
 	@Override
 	public double getLength() {
-		return this.startPos.distanceTo(this.pos)+startLength;
+		return this.startPos.distanceTo(this.pos)+this.startLength;
 	}
 
+	@SuppressWarnings("hiding")
 	@Override
 	public PC_IBeam getNewBeam(double maxLength, PC_Vec3 startPos, PC_Vec3 newDirection, PC_LightFilter filter) {
-		PC_LightValue lv = lightValue.filterBy(filter);
+		PC_LightValue lv = this.lightValue.filterBy(filter);
 		double nml = maxLength<0?this.maxLength:maxLength;
 		if(lv==null || nml<=0)
 			return null;
-		return new PCla_Beam(this.world, this.handler, handledEntities, nml, getLength(), startPos==null?this.pos:startPos, newDirection==null?this.dir:newDirection, lv);
+		return new PCla_Beam(this.world, this.handler, this.handledEntities, nml, getLength(), startPos==null?this.pos:startPos, newDirection==null?this.dir:newDirection, lv);
 	}
 	
 	public void trace() {
@@ -128,14 +129,14 @@ public class PCla_Beam implements PC_IBeam {
 		Vec3 v3pos = Vec3.createVectorHelper(this.pos.x, this.pos.y, this.pos.z);
 		Vec3 v3dir = Vec3.createVectorHelper(this.dir.x, this.dir.y, this.dir.z);
 		for(Entity entity:entities){
-			if(!handledEntities.contains(entity)){
+			if(!this.handledEntities.contains(entity)){
 				double expand = 0.2;
 				if(entity instanceof EntityItem){
 					expand = 0.4;
 				}
 				AxisAlignedBB aabb = entity.boundingBox.expand(expand, expand, expand);
 				if(aabb.isVecInside(v3pos) || aabb.calculateIntercept(v3pos, v3dir)!=null){
-					handledEntities.add(entity);
+					this.handledEntities.add(entity);
 					result = PCla_Beams.onHitEntity(this.world, entity, this);
 					switch(result){
 					case CONTINUE:
@@ -189,7 +190,7 @@ public class PCla_Beam implements PC_IBeam {
 	}
 
 	public void onFinished() {
-		handler.onFinished(this);
+		this.handler.onFinished(this);
 	}
 	
 }

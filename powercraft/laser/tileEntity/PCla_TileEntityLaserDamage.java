@@ -71,7 +71,7 @@ public class PCla_TileEntityLaserDamage extends PC_TileEntityRotateable implemen
 
 	@Override
 	public void onFinished(PCla_Beam beam) {
-		
+		//
 	}
 
 	@Override

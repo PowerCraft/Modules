@@ -19,23 +19,23 @@ public class PCla_TileEntityMirror extends PC_TileEntity {
 	
 	@Override
 	public void onBlockPostSet(PC_Direction side, ItemStack stack, EntityPlayer player, float hitX, float hitY, float hitZ) {
-		normal = PC_Utils.getLookDir(player);
+		this.normal = PC_Utils.getLookDir(player);
 		sync();
 	}
 
 	@Override
 	public PC_BeamHitResult onHitByBeam(PC_IBeam beam) {
-		if(normal!=null){
+		if(this.normal!=null){
 			PC_Vec3 dir = beam.getDirection();
-			PC_Vec3 result = dir.sub(normal.mul(dir.dot(normal)*2));
-			beam.getNewBeam(-1, new PC_Vec3(xCoord+0.5, yCoord+0.5, zCoord+0.5), result, null);
+			PC_Vec3 result = dir.sub(this.normal.mul(dir.dot(this.normal)*2));
+			beam.getNewBeam(-1, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5), result, null);
 		}
 		return PC_BeamHitResult.STOP;
 	}
 
 	@Override
 	public boolean onBlockActivated(EntityPlayer player, PC_Direction side) {
-		normal = PC_Utils.getLookDir(player);
+		this.normal = PC_Utils.getLookDir(player);
 		sync();
 		return true;
 	}
