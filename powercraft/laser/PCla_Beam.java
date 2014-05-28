@@ -32,9 +32,12 @@ public class PCla_Beam implements PC_IBeam {
 	private double maxLength;
 	private double startLength;
 	private List<Entity> handledEntities;
+	private boolean specialStart = false;
+	private boolean specialEnd = false;
 	
 	public PCla_Beam(World world, PCla_IBeamHandler handler, double maxLength, PC_Vec3 startPos, PC_Vec3 dir, PC_LightValue lightValue){
 		this(world, handler, new ArrayList<Entity>(), maxLength, 0, startPos, dir, lightValue);
+		this.specialStart = true;
 	}
 	
 	public PCla_Beam(World world, PCla_IBeamHandler handler, List<Entity> handledEntities, double maxLength, double startLength, PC_Vec3 startPos, PC_Vec3 dir, PC_LightValue lightValue){
@@ -91,12 +94,7 @@ public class PCla_Beam implements PC_IBeam {
 	}
 	
 	public void trace() {
-		while(getLength()<this.maxLength)
-			if(!nextStep())
-				break;
-		if(getLength()>this.maxLength){
-			this.pos = this.pos.sub(this.startPos).normalize().mul(this.maxLength-this.startLength).add(this.startPos);
-		}
+		while(nextStep());
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -153,6 +151,9 @@ public class PCla_Beam implements PC_IBeam {
 				}
 			}
 		}
+		if(toLong){
+			this.specialEnd = true;
+		}
 		if(stop || toLong)
 			return false;
 		PC_Vec3 blockPos = this.pos.add(add);
@@ -186,7 +187,7 @@ public class PCla_Beam implements PC_IBeam {
 
 	@SideOnly(Side.CLIENT)
 	public void generate() {
-		PC_ClientUtils.spawnParicle(new PCla_LaserEntityFX(this.world, this.startPos, this.pos, getColor()));
+		PC_ClientUtils.spawnParicle(new PCla_LaserEntityFX(this.world, this.startPos, this.specialStart, this.pos, this.specialEnd, getColor()));
 	}
 
 	public void onFinished() {

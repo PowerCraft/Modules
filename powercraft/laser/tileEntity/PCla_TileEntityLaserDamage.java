@@ -50,7 +50,7 @@ public class PCla_TileEntityLaserDamage extends PC_TileEntityRotateable implemen
 		super.onTick();
 		PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.NORTH);
 		PC_Vec3 vec = new PC_Vec3(dir.offsetX, dir.offsetY, dir.offsetZ);
-		new PCla_Beam(this.worldObj, this, 20, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5), vec, new PC_LightValue(450*PC_LightValue.THz, 1));
+		new PCla_Beam(this.worldObj, this, 20, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5).add(vec.mul(0.3)), vec, new PC_LightValue(450*PC_LightValue.THz, 1));
 	}
 
 	@Override
