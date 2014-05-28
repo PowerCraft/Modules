@@ -17,6 +17,7 @@ import powercraft.api.gres.layout.PC_GresLayoutVertical;
 import powercraft.api.gres.nodesys.PC_GresNodesysGrid;
 import powercraft.api.gres.nodesys.PC_GresNodesysGridView;
 import powercraft.api.gres.nodesys.PC_GresNodesysHelper;
+import powercraft.api.nodesys.PC_NodeGridBase;
 
 public class PCtm_GuiEnergyConsumer implements PC_IGresGui, PC_IGresEventListener {
 
@@ -30,8 +31,8 @@ public class PCtm_GuiEnergyConsumer implements PC_IGresGui, PC_IGresEventListene
 		this.gridView.setMinSize(new PC_Vec2I(400, 220));
 		this.gridView.setPrefSize(new PC_Vec2I(400, 220));
 		this.gridView.setSize(new PC_Vec2I(400, 220));
-		PC_GresNodesysGrid grid = new PC_GresNodesysGrid();
-		PC_GresNodesysHelper.addNodeToGrid(grid, new PC_Vec2I(), 3);
+		PC_GresNodesysGrid grid = new PC_GresNodesysGrid(new PC_NodeGridBase());
+		//PC_GresNodesysHelper.addNodeToGrid(grid, new PC_Vec2I(), 3);
 		this.gridView.add(grid);
 		window.add(this.gridView);
 		gui.add(window);
@@ -56,7 +57,7 @@ public class PCtm_GuiEnergyConsumer implements PC_IGresGui, PC_IGresEventListene
 		}else if(event instanceof ElementClicked){
 			ElementClicked ec = (ElementClicked)event;
 			if(ec.getElement().nextLayer==null){
-				PC_GresNodesysHelper.addNodeToGrid((PC_GresNodesysGrid) this.gridView.getChildren().get(0), new PC_Vec2I(), ec.getElement().id);
+				PC_GresNodesysHelper.addNodeToGrid((PC_GresNodesysGrid) this.gridView.getChildren().get(0), new PC_Vec2I(), (String)ec.getElement().id);
 				//component.getParent().getParent().takeFocus();
 			}
 		}

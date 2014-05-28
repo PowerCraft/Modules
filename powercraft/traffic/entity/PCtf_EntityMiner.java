@@ -741,6 +741,8 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	
 	@Override
 	public ItemStack getStackInSlot(int i) {
+		if(i>=this.inventoryContents.length)
+			return null;
 		return this.inventoryContents[i];
 	}
 
