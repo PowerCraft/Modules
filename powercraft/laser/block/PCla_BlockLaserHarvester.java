@@ -1,5 +1,6 @@
 package powercraft.laser.block;
 
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.IIcon;
 import powercraft.api.PC_Direction;
@@ -7,6 +8,7 @@ import powercraft.api.PC_IconRegistry;
 import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_BlockType;
 import powercraft.api.block.PC_TileEntity;
+import powercraft.laser.PCla_LaserRenderer;
 import powercraft.laser.tileEntity.PCla_TileEntityLaserHarvester;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -14,7 +16,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class PCla_BlockLaserHarvester extends PC_BlockTileEntity {
 
 	public static IIcon side;
-	public static IIcon front;
+	public static IIcon inside;
+	public static IIcon black;
+	public static IIcon white;
 
 	public PCla_BlockLaserHarvester() {
 		super(PC_BlockType.MACHINE);
@@ -31,8 +35,6 @@ public class PCla_BlockLaserHarvester extends PC_BlockTileEntity {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(PC_Direction side, int metadata) {
-		if (side == PC_Direction.EAST)
-			return front;
 		return PCla_BlockLaserHarvester.side;
 	}
 
@@ -40,7 +42,15 @@ public class PCla_BlockLaserHarvester extends PC_BlockTileEntity {
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(PC_IconRegistry iconRegistry) {
 		side = iconRegistry.registerIcon("side");
-		front = iconRegistry.registerIcon("front");
+		inside = iconRegistry.registerIcon("inside");
+		black = iconRegistry.registerIcon("black");
+		white = iconRegistry.registerIcon("white");
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void renderInventoryBlock(int metadata, int modelId, RenderBlocks renderer) {
+		PCla_LaserRenderer.renderLaserInInventory(renderer, side, inside, black, white);
 	}
 
 }

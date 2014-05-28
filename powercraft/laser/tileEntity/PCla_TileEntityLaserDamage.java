@@ -1,6 +1,7 @@
 package powercraft.laser.tileEntity;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -10,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.IChatComponent;
-import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayerFactory;
@@ -22,7 +22,10 @@ import powercraft.api.beam.PC_LightValue;
 import powercraft.api.block.PC_TileEntityRotateable;
 import powercraft.laser.PCla_Beam;
 import powercraft.laser.PCla_IBeamHandler;
+import powercraft.laser.PCla_LaserRenderer;
 import powercraft.laser.block.PCla_BlockLaserDamage;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCla_TileEntityLaserDamage extends PC_TileEntityRotateable implements PCla_IBeamHandler {
 	
@@ -50,7 +53,7 @@ public class PCla_TileEntityLaserDamage extends PC_TileEntityRotateable implemen
 		super.onTick();
 		PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.NORTH);
 		PC_Vec3 vec = new PC_Vec3(dir.offsetX, dir.offsetY, dir.offsetZ);
-		new PCla_Beam(this.worldObj, this, 20, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5).add(vec.mul(0.3)), vec, new PC_LightValue(450*PC_LightValue.THz, 1));
+		new PCla_Beam(this.worldObj, this, 20, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5).add(vec.mul(0.1)), vec, new PC_LightValue(450*PC_LightValue.THz, 1));
 	}
 
 	@Override
@@ -87,11 +90,14 @@ public class PCla_TileEntityLaserDamage extends PC_TileEntityRotateable implemen
 	}
 	
 	@Override
-	public IIcon getIcon(PC_Direction side) {
-		if(side==PC_Direction.NORTH){
-			return PCla_BlockLaserDamage.front;
-		}
-		return PCla_BlockLaserDamage.side;
+	@SideOnly(Side.CLIENT)
+	public boolean renderWorldBlock(int modelId, RenderBlocks renderer) {
+		
+		PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.NORTH);
+		
+		PCla_LaserRenderer.renderLaser(this.worldObj, this.xCoord, this.yCoord, this.zCoord, dir, renderer, PCla_BlockLaserDamage.side, PCla_BlockLaserDamage.inside, PCla_BlockLaserDamage.black, PCla_BlockLaserDamage.white);
+		
+		return true;
 	}
 	
 }

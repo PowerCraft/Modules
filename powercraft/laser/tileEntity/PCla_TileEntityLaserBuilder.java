@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import powercraft.api.PC_3DRotation;
 import powercraft.api.PC_3DRotationY;
@@ -26,7 +26,10 @@ import powercraft.api.building.PC_Build;
 import powercraft.api.inventory.PC_InventoryUtils;
 import powercraft.laser.PCla_Beam;
 import powercraft.laser.PCla_IBeamHandler;
+import powercraft.laser.PCla_LaserRenderer;
 import powercraft.laser.block.PCla_BlockLaserBuilder;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory implements PCla_IBeamHandler {
 	
@@ -78,7 +81,7 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 		PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.NORTH);
 		PC_Vec3 vec = new PC_Vec3(dir.offsetX, dir.offsetY, dir.offsetZ);
 		this.blockList.clear();
-		new PCla_Beam(this.worldObj, this, 20, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5).add(vec.mul(0.3)), vec, new PC_LightValue(525*PC_LightValue.THz, 1));
+		new PCla_Beam(this.worldObj, this, 20, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5).add(vec.mul(0.1)), vec, new PC_LightValue(525*PC_LightValue.THz, 1));
 	}
 
 	@Override
@@ -141,14 +144,6 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 		if(this.rotation==null)
 			set3DRotation(new PC_3DRotationY(player));
 	}
-	
-	@Override
-	public IIcon getIcon(PC_Direction side) {
-		if(side==PC_Direction.NORTH){
-			return PCla_BlockLaserBuilder.front;
-		}
-		return PCla_BlockLaserBuilder.side;
-	}
 
 	@Override
 	public PC_3DRotation get3DRotation() {
@@ -164,6 +159,17 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 
 	@Override
 	public boolean canRotate() {
+		return true;
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public boolean renderWorldBlock(int modelId, RenderBlocks renderer) {
+		
+		PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.NORTH);
+		
+		PCla_LaserRenderer.renderLaser(this.worldObj, this.xCoord, this.yCoord, this.zCoord, dir, renderer, PCla_BlockLaserBuilder.side, PCla_BlockLaserBuilder.inside, PCla_BlockLaserBuilder.black, PCla_BlockLaserBuilder.white);
+		
 		return true;
 	}
 	
