@@ -190,7 +190,7 @@ public class PCla_TileEntityPrism extends PC_TileEntity {
 					n1 = new PC_Vec3(-d.x, -d.y, (d.x*d.x+d.y*d.y)/d.z).normalize();
 				}
 				PC_Vec3 n2 = d.cross(n1).mul(0.2);
-				PC_Vec3 p = d.mul(0.5).add(new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5));
+				PC_Vec3 p = d.mul(0.4).add(new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5));
 				PC_Vec3 p1 = p.sub(d.mul(0.03));
 				n1 = n1.mul(0.2);
 				double u1 = i1.getMinU();

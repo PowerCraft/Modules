@@ -1,5 +1,7 @@
 package powercraft.laser.block;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.IIcon;
@@ -51,6 +53,8 @@ public class PCla_BlockPrism extends PC_BlockTileEntity {
 
 	@Override
 	public void renderInventoryBlock(int metadata, int modelId, RenderBlocks renderer) {
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		IIcon[] icons = new IIcon[6];
 		for(int i=0; i<6; i++){
 			icons[i] = side;
