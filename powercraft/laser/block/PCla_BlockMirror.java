@@ -4,7 +4,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
+import powercraft.api.PC_Direction;
 import powercraft.api.PC_IconRegistry;
+import powercraft.api.PC_Utils;
 import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_BlockType;
 import powercraft.api.block.PC_TileEntity;
@@ -44,5 +47,22 @@ public class PCla_BlockMirror extends PC_BlockTileEntity {
 	public boolean renderAsNormalBlock() {
 		return false;
 	}
+
+	@Override
+	public boolean canBlockStay(World world, int x, int y, int z) {
+		PCla_TileEntityMirror mirror = PC_Utils.getTileEntity(world, x, y, z, PCla_TileEntityMirror.class);
+		if(mirror==null)
+			return true;
+		PC_Direction dir = mirror.getPlacing();
+		if(dir==null)
+			return true;
+		return PC_Utils.isBlockSideSolid(world, x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ, dir);
+	}
 	
+	@Override
+	public boolean canPlaceBlockOnSide(World world, int x, int y, int z, int side){
+		PC_Direction dir = PC_Direction.fromSide(side);
+		return PC_Utils.isBlockSideSolid(world, x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ, dir);
+	}
+	   
 }
