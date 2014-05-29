@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import powercraft.api.PC_3DRotation;
 import powercraft.api.PC_3DRotationY;
@@ -23,15 +24,20 @@ import powercraft.api.PC_Vec3I;
 import powercraft.api.beam.PC_LightValue;
 import powercraft.api.block.PC_TileEntityWithInventory;
 import powercraft.api.building.PC_Build;
+import powercraft.api.gres.PC_GresBaseWithInventory;
+import powercraft.api.gres.PC_IGresGui;
+import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.inventory.PC_InventoryUtils;
 import powercraft.laser.PCla_Beam;
 import powercraft.laser.PCla_IBeamHandler;
 import powercraft.laser.PCla_LaserRenderer;
 import powercraft.laser.block.PCla_BlockLaserBuilder;
+import powercraft.laser.container.PCla_ContainerLaserBuilder;
+import powercraft.laser.gui.PCla_GuiLaserBuilder;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory implements PCla_IBeamHandler {
+public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory implements PCla_IBeamHandler, PC_IGresGuiOpenHandler {
 	
 	private static class BlockPosAndDist{
 		
@@ -171,6 +177,21 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 		PCla_LaserRenderer.renderLaser(this.worldObj, this.xCoord, this.yCoord, this.zCoord, dir, renderer, PCla_BlockLaserBuilder.side, PCla_BlockLaserBuilder.inside, PCla_BlockLaserBuilder.black, PCla_BlockLaserBuilder.white);
 		
 		return true;
+	}
+
+	@Override
+	public PC_IGresGui openClientGui(EntityPlayer player, NBTTagCompound serverData) {
+		return new PCla_GuiLaserBuilder(player, this);
+	}
+
+	@Override
+	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
+		return new PCla_ContainerLaserBuilder(player, this);
+	}
+
+	@Override
+	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
+		return null;
 	}
 	
 }

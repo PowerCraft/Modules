@@ -45,6 +45,7 @@ public class PCla_LaserEntityFX extends EntityFX {
         return 3;
     }
 
+	@SuppressWarnings("hiding")
 	@Override
 	public void renderParticle(Tessellator tessellator, float patrialTickTime, float par3, float par4, float par5, float par6, float par7) {
 		if(this.isDead)

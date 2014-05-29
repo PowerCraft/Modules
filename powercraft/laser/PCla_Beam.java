@@ -193,5 +193,10 @@ public class PCla_Beam implements PC_IBeam {
 	public void onFinished() {
 		this.handler.onFinished(this);
 	}
+
+	@Override
+	public double getRemainingLength() {
+		return this.maxLength-getLength();
+	}
 	
 }

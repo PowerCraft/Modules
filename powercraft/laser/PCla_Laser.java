@@ -11,6 +11,7 @@ import powercraft.laser.block.PCla_BlockLaserHarvester;
 import powercraft.laser.block.PCla_BlockLaserTractor;
 import powercraft.laser.block.PCla_BlockMirror;
 import powercraft.laser.block.PCla_BlockMirrorCube;
+import powercraft.laser.block.PCla_BlockPrism;
 import powercraft.laser.item.PCla_ItemCatalysator;
 import powercraft.laser.item.PCla_ItemLaserEmitter;
 import powercraft.laser.item.PCla_ItemLaserUpgrade;
@@ -47,6 +48,8 @@ public class PCla_Laser extends PC_Module {
 	public static final PCla_BlockMirrorCube MIRROR_CUBE = new PCla_BlockMirrorCube();
 	
 	public static final PCla_BlockMirror MIRROR = new PCla_BlockMirror();
+	
+	public static final PCla_BlockPrism PRISM = new PCla_BlockPrism();
 	
 	@InstanceFactory
 	public static PCla_Laser factory() {
