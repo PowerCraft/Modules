@@ -22,6 +22,12 @@ public class PCla_BlockPrism extends PC_BlockTileEntity {
 	public PCla_BlockPrism() {
 		super(PC_BlockType.MACHINE);
 		setCreativeTab(CreativeTabs.tabBlock);
+		this.minX = 2/16.0;
+		this.minY = 2/16.0;
+		this.minZ = 2/16.0;
+		this.maxX = 14/16.0;
+		this.maxY = 14/16.0;
+		this.maxZ = 14/16.0;
 	}
 
 	@Override
