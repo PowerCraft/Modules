@@ -184,10 +184,12 @@ public class PCla_TileEntityPrism extends PC_TileEntity {
 				PC_Vec3 d = lense.dir;
 				tessellator.setNormal((float)d.x, (float)d.y, (float)d.z);
 				PC_Vec3 n1;
-				if(d.z==0){
-					n1 = new PC_Vec3(0, 0, 1);
+				if(d.y==0){
+					n1 = new PC_Vec3(0, 1, 0);
+				}else if(d.x==0 && d.z==0){
+					n1 = new PC_Vec3(1, 0, 0);
 				}else{
-					n1 = new PC_Vec3(-d.x, -d.y, (d.x*d.x+d.y*d.y)/d.z).normalize();
+					n1 = new PC_Vec3(-d.x, (d.x*d.x+d.z*d.z)/d.y, -d.z).normalize();
 				}
 				PC_Vec3 n2 = d.cross(n1).mul(0.2);
 				PC_Vec3 p = d.mul(0.4).add(new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5));
