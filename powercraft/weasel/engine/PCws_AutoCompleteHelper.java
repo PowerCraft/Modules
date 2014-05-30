@@ -13,7 +13,7 @@ import java.util.zip.ZipFile;
 
 import powercraft.api.gres.PC_GresComponent;
 import powercraft.api.gres.autoadd.PC_AutoCompleteDisplay;
-import powercraft.api.gres.autoadd.PC_SortedStringList;
+import powercraft.api.gres.autoadd.PC_SortedList;
 import powercraft.api.gres.autoadd.PC_StringListPart;
 import powercraft.api.gres.autoadd.PC_StringWithInfo;
 import powercraft.api.gres.doc.PC_GresDocument;
@@ -40,7 +40,7 @@ import xscript.runtime.method.XMethod;
 
 public final class PCws_AutoCompleteHelper {
 
-	private static final PC_SortedStringList keyWords = new PC_SortedStringList();
+	private static final PC_SortedList<PC_StringWithInfo> keyWords = new PC_SortedList<PC_StringWithInfo>();
 	
 	static{
 		keyWords.add(new PC_StringWithInfo("if", "instruction: if"));
@@ -54,7 +54,7 @@ public final class PCws_AutoCompleteHelper {
 	
 	private static class AutoCompleteHelper{
 
-		PC_SortedStringList runtimeClasses;
+		PC_SortedList<PC_StringWithInfo> runtimeClasses;
 		
 		AutoCompleteHelper() {
 			this.runtimeClasses = getAllRuntimeClasses();
@@ -231,13 +231,13 @@ public final class PCws_AutoCompleteHelper {
 		}
 	}
 	
-	public static PC_SortedStringList getClassPossibilities(XClass xClass, int acceptedModifier, int inAcceptedModifier){
-		PC_SortedStringList list = new PC_SortedStringList();
+	public static PC_SortedList<PC_StringWithInfo> getClassPossibilities(XClass xClass, int acceptedModifier, int inAcceptedModifier){
+		PC_SortedList<PC_StringWithInfo> list = new PC_SortedList<PC_StringWithInfo>();
 		getClassPossibilities(xClass, list, acceptedModifier, inAcceptedModifier);
 		return list;
 	}
 	
-	public static void getClassPossibilities(XClass xClass, PC_SortedStringList list, int acceptedModifier, int inAcceptedModifier){
+	public static void getClassPossibilities(XClass xClass, PC_SortedList<PC_StringWithInfo> list, int acceptedModifier, int inAcceptedModifier){
 		Set<Entry<String, Object>> set = xClass.entrySet();
 		for(Entry<String, Object> e:set){
 			Object value = e.getValue();
@@ -269,10 +269,10 @@ public final class PCws_AutoCompleteHelper {
 		return vm;
 	}
 	
-	static PC_SortedStringList getAllRuntimeClasses(){
+	static PC_SortedList<PC_StringWithInfo> getAllRuntimeClasses(){
 		XVirtualMachine vm = makeVM();
 		List<XClass> c = vm.getClassProvider().getAllLoadedClasses();
-		PC_SortedStringList l = new PC_SortedStringList();
+		PC_SortedList<PC_StringWithInfo> l = new PC_SortedList<PC_StringWithInfo>();
 		for(XClass cc:c){
 			if(!cc.isArray() && isVisible(cc)){
 				PC_StringWithInfo swi = new PC_StringWithInfo(cc.getSimpleName(), cc.getName());

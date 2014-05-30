@@ -242,11 +242,13 @@ public class PCla_TileEntityPrism extends PC_TileEntity {
 	public PC_BeamHitResult onHitByBeam(PC_IBeam beam) {
 		if(this.lenses==null || this.lenses.length==0)
 			return PC_BeamHitResult.CONTINUE;
-		beam.setPosition(beam.getPosition().add(beam.getDirection().mul(0.5)));
-		double length = beam.getRemainingLength();
+		PC_IBeam b = beam.getNewBeam(-1, null, null, null);
+		b.setPosition(new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5));
+		b.noTrace();
+		double length = b.getRemainingLength();
 		length /= this.lenses.length;
 		for(Lenses lense:this.lenses){
-			beam.getNewBeam(beam.getLength()+length, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5), lense.dir, null);
+			b.getNewBeam(b.getLength()+length, null, lense.dir, null);
 		}
 		return PC_BeamHitResult.STOP;
 	}

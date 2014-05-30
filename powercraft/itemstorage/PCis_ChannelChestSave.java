@@ -10,13 +10,12 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.world.WorldSavedData;
-import powercraft.api.PC_Utils;
+import powercraft.api.PC_WorldSaveData;
 import powercraft.api.inventory.PC_IInventorySetNoMark;
 import powercraft.api.inventory.PC_InventoryUtils;
 
 
-public class PCis_ChannelChestSave extends WorldSavedData {
+public class PCis_ChannelChestSave extends PC_WorldSaveData {
 
 	private static final String NAME = "powercraft-channelchests";
 	
@@ -24,17 +23,9 @@ public class PCis_ChannelChestSave extends WorldSavedData {
 	
 	static PCis_ChannelChestSave save;
 	
-	public static void cleanup() {
-		save = null;
-	}
-	
 	private static PCis_ChannelChestSave getSave(){
 		if(save==null){
-			save = (PCis_ChannelChestSave) PC_Utils.mcs().worldServerForDimension(0).mapStorage.loadData(PCis_ChannelChestSave.class, NAME);
-			if(save==null){
-				save = new PCis_ChannelChestSave();
-				PC_Utils.mcs().worldServerForDimension(0).mapStorage.setData(NAME, save);
-			}
+			save = loadOrCreate(NAME, PCis_ChannelChestSave.class);
 		}
 		return save;
 	}
@@ -63,14 +54,15 @@ public class PCis_ChannelChestSave extends WorldSavedData {
 	
 	private Map<Integer, PCis_ChannelChestInventory> channels = new HashMap<Integer, PCis_ChannelChestInventory>();
 	
-	public PCis_ChannelChestSave() {
-		super(NAME);
-	}
-	
 	public PCis_ChannelChestSave(String name) {
 		super(name);
 	}
 
+	@Override
+	public void cleanup() {
+		save = null;
+	}
+	
 	@Override
 	public void readFromNBT(NBTTagCompound nbtTagCompound) {
 		NBTTagList list = (NBTTagList)nbtTagCompound.getTag("save");

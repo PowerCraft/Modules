@@ -4,6 +4,7 @@ import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
 import powercraft.api.PC_Module;
 import powercraft.misc.block.PCms_BlockClimbingRope;
+import powercraft.misc.item.PCms_ItemSaw;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.InstanceFactory;
 
@@ -18,6 +19,8 @@ public class PCms_Misc extends PC_Module{
 	public static final PCms_Misc INSTANCE = new PCms_Misc();
 	
 	public static final PCms_BlockClimbingRope CLIMBING_ROPE = new PCms_BlockClimbingRope();
+	
+	public static final PCms_ItemSaw SAW = new PCms_ItemSaw();
 	
 	@InstanceFactory
 	public static PCms_Misc factory() {

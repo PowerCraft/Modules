@@ -43,12 +43,12 @@ public class PCla_TileEntityMirror extends PC_TileEntity {
 	@Override
 	public PC_BeamHitResult onHitByBeam(PC_IBeam beam) {
 		if(this.normal != null) {
-			hitBack = false;
+			this.hitBack = false;
 			PC_Vec3 coll = vv(beam.getPosition(), beam.getDirection());
 			if(coll==null)
 				return PC_BeamHitResult.CONTINUE;
 			beam.setPosition(coll);
-			if(hitBack)
+			if(this.hitBack)
 				return PC_BeamHitResult.STOP;
 			PC_Vec3 dir = beam.getDirection();
 			PC_Vec3 result = dir.sub(this.normal.mul(dir.dot(this.normal) * 2));
@@ -121,7 +121,7 @@ public class PCla_TileEntityMirror extends PC_TileEntity {
 		PC_Vec3 n2 = d.cross(n1).mul(7 / 16.0);
 		n1 = n1.mul(7 / 16.0);
 
-		PC_Vec3 p = new PC_Vec3(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5);
+		PC_Vec3 p = new PC_Vec3(this.xCoord + 0.5, this.yCoord + 0.5, this.zCoord + 0.5);
 		PC_Vec3 p1 = p.sub(this.normal.mul(1 / 16.0));
 		p = p.add(this.normal.mul(1 / 16.0));
 
@@ -186,7 +186,7 @@ public class PCla_TileEntityMirror extends PC_TileEntity {
 			n1 = new PC_Vec3( -n.x, (n.x * n.x + n.z * n.z) / n.y, -n.z).normalize();
 		}
 		PC_Vec3 n2 = n.cross(n1);
-		PC_Vec3 p = new PC_Vec3(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5).sub(this.normal.mul(1 / 16.0));
+		PC_Vec3 p = new PC_Vec3(this.xCoord + 0.5, this.yCoord + 0.5, this.zCoord + 0.5).sub(this.normal.mul(1 / 16.0));
 
 		// Calculated by Mathematica -> Check for Collision Ray<->Mirror
 		
@@ -203,14 +203,14 @@ public class PCla_TileEntityMirror extends PC_TileEntity {
 			return null;
 		
 		if(ld.dot(n)<0){
-			hitBack = true;
+			this.hitBack = true;
 		}
 		
 		return p.add(n1.mul(u)).add(n2.mul(v));
 	}
 
 	public PC_Direction getPlacing() {
-		return placing;
+		return this.placing;
 	}
 
 }

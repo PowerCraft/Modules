@@ -156,18 +156,18 @@ public final class PCla_LaserRenderer {
 		PC_Renderer.renderStandardBlockInInventory(icons, -1, 0, renderer);
 		icons[1] = side;
 
-		icons[2] = inside;
-		renderer.setRenderBounds(0, 2/16.0, 1-2/16.0, 1, 1-2/16.0, 1);
-		PC_Renderer.renderStandardBlockInInventory(icons, -1, 0, renderer);
-		icons[2] = side;
-
-		icons[3] = inside;
+		icons[3] = white;
 		renderer.setRenderBounds(0, 2/16.0, 0, 1, 1-2/16.0, 2/16.0);
 		PC_Renderer.renderStandardBlockInInventory(icons, -1, 0, renderer);
 		icons[3] = side;
 		
-		icons[4] = white;
-		renderer.setRenderBounds(1-2/16.0, 2/16.0, 2/16.0, 1, 1-2/16.0, 1-2/16.0);
+		icons[4] = inside;
+		renderer.setRenderBounds(1-2/16.0, 2/16.0, 2/16.0, 1, 1-2/16.0, 1);
+		PC_Renderer.renderStandardBlockInInventory(icons, -1, 0, renderer);
+		icons[4] = side;
+		
+		icons[5] = inside;
+		renderer.setRenderBounds(0, 2/16.0, 2/16.0, 2/16.0, 1-2/16.0, 1);
 		PC_Renderer.renderStandardBlockInInventory(icons, -1, 0, renderer);
 		
 		icons[0] = black;
@@ -177,12 +177,12 @@ public final class PCla_LaserRenderer {
 		icons[4] = black;
 		icons[5] = black;
 		
+		renderer.setRenderBounds(2/16.0, 7/16.0, 7/16.0, 14/16.0, 9/16.0, 9/16.0);
+		PC_Renderer.renderStandardBlockInInventory(icons, -1, 0, renderer);
 		renderer.setRenderBounds(7/16.0, 2/16.0, 7/16.0, 9/16.0, 14/16.0, 9/16.0);
 		PC_Renderer.renderStandardBlockInInventory(icons, -1, 0, renderer);
-		renderer.setRenderBounds(7/16.0, 7/16.0, 2/16.0, 9/16.0, 9/16.0, 14/16.0);
-		PC_Renderer.renderStandardBlockInInventory(icons, -1, 0, renderer);
 		
-		renderer.setRenderBounds(1/16.0, 5/16.0, 5/16.0, 3/16.0, 11/16.0, 11/16.0);
+		renderer.setRenderBounds(5/16.0, 5/16.0, 13/16.0, 11/16.0, 11/16.0, 15/16.0);
 		PC_Renderer.renderStandardBlockInInventory(icons, -1, 0, renderer);
 		
 		icons[0] = white;
@@ -192,7 +192,7 @@ public final class PCla_LaserRenderer {
 		icons[4] = white;
 		icons[5] = white;
 		
-		renderer.setRenderBounds(3/16.0, 6/16.0, 6/16.0, 13/16.0, 10/16.0, 10/16.0);
+		renderer.setRenderBounds(6/16.0, 6/16.0, 3/16.0, 10/16.0, 10/16.0, 13/16.0);
 		PC_Renderer.renderStandardBlockInInventory(icons, -1, 0, renderer);
 		
 	}

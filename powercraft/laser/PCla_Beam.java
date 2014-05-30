@@ -34,6 +34,7 @@ public class PCla_Beam implements PC_IBeam {
 	private List<Entity> handledEntities;
 	private boolean specialStart = false;
 	private boolean specialEnd = false;
+	private boolean noTrace = false;
 	
 	public PCla_Beam(World world, PCla_IBeamHandler handler, double maxLength, PC_Vec3 startPos, PC_Vec3 dir, PC_LightValue lightValue){
 		this(world, handler, new ArrayList<Entity>(), maxLength, 0, startPos, dir, lightValue);
@@ -94,7 +95,7 @@ public class PCla_Beam implements PC_IBeam {
 	}
 	
 	public void trace() {
-		while(nextStep());
+		while(!this.noTrace && nextStep());
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -197,6 +198,11 @@ public class PCla_Beam implements PC_IBeam {
 	@Override
 	public double getRemainingLength() {
 		return this.maxLength-getLength();
+	}
+
+	@Override
+	public void noTrace() {
+		noTrace = true;
 	}
 	
 }

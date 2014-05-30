@@ -10,9 +10,7 @@ import powercraft.itemstorage.packet.PCis_PacketItemSetName;
 import powercraft.itemstorage.packet.PCis_PacketItemSetPutStacks;
 import powercraft.itemstorage.packet.PCis_PacketItemSetTakeStacks;
 import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.InstanceFactory;
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 
 
 @Mod(modid = PCis_ItemStorage.NAME, name = PCis_ItemStorage.NAME, version = PCis_ItemStorage.VERSION, dependencies = PCis_ItemStorage.DEPENDENCIES)
@@ -42,10 +40,4 @@ public class PCis_ItemStorage extends PC_Module {
 		return new ItemStack(CHANNEL_CHEST);
 	}
 
-	@SuppressWarnings({ "static-method", "unused" })
-	@EventHandler
-	public void onServerStopping(FMLServerStoppedEvent serverStoppedEvent){
-		PCis_ChannelChestSave.cleanup();
-	}
-	
 }

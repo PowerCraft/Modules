@@ -14,8 +14,10 @@ import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3;
 import powercraft.api.beam.PC_LightValue;
 import powercraft.api.block.PC_TileEntityRotateable;
+import powercraft.api.building.PC_BlockDamage;
 import powercraft.api.building.PC_Build;
 import powercraft.api.building.PC_Build.ItemStackSpawn;
+import powercraft.api.building.PC_Harvest;
 import powercraft.laser.PCla_Beam;
 import powercraft.laser.PCla_IBeamHandler;
 import powercraft.laser.PCla_LaserRenderer;
@@ -40,8 +42,15 @@ public class PCla_TileEntityLaserHarvester extends PC_TileEntityRotateable imple
 		if(block==null||!block.isNormalCube()){
 			return true;
 		}
-		List<ItemStackSpawn> list = PC_Build.harvestWithDropPos(world, x, y, z, 1);
-		PC_Utils.spawnItems(world, list);
+		float hardness = block.getBlockHardness(world, x, y, z);
+		if(hardness<0)
+			hardness=0;
+		float damage = 0.1f/hardness;
+		if(PC_BlockDamage.damageBlock(world, x, y, z, damage)){
+			PC_Harvest harvest = PC_Build.getHarvest(world, x, y, z, -1);
+			List<ItemStackSpawn> list = PC_Build.harvestWithDropPos(world, harvest, 0);
+			PC_Utils.spawnItems(world, list);
+		}
 		return false;
 	}
 
