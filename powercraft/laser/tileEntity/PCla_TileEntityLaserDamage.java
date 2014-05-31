@@ -9,17 +9,16 @@ import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.util.FakePlayerFactory;
 import powercraft.api.PC_3DRotationY;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3;
 import powercraft.api.beam.PC_LightValue;
 import powercraft.api.block.PC_TileEntityRotateable;
+import powercraft.api.reflect.PC_Fields;
 import powercraft.laser.PCla_Beam;
 import powercraft.laser.PCla_IBeamHandler;
 import powercraft.laser.PCla_LaserRenderer;
@@ -29,10 +28,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class PCla_TileEntityLaserDamage extends PC_TileEntityRotateable implements PCla_IBeamHandler {
 	
-	private static class PC_DamageSourceLaser extends EntityDamageSource{
+	private static DamageSource LASER_DAMAGE = new PC_DamageSourceLaser();
+	
+	private static class PC_DamageSourceLaser extends DamageSource{
 
-		public PC_DamageSourceLaser(WorldServer worldServer) {
-			super("Laser", FakePlayerFactory.getMinecraft(worldServer));
+		PC_DamageSourceLaser() {
+			super("Laser");
 		}
 
 		@Override
@@ -66,8 +67,9 @@ public class PCla_TileEntityLaserDamage extends PC_TileEntityRotateable implemen
 	public boolean onHitEntity(World world, Entity entity, PCla_Beam beam) {
 		if(entity instanceof EntityItem || entity instanceof EntityXPOrb)
 			return true;
-		if(world instanceof WorldServer){
-			entity.attackEntityFrom(new PC_DamageSourceLaser((WorldServer)world), 2);
+		if(!world.isRemote){
+			PC_Fields.EntityLivingBase_recentlyHit.setValue(entity, Integer.valueOf(60));
+			entity.attackEntityFrom(LASER_DAMAGE, 2);
 		}
 		return true;
 	}

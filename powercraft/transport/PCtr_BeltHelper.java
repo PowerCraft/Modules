@@ -15,12 +15,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import powercraft.api.PC_Direction;
-import powercraft.api.PC_MathHelper;
 import powercraft.api.PC_Sound;
 import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3I;
 import powercraft.api.inventory.PC_InventoryUtils;
-import powercraft.api.reflect.PC_Reflection;
+import powercraft.api.reflect.PC_Fields;
 import powercraft.transport.block.PCtr_BlockBeltNormal;
 import powercraft.transport.block.PCtr_BlockBeltScriptable;
 
@@ -137,6 +136,7 @@ public final class PCtr_BeltHelper {
 			if(aabb.intersectsWith(entity.boundingBox)){
 				ItemStack is = ((EntityItem)entity).getEntityItem();
 				IInventory inventory = PC_InventoryUtils.getInventoryAt(world, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ, false);
+				System.out.println("tryStore:"+inventory);
 				if(inventory!=null){
 					int storeResult = PC_InventoryUtils.storeItemStackToInventoryFrom(inventory, is, dir.getOpposite()); 
 					if(storeResult==0){
@@ -166,7 +166,7 @@ public final class PCtr_BeltHelper {
 		}
 		entity.motionZ = dir.offsetZ!=0?dir.offsetZ*speed:(z+0.5-entity.posZ)*FAC;
 		entity.velocityChanged = true;
-		if(canPass)
+		/*if(canPass)
 			return;
 		double diff, tmp;
 		if(dir.isVertical() && (diff=PC_MathHelper.abs_double((y+0.5+dir.offsetY*0.5)-entity.posY))<2*speed){
@@ -175,7 +175,7 @@ public final class PCtr_BeltHelper {
 			entity.motionX = getSpeedForDiff(diff);
 		}else if(dir.isHorizontalZ() && (diff=PC_MathHelper.abs_double((z+0.5+dir.offsetZ*0.5)-entity.posZ))<2*speed){
 			entity.motionZ = getSpeedForDiff(diff);
-		}
+		}*/
 	}
 	
 	private static double getSpeedForDiff(double diff){
@@ -205,8 +205,8 @@ public final class PCtr_BeltHelper {
 			EntityXPOrb xp = (EntityXPOrb)entity;
 			if(preventPickup){
 				xp.field_70532_c = 7;
-				PC_Reflection.setValue(EntityXPOrb.class, xp, 6, int.class, Integer.valueOf((xp.xpColor - 20 + xp.getEntityId() % 100) + 7));
-				PC_Reflection.setValue(EntityXPOrb.class, xp, 5, EntityPlayer.class, null);
+				PC_Fields.EntityXPOrb_xpTargetColor.setValue(xp, Integer.valueOf((xp.xpColor - 20 + xp.getEntityId() % 100) + 7));
+				PC_Fields.EntityXPOrb_closestPlayer.setValue(xp, null);
 			}
 			if (xp.xpOrbAge >= 5000) {
 				if (xp.worldObj.getEntitiesWithinAABBExcludingEntity(

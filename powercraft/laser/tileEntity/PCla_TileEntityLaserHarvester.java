@@ -1,7 +1,5 @@
 package powercraft.laser.tileEntity;
 
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.Entity;
@@ -15,9 +13,6 @@ import powercraft.api.PC_Vec3;
 import powercraft.api.beam.PC_LightValue;
 import powercraft.api.block.PC_TileEntityRotateable;
 import powercraft.api.building.PC_BlockDamage;
-import powercraft.api.building.PC_Build;
-import powercraft.api.building.PC_Build.ItemStackSpawn;
-import powercraft.api.building.PC_Harvest;
 import powercraft.laser.PCla_Beam;
 import powercraft.laser.PCla_IBeamHandler;
 import powercraft.laser.PCla_LaserRenderer;
@@ -45,14 +40,13 @@ public class PCla_TileEntityLaserHarvester extends PC_TileEntityRotateable imple
 		float hardness = block.getBlockHardness(world, x, y, z);
 		if(hardness<0)
 			hardness=0;
-		float damage = 0.1f/hardness;
+		float damage = (float) (beam.getLightValue().getIntensity()/hardness);
 		PC_BlockDamage.damageBlock(world, x, y, z, damage);
 		return false;
 	}
 
 	@Override
 	public boolean onHitEntity(World world, Entity entity, PCla_Beam beam) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
