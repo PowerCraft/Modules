@@ -46,11 +46,7 @@ public class PCla_TileEntityLaserHarvester extends PC_TileEntityRotateable imple
 		if(hardness<0)
 			hardness=0;
 		float damage = 0.1f/hardness;
-		if(PC_BlockDamage.damageBlock(world, x, y, z, damage)){
-			PC_Harvest harvest = PC_Build.getHarvest(world, x, y, z, -1);
-			List<ItemStackSpawn> list = PC_Build.harvestWithDropPos(world, harvest, 0);
-			PC_Utils.spawnItems(world, list);
-		}
+		PC_BlockDamage.damageBlock(world, x, y, z, damage);
 		return false;
 	}
 
