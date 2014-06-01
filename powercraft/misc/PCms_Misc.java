@@ -2,6 +2,7 @@ package powercraft.misc;
 
 import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
+import powercraft.api.PC_Build;
 import powercraft.api.PC_Module;
 import powercraft.misc.block.PCms_BlockClimbingRope;
 import powercraft.misc.item.PCms_ItemSaw;
@@ -13,7 +14,7 @@ import cpw.mods.fml.common.Mod.InstanceFactory;
 public class PCms_Misc extends PC_Module{
 	
 	public static final String NAME = POWERCRAFT + "-Misc";
-	public static final String VERSION = "1.7.2";
+	public static final String VERSION = PC_Build.BUILD_VERSION;
 	public static final String DEPENDENCIES = "required-after:" + PC_Api.NAME + "@" + PC_Api.VERSION;
 	
 	public static final PCms_Misc INSTANCE = new PCms_Misc();

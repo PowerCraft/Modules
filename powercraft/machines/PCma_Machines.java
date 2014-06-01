@@ -2,6 +2,7 @@ package powercraft.machines;
 
 import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
+import powercraft.api.PC_Build;
 import powercraft.api.PC_Module;
 import powercraft.machines.block.PCma_BlockAutomaticWorkbench;
 import powercraft.machines.block.PCma_BlockFurnace;
@@ -13,7 +14,7 @@ import cpw.mods.fml.common.Mod.InstanceFactory;
 public class PCma_Machines extends PC_Module {
 
 	public static final String NAME = POWERCRAFT + "-Machines";
-	public static final String VERSION = "1.7.2";
+	public static final String VERSION = PC_Build.BUILD_VERSION;
 	public static final String DEPENDENCIES = "required-after:" + PC_Api.NAME + "@" + PC_Api.VERSION;
 	
 	public static final PCma_Machines INSTANCE = new PCma_Machines();

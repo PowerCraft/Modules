@@ -2,6 +2,7 @@ package powercraft.core;
 
 import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
+import powercraft.api.PC_Build;
 import powercraft.api.PC_Module;
 import powercraft.api.multiblock.PC_BlockMultiblock;
 import powercraft.api.multiblock.PC_Multiblocks;
@@ -14,7 +15,7 @@ import cpw.mods.fml.common.Mod.InstanceFactory;
 public class PCco_Core extends PC_Module {
 
 	public static final String NAME = POWERCRAFT + "-Core";
-	public static final String VERSION = "1.7.2";
+	public static final String VERSION = PC_Build.BUILD_VERSION;
 	public static final String DEPENDENCIES = "required-after:" + PC_Api.NAME + "@" + PC_Api.VERSION;
 	
 	public static final PCco_Core INSTANCE = new PCco_Core();

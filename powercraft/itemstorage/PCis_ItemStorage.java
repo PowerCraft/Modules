@@ -2,6 +2,7 @@ package powercraft.itemstorage;
 
 import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
+import powercraft.api.PC_Build;
 import powercraft.api.PC_Module;
 import powercraft.api.network.PC_PacketHandler;
 import powercraft.itemstorage.block.PCis_BlockChannelChest;
@@ -17,7 +18,7 @@ import cpw.mods.fml.common.Mod.InstanceFactory;
 public class PCis_ItemStorage extends PC_Module {
 
 	public static final String NAME = POWERCRAFT + "-ItemStorage";
-	public static final String VERSION = "1.7.2";
+	public static final String VERSION = PC_Build.BUILD_VERSION;
 	public static final String DEPENDENCIES = "required-after:" + PC_Api.NAME + "@" + PC_Api.VERSION;
 	
 	public static final PCis_ItemStorage INSTANCE = new PCis_ItemStorage();

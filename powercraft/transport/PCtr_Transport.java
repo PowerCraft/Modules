@@ -2,6 +2,7 @@ package powercraft.transport;
 
 import net.minecraft.item.ItemStack;
 import powercraft.api.PC_Api;
+import powercraft.api.PC_Build;
 import powercraft.api.PC_Module;
 import powercraft.api.network.PC_PacketHandler;
 import powercraft.transport.block.PCtr_BlockBeltBidirectional;
@@ -17,7 +18,7 @@ import cpw.mods.fml.common.Mod.InstanceFactory;
 public class PCtr_Transport extends PC_Module {
 
 	public static final String NAME = POWERCRAFT+"-Transport";
-	public static final String VERSION = "1.7.2";
+	public static final String VERSION = PC_Build.BUILD_VERSION;
 	public static final String DEPENDENCIES = "required-after:"+PC_Api.NAME+"@"+PC_Api.VERSION;
 	
 	public static final PCtr_Transport INSTANCE = new PCtr_Transport();

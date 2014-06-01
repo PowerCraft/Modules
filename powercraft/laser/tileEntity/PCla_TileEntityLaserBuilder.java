@@ -114,13 +114,15 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 
 	@Override
 	public void onFinished(PCla_Beam beam) {
-		BlockPosAndDist[] blocks = this.blockList.toArray(new BlockPosAndDist[this.blockList.size()]);
-		Arrays.sort(blocks, C);
-		for(BlockPosAndDist blockPos:blocks){
-			if(tryBuildHere(blockPos.pos)){
-				this.remaining = (int)(10/beam.getLightValue().getIntensity());
-				markDirty();
-				break;
+		if(this.remaining<=0){
+			BlockPosAndDist[] blocks = this.blockList.toArray(new BlockPosAndDist[this.blockList.size()]);
+			Arrays.sort(blocks, C);
+			for(BlockPosAndDist blockPos:blocks){
+				if(tryBuildHere(blockPos.pos)){
+					this.remaining = (int)(10/beam.getLightValue().getIntensity());
+					markDirty();
+					break;
+				}
 			}
 		}
 		this.blockList.clear();
