@@ -1,6 +1,7 @@
 package powercraft.itemstorage.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
+import powercraft.api.PC_Lang;
 import powercraft.api.gres.PC_GresGuiHandler;
 import powercraft.api.gres.PC_GresInventory;
 import powercraft.api.gres.PC_GresPlayerInventory;
@@ -20,7 +21,7 @@ public class PCis_GuiChannelChest extends PCis_ContainerChannelChest implements 
 	@SuppressWarnings("hiding")
 	@Override
 	public void initGui(PC_GresGuiHandler gui) {
-		PC_GresWindow w = new PC_GresWindow(this.inventory.getInventoryName()+".name");
+		PC_GresWindow w = new PC_GresWindow(PC_Lang.translate(this.inventory.getInventoryName()+".name"));
 		w.setLayout(new PC_GresLayoutVertical());
 		PC_GresInventory inventory = new PC_GresInventory(9, 3);
 		inventory.setSlots(this.invSlots, 0);

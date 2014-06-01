@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import powercraft.api.PC_Lang;
 import powercraft.api.PC_Vec2I;
 import powercraft.api.gres.PC_GresCheckBox;
 import powercraft.api.gres.PC_GresComponent;
@@ -39,20 +40,20 @@ public class PCis_GuiCompressor extends PCis_ContainerCompressor implements PC_I
 	@SuppressWarnings("hiding")
 	@Override
 	public void initGui(PC_GresGuiHandler gui) {
-		PC_GresWindow w = new PC_GresWindow(this.inventory.getInventoryName()+".name");
+		PC_GresWindow w = new PC_GresWindow(PC_Lang.translate(this.inventory.getInventoryName()+".name"));
 		w.setLayout(new PC_GresLayoutVertical());
-		PC_GresWindowSideTab tab = new PC_GresWindowSideTab("Name", new PC_GresDisplayObject(Items.paper));
+		PC_GresWindowSideTab tab = new PC_GresWindowSideTab(PC_Lang.translate("PCis.gui.name"), new PC_GresDisplayObject(Items.paper));
 		tab.setLayout(new PC_GresLayoutVertical());
 		tab.add(this.name = new PC_GresTextEdit(PCis_ItemCompressor.getName(this.itemStack), 10));
 		this.name.addEventListener(this);
 		w.addSideTab(tab);
 		
-		tab = new PC_GresWindowSideTab("Working", new PC_GresDisplayObject(Items.fishing_rod));
+		tab = new PC_GresWindowSideTab(PC_Lang.translate("PCis.gui.working"), new PC_GresDisplayObject(Items.fishing_rod));
 		tab.setLayout(new PC_GresLayoutVertical());
-		tab.add(this.takeStacks = new PC_GresCheckBox("pc.gui.compressor.takeStacks"));
+		tab.add(this.takeStacks = new PC_GresCheckBox(PC_Lang.translate("PCis.gui.compressor.takeStacks")));
 		this.takeStacks.addEventListener(this);
 		this.takeStacks.check(PCis_ItemCompressor.isTakeStacks(this.itemStack));
-		tab.add(new PC_GresLabel("pc.gui.compressor.putStacks"));
+		tab.add(new PC_GresLabel(PC_Lang.translate("PCis.gui.compressor.putStacks")));
 		tab.add(this.putStacks = new PC_GresTextEdit(""+PCis_ItemCompressor.getPutStacks(this.itemStack), 3, PC_GresInputType.UNSIGNED_INT));
 		this.putStacks.addEventListener(this);
 		w.addSideTab(tab);

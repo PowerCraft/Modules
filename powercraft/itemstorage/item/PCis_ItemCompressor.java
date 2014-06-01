@@ -13,6 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import powercraft.api.PC_IconRegistry;
+import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec2I;
 import powercraft.api.gres.PC_GresBaseWithInventory;
 import powercraft.api.gres.PC_IGresGui;
@@ -259,16 +260,16 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 		ItemStack compressor = inventory.getStackInSlot(slot);
 		switch(compressor.getItemDamage()){
 		case NORMAL:
-			return new PCis_NormalCompressorInventory(inventory, slot);
+			return new PCis_NormalCompressorInventory(inventory, slot, compressor.getUnlocalizedName());
 		case ENDERACCESS:
 			if(player instanceof EntityPlayer){
-				return new PCis_EnderCompressorInventory((EntityPlayer)player, inventory, slot);
+				return new PCis_EnderCompressorInventory((EntityPlayer)player, inventory, slot, compressor.getUnlocalizedName());
 			}
 			return null;
 		case HEIGHT:
-			return new PCis_HightCompressorInventory(inventory, slot);
+			return new PCis_HightCompressorInventory(inventory, slot, compressor.getUnlocalizedName());
 		case BIG:
-			return new PCis_NormalCompressorInventory(inventory, slot, new PC_Vec2I(9, 6));
+			return new PCis_NormalCompressorInventory(inventory, slot, new PC_Vec2I(9, 6), compressor.getUnlocalizedName());
 		case CHANNEL:
 			if(world.isRemote){
 				return PCis_ChannelChestSave.getFake();
@@ -346,6 +347,15 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 
 	public static ItemStack getItem(EntityPlayer player){
 		return player.inventory.getCurrentItem();
+	}
+	
+	@Override
+	public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player) {
+		if(itemStack.getItemDamage()==CHANNEL && !itemStack.hasTagCompound() && !world.isRemote){
+			PC_Utils.sendMessageToTranslate(player, "PCis.compressor.not.connected");
+			return itemStack;
+		}
+		return super.onItemRightClick(itemStack, world, player);
 	}
 
 	@Override

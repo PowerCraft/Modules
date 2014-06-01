@@ -9,8 +9,8 @@ public class PCis_EnderCompressorInventory extends PCis_CompressorInventory {
 
 	private EntityPlayer player;
 	
-	public PCis_EnderCompressorInventory(EntityPlayer player, IInventory inventory, int slot) {
-		super(inventory, slot, new PC_Vec2I(9, 3));
+	public PCis_EnderCompressorInventory(EntityPlayer player, IInventory inventory, int slot, String name) {
+		super(inventory, slot, new PC_Vec2I(9, 3), name);
 		this.player = player;
 	}
 

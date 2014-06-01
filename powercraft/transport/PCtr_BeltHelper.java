@@ -136,7 +136,6 @@ public final class PCtr_BeltHelper {
 			if(aabb.intersectsWith(entity.boundingBox)){
 				ItemStack is = ((EntityItem)entity).getEntityItem();
 				IInventory inventory = PC_InventoryUtils.getInventoryAt(world, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ, false);
-				System.out.println("tryStore:"+inventory);
 				if(inventory!=null){
 					int storeResult = PC_InventoryUtils.storeItemStackToInventoryFrom(inventory, is, dir.getOpposite()); 
 					if(storeResult==0){
@@ -166,7 +165,7 @@ public final class PCtr_BeltHelper {
 		}
 		entity.motionZ = dir.offsetZ!=0?dir.offsetZ*speed:(z+0.5-entity.posZ)*FAC;
 		entity.velocityChanged = true;
-		/*if(canPass)
+		/*if(canPass) FIXME Not working for some directions
 			return;
 		double diff, tmp;
 		if(dir.isVertical() && (diff=PC_MathHelper.abs_double((y+0.5+dir.offsetY*0.5)-entity.posY))<2*speed){

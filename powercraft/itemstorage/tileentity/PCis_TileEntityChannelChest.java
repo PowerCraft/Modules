@@ -155,6 +155,9 @@ public class PCis_TileEntityChannelChest extends PC_TileEntityRotateable impleme
 				is.setTagCompound(tagCompound = new NBTTagCompound());
 			}
 			tagCompound.setInteger("id", this.id);
+			if(!isClient()){
+				PC_Utils.sendMessageToTranslate(player, "PCis.chest.connected");
+			}
 			return true;
 		}
 		return super.onBlockActivated(player, side);

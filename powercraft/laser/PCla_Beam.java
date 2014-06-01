@@ -95,7 +95,8 @@ public class PCla_Beam implements PC_IBeam {
 	}
 	
 	public void trace() {
-		while(!this.noTrace && nextStep());
+		while(!this.noTrace && nextStep())
+			continue;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -202,7 +203,7 @@ public class PCla_Beam implements PC_IBeam {
 
 	@Override
 	public void noTrace() {
-		noTrace = true;
+		this.noTrace = true;
 	}
 	
 }

@@ -19,7 +19,7 @@ public class PCis_ChannelChestSave extends PC_WorldSaveData {
 
 	private static final String NAME = "powercraft-channelchests";
 	
-	private static int lastID = 0;
+	private int lastID = 0;
 	
 	static PCis_ChannelChestSave save;
 	
@@ -70,6 +70,7 @@ public class PCis_ChannelChestSave extends PC_WorldSaveData {
 			NBTTagCompound com = list.getCompoundTagAt(i);
 			this.channels.put(Integer.valueOf(com.getInteger("key")), new PCis_ChannelChestInventory(com));
 		}
+		this.lastID = nbtTagCompound.getInteger("lastID");
 	}
 
 	@Override
@@ -82,6 +83,7 @@ public class PCis_ChannelChestSave extends PC_WorldSaveData {
 			list.appendTag(com);
 		}
 		nbtTagCompound.setTag("save", list);
+		nbtTagCompound.setInteger("lastID", this.lastID);
 	}
 
 	public static class PCis_ChannelChestInventory implements IInventory, PC_IInventorySetNoMark{
@@ -179,12 +181,12 @@ public class PCis_ChannelChestSave extends PC_WorldSaveData {
 
 		@Override
 		public String getInventoryName() {
-			return "Channel Chest";
+			return "tile.PCis_BlockChannelChest";
 		}
 
 		@Override
 		public boolean hasCustomInventoryName() {
-			return true;
+			return false;
 		}
 
 		@Override
@@ -232,11 +234,11 @@ public class PCis_ChannelChestSave extends PC_WorldSaveData {
 
 	public static int getNextFreeID() {
 		Set<Integer> set = getSave().channels.keySet();
-		lastID++;
-		while(set.contains(Integer.valueOf(lastID)) || lastID==0){
-			lastID++;
+		save.lastID++;
+		while(set.contains(Integer.valueOf(save.lastID)) || save.lastID==0){
+			save.lastID++;
 		}
-		return lastID;
+		return save.lastID;
 	}
 	
 }

@@ -39,9 +39,10 @@ public class PCla_TileEntityLaserTractor extends PC_TileEntityRotateable impleme
 	@Override
 	public boolean onHitEntity(World world, Entity entity, PCla_Beam beam) {
 		PC_Vec3 dir = beam.getDirection();
-		entity.motionX -= dir.x/10;
-		entity.motionY -= dir.y/10;
-		entity.motionZ -= dir.z/10;
+		double strength = beam.getLightValue().getIntensity()/10;
+		entity.motionX -= dir.x*strength;
+		entity.motionY -= dir.y*strength;
+		entity.motionZ -= dir.z*strength;
 		return true;
 	}
 

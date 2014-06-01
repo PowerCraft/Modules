@@ -69,7 +69,7 @@ public class PCla_TileEntityLaserDamage extends PC_TileEntityRotateable implemen
 			return true;
 		if(!world.isRemote){
 			PC_Fields.EntityLivingBase_recentlyHit.setValue(entity, Integer.valueOf(60));
-			entity.attackEntityFrom(LASER_DAMAGE, 2);
+			entity.attackEntityFrom(LASER_DAMAGE, (float) (10*beam.getLightValue().getIntensity()));
 		}
 		return true;
 	}

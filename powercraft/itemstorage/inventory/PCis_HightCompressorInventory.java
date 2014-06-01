@@ -10,8 +10,8 @@ import powercraft.api.inventory.PC_InventoryUtils;
 public class PCis_HightCompressorInventory extends PCis_NormalCompressorInventory implements PC_IInventorySizeOverrider {
 	
 	@SuppressWarnings("hiding")
-	public PCis_HightCompressorInventory(IInventory inventory, int slot){
-		super(inventory, slot, new PC_Vec2I(3, 3));
+	public PCis_HightCompressorInventory(IInventory inventory, int slot, String name){
+		super(inventory, slot, new PC_Vec2I(3, 3), name);
 		NBTTagCompound tag = getItemStack().getTagCompound();
 		if(tag.hasKey("size")){
 			int[] size = tag.getIntArray("size");

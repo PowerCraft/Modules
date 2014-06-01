@@ -13,11 +13,13 @@ public abstract class PCis_CompressorInventory implements PC_IInventory {
 	protected IInventory inventory;
 	protected int slot;
 	protected PC_Vec2I size;
+	protected String name;
 	
-	public PCis_CompressorInventory(IInventory inventory, int slot, PC_Vec2I size){
+	public PCis_CompressorInventory(IInventory inventory, int slot, PC_Vec2I size, String name){
 		this.inventory = inventory;
 		this.slot = slot;
 		this.size = size;
+		this.name = name;
 	}
 	
 	public ItemStack getItemStack(){
@@ -30,7 +32,7 @@ public abstract class PCis_CompressorInventory implements PC_IInventory {
 
 	@Override
 	public String getInventoryName() {
-		return "Compressor";
+		return this.name;
 	}
 
 	@Override

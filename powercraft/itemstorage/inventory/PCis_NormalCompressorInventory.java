@@ -10,8 +10,8 @@ public class PCis_NormalCompressorInventory extends PCis_CompressorInventory {
 
 	protected ItemStack[] is;
 	
-	public PCis_NormalCompressorInventory(IInventory inventory, int slot, PC_Vec2I size) {
-		super(inventory, slot, size);
+	public PCis_NormalCompressorInventory(IInventory inventory, int slot, PC_Vec2I size, String name) {
+		super(inventory, slot, size, name);
 		NBTTagCompound tag = getItemStack().getTagCompound();
 		if(tag==null){
 			getItemStack().setTagCompound(tag = new NBTTagCompound());
@@ -26,8 +26,8 @@ public class PCis_NormalCompressorInventory extends PCis_CompressorInventory {
 		}
 	}
 	
-	public PCis_NormalCompressorInventory(IInventory inventory, int slot) {
-		this(inventory, slot, new PC_Vec2I(9, 3));
+	public PCis_NormalCompressorInventory(IInventory inventory, int slot, String name) {
+		this(inventory, slot, new PC_Vec2I(9, 3), name);
 	}
 
 	@Override

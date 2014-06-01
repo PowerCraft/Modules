@@ -72,6 +72,8 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 	protected PC_3DRotation rotation;
 	
 	private List<BlockPosAndDist> blockList = new ArrayList<BlockPosAndDist>();
+	@PC_Field
+	private int remaining;
 	
 	public PCla_TileEntityLaserBuilder() {
 		super("Builder", 9, new Group(true, PC_InventoryUtils.makeIndexList(0, 9)));
@@ -87,6 +89,10 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 		PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.NORTH);
 		PC_Vec3 vec = new PC_Vec3(dir.offsetX, dir.offsetY, dir.offsetZ);
 		this.blockList.clear();
+		if(this.remaining>0){
+			this.remaining--;
+			markDirty();
+		}
 		new PCla_Beam(this.worldObj, this, 20, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5).add(vec.mul(0.1)), vec, new PC_LightValue(525*PC_LightValue.THz, 1));
 	}
 
@@ -112,6 +118,8 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 		Arrays.sort(blocks, C);
 		for(BlockPosAndDist blockPos:blocks){
 			if(tryBuildHere(blockPos.pos)){
+				this.remaining = (int)(10/beam.getLightValue().getIntensity());
+				markDirty();
 				break;
 			}
 		}
