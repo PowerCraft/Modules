@@ -234,6 +234,7 @@ public class PCrs_MultiblockObjectRedstoneBundleCable extends PC_MultiblockObjec
 		return super.canConnectToBlock(world, x, y, z, block, dir, dir2);
 	}
 	
+	@SuppressWarnings("hiding")
 	@Override
 	protected int canConnectToMultiblock(PC_MultiblockObject multiblock, PC_Direction dir, PC_Direction dir2) {
 		if(multiblock instanceof PCrs_MultiblockObjectRedstoneCable){
