@@ -130,7 +130,7 @@ public class PCla_Beam implements PC_IBeam {
 		Vec3 v3dir = Vec3.createVectorHelper(this.dir.x, this.dir.y, this.dir.z);
 		for(Entity entity:entities){
 			if(!this.handledEntities.contains(entity)){
-				double expand = 0.2;
+				double expand = 0.1;
 				if(entity instanceof EntityItem){
 					expand = 0.4;
 				}

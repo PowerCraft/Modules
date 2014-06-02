@@ -5,9 +5,11 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import powercraft.api.PC_CtrlPressed;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Field;
 import powercraft.api.PC_Field.Flag;
+import powercraft.api.PC_MathHelper;
 import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3;
 import powercraft.api.beam.PC_BeamHitResult;
@@ -36,6 +38,9 @@ public class PCla_TileEntityMirror extends PC_TileEntity {
 	@Override
 	public void onBlockPostSet(PC_Direction side, ItemStack stack, EntityPlayer player, float hitX, float hitY, float hitZ) {
 		this.normal = PC_Utils.getLookDir(player);
+		if(PC_CtrlPressed.isPressingCtrl(player)){
+			this.normal = PC_MathHelper.to45Angles(this.normal);
+		}
 		this.placing = side;
 		sync();
 	}
@@ -61,6 +66,9 @@ public class PCla_TileEntityMirror extends PC_TileEntity {
 	@Override
 	public boolean onBlockActivated(EntityPlayer player, PC_Direction side) {
 		this.normal = PC_Utils.getLookDir(player);
+		if(PC_CtrlPressed.isPressingCtrl(player)){
+			this.normal = PC_MathHelper.to45Angles(this.normal);
+		}
 		PC_Vec3 d = new PC_Vec3(this.placing.offsetX, this.placing.offsetY, this.placing.offsetZ);
 		if(this.normal.dot(d)>0){
 			if(this.placing.offsetX!=0)

@@ -13,8 +13,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+import powercraft.api.PC_CtrlPressed;
 import powercraft.api.PC_Direction;
 import powercraft.api.PC_Field;
+import powercraft.api.PC_MathHelper;
 import powercraft.api.PC_Field.Flag;
 import powercraft.api.PC_INBT;
 import powercraft.api.PC_Utils;
@@ -63,6 +65,9 @@ public class PCla_TileEntityPrism extends PC_TileEntity {
 	@Override
 	public boolean onBlockActivated(EntityPlayer player, PC_Direction side) {
 		PC_Vec3 dir = PC_Utils.getLookDir(player).mul(-1);
+		if(PC_CtrlPressed.isPressingCtrl(player)){
+			dir = PC_MathHelper.to45Angles(dir);
+		}
 		Lenses best = null;
 		double diff = 0.4;
 		if(this.lenses!=null){

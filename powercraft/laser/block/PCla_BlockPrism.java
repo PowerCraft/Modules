@@ -1,10 +1,11 @@
 package powercraft.laser.block;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.IIcon;
+
+import org.lwjgl.opengl.GL11;
+
 import powercraft.api.PC_IconRegistry;
 import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_BlockType;

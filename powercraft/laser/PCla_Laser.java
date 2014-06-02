@@ -8,6 +8,7 @@ import powercraft.laser.block.PCla_BlockLaserBuilder;
 import powercraft.laser.block.PCla_BlockLaserDamage;
 import powercraft.laser.block.PCla_BlockLaserDetector;
 import powercraft.laser.block.PCla_BlockLaserHarvester;
+import powercraft.laser.block.PCla_BlockLaserPusher;
 import powercraft.laser.block.PCla_BlockLaserTractor;
 import powercraft.laser.block.PCla_BlockMirror;
 import powercraft.laser.block.PCla_BlockPrism;
@@ -39,6 +40,8 @@ public class PCla_Laser extends PC_Module {
 	public static final PCla_BlockLaserDetector laserDetector = new PCla_BlockLaserDetector();
 	
 	public static final PCla_BlockLaserBuilder laserBuilder = new PCla_BlockLaserBuilder();
+	
+	public static final PCla_BlockLaserPusher laserPusher = new PCla_BlockLaserPusher();
 	
 	public static final PCla_BlockMirror MIRROR = new PCla_BlockMirror();
 	
