@@ -1,4 +1,4 @@
-package powercraft.laser.block;
+package powercraft.oldlaser.block;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -18,7 +18,7 @@ import powercraft.api.PC_Vec4I;
 import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.api.renderer.PC_ModelHelper;
-import powercraft.laser.tileEntity.PCla_TileEntityLaser;
+import powercraft.oldlaser.tileentity.PCla_TileEntityLaser;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -27,8 +27,8 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 	public static IIcon[] icons = new IIcon[3];
 
 	private final double laserT = 0.25f;
-	private final double minLaserP = 0.5 - 0.5 * laserT;
-	private final double maxLaserP = 0.5 + 0.5 * laserT;// Used in Rendering
+	private final double minLaserP = 0.5 - 0.5 * this.laserT;
+	private final double maxLaserP = 0.5 + 0.5 * this.laserT;// Used in Rendering
 
 	public PCla_BlockLaser() {
 		super(Material.wood);
@@ -43,7 +43,7 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemInHand) {
-		int l = MathHelper.floor_double((double) (entity.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+		int l = MathHelper.floor_double(entity.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
 		switch (l) {
 		case 0:
 			l = 2;
@@ -56,6 +56,8 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 			break;
 		case 3:
 			l = 4;
+			break;
+		default:
 			break;
 		}
 		((PCla_TileEntityLaser) world.getTileEntity(x, y, z)).orientation = PC_Direction.fromSide(l);
@@ -121,20 +123,20 @@ public class PCla_BlockLaser extends PC_BlockTileEntity {
 		for (PC_Vec3I posToDraw : tileEntity.calculator.beamCalc.validLaserPos)
 			switch (tileEntity.orientation) {
 			case EAST:
-				PC_ModelHelper.drawBox(new PC_Vec3(posToDraw.x - x, minLaserP, minLaserP), new PC_Vec3(posToDraw.x - x
-						+ 1, maxLaserP, maxLaserP), tessellator, PCla_BlockLaser.icons[2]);
+				PC_ModelHelper.drawBox(new PC_Vec3(posToDraw.x - x, this.minLaserP, this.minLaserP), new PC_Vec3(posToDraw.x - x
+						+ 1, this.maxLaserP, this.maxLaserP), tessellator, PCla_BlockLaser.icons[2]);
 				break;
 			case NORTH:
-				PC_ModelHelper.drawBox(new PC_Vec3(minLaserP, minLaserP, posToDraw.z - z), new PC_Vec3(maxLaserP,
-						maxLaserP, posToDraw.z - z + 1), tessellator, PCla_BlockLaser.icons[2]);
+				PC_ModelHelper.drawBox(new PC_Vec3(this.minLaserP, this.minLaserP, posToDraw.z - z), new PC_Vec3(this.maxLaserP,
+						this.maxLaserP, posToDraw.z - z + 1), tessellator, PCla_BlockLaser.icons[2]);
 				break;
 			case SOUTH:
-				PC_ModelHelper.drawBox(new PC_Vec3(minLaserP, minLaserP, posToDraw.z - z), new PC_Vec3(maxLaserP,
-						maxLaserP, posToDraw.z - z + 1), tessellator, PCla_BlockLaser.icons[2]);
+				PC_ModelHelper.drawBox(new PC_Vec3(this.minLaserP, this.minLaserP, posToDraw.z - z), new PC_Vec3(this.maxLaserP,
+						this.maxLaserP, posToDraw.z - z + 1), tessellator, PCla_BlockLaser.icons[2]);
 				break;
 			case WEST:
-				PC_ModelHelper.drawBox(new PC_Vec3(posToDraw.x - x, minLaserP, minLaserP), new PC_Vec3(posToDraw.x - x
-						+ 1, maxLaserP, maxLaserP), tessellator, PCla_BlockLaser.icons[2]);
+				PC_ModelHelper.drawBox(new PC_Vec3(posToDraw.x - x, this.minLaserP, this.minLaserP), new PC_Vec3(posToDraw.x - x
+						+ 1, this.maxLaserP, this.maxLaserP), tessellator, PCla_BlockLaser.icons[2]);
 				break;
 			default:
 				break;

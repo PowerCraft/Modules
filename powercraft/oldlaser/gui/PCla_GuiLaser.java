@@ -1,7 +1,9 @@
-package powercraft.laser.gui;
+package powercraft.oldlaser.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
+
 import org.lwjgl.input.Keyboard;
+
 import powercraft.api.PC_RectI;
 import powercraft.api.gres.PC_GresComponent;
 import powercraft.api.gres.PC_GresGroupContainer;
@@ -19,8 +21,8 @@ import powercraft.api.gres.events.PC_GresKeyEvent;
 import powercraft.api.gres.events.PC_IGresEventListener;
 import powercraft.api.gres.layout.PC_GresLayoutHorizontal;
 import powercraft.api.gres.layout.PC_GresLayoutVertical;
-import powercraft.laser.container.PCla_ContainerLaser;
-import powercraft.laser.tileEntity.PCla_TileEntityLaser;
+import powercraft.oldlaser.container.PCla_ContainerLaser;
+import powercraft.oldlaser.tileentity.PCla_TileEntityLaser;
 
 public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, PC_IGresEventListener {
 
@@ -77,24 +79,24 @@ public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, P
 		tabs.add("Script", scriptTab);
 		presentTab.setLayout(new PC_GresLayoutHorizontal());
 
-		lensSlot = new PC_GresGroupContainer();
-		lensSlot.setLayout(new PC_GresLayoutVertical());
-		lensSlot.add(inv = new PC_GresInventory(1, 4));
+		this.lensSlot = new PC_GresGroupContainer();
+		this.lensSlot.setLayout(new PC_GresLayoutVertical());
+		this.lensSlot.add(inv = new PC_GresInventory(1, 4));
 		inv.setSlot(0, 0, this.invSlots[0]);
 		inv.setSlot(0, 1, this.invSlots[1]);
 		inv.setSlot(0, 2, this.invSlots[2]);
 		inv.setSlot(0, 3, this.invSlots[3]);
-		PC_RectI newRect = new PC_RectI(lensSlot.getPadding());
+		PC_RectI newRect = new PC_RectI(this.lensSlot.getPadding());
 		newRect.width += 5;
 		newRect.x += 3;
 		newRect.y += 3;
 		newRect.height += 3;
-		lensSlot.setPadding(newRect);
-		laserItems.add(lensSlot);
+		this.lensSlot.setPadding(newRect);
+		laserItems.add(this.lensSlot);
 
-		catalysator = new PC_GresGroupContainer();
-		catalysator.setLayout(new PC_GresLayoutHorizontal());
-		catalysator.add(inv = new PC_GresInventory(2, 4));
+		this.catalysator = new PC_GresGroupContainer();
+		this.catalysator.setLayout(new PC_GresLayoutHorizontal());
+		this.catalysator.add(inv = new PC_GresInventory(2, 4));
 		inv.setSlot(0, 0, this.invSlots[4]);
 		inv.setSlot(1, 0, this.invSlots[5]);
 		inv.setSlot(0, 1, this.invSlots[6]);
@@ -103,39 +105,39 @@ public class PCla_GuiLaser extends PCla_ContainerLaser implements PC_IGresGui, P
 		inv.setSlot(1, 2, this.invSlots[9]);
 		inv.setSlot(0, 3, this.invSlots[10]);
 		inv.setSlot(1, 3, this.invSlots[11]);
-		laserItems.add(catalysator);
+		laserItems.add(this.catalysator);
 
-		laserSlot = new PC_GresGroupContainer();
-		laserSlot.setLayout(new PC_GresLayoutHorizontal());
-		laserSlot.add(inv = new PC_GresInventory(1, 4));
+		this.laserSlot = new PC_GresGroupContainer();
+		this.laserSlot.setLayout(new PC_GresLayoutHorizontal());
+		this.laserSlot.add(inv = new PC_GresInventory(1, 4));
 		inv.setSlot(0, 0, this.invSlots[12]);
 		inv.setSlot(0, 1, this.invSlots[13]);
 		inv.setSlot(0, 2, this.invSlots[14]);
 		inv.setSlot(0, 3, this.invSlots[15]);
-		newRect = new PC_RectI(laserSlot.getPadding());
+		newRect = new PC_RectI(this.laserSlot.getPadding());
 		newRect.width += 3;
 		newRect.x += 5;
 		newRect.y += 3;
 		newRect.height += 3;
-		laserSlot.setPadding(newRect);
-		laserItems.add(laserSlot);
+		this.laserSlot.setPadding(newRect);
+		laserItems.add(this.laserSlot);
 
 		PC_GresLabel upgradeLabel = new PC_GresLabel("Upgrades");
 		upgradeItems.add(upgradeLabel);
-		upgradeSlot = new PC_GresGroupContainer();
-		upgradeSlot.setLayout(new PC_GresLayoutHorizontal());
-		upgradeSlot.add(inv = new PC_GresInventory(5, 1));
+		this.upgradeSlot = new PC_GresGroupContainer();
+		this.upgradeSlot.setLayout(new PC_GresLayoutHorizontal());
+		this.upgradeSlot.add(inv = new PC_GresInventory(5, 1));
 		inv.setSlot(0, 0, this.invSlots[16]);
 		inv.setSlot(1, 0, this.invSlots[17]);
 		inv.setSlot(2, 0, this.invSlots[18]);
 		inv.setSlot(3, 0, this.invSlots[19]);
 		inv.setSlot(4, 0, this.invSlots[20]);
-		newRect = new PC_RectI(upgradeSlot.getPadding());
+		newRect = new PC_RectI(this.upgradeSlot.getPadding());
 		newRect.width += 3;
 		newRect.x += 3;
 		newRect.height += 3;
-		upgradeSlot.setPadding(newRect);
-		upgradeItems.add(upgradeSlot);
+		this.upgradeSlot.setPadding(newRect);
+		upgradeItems.add(this.upgradeSlot);
 
 		window.add(tabs);
 		window.add(new PC_GresPlayerInventory(this));

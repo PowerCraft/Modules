@@ -1,4 +1,4 @@
-package powercraft.laser.item;
+package powercraft.oldlaser.item;
 
 import java.util.List;
 import net.minecraft.creativetab.CreativeTabs;
@@ -17,18 +17,18 @@ public class PCla_ItemLaserUpgrade extends PC_Item {
 	private String[] names = new String[] { "2laser", "3laser", "4laser", "2upgrade", "3upgrade", "4upgrade",
 			"5upgrade", "rotatingItems", "switchingItems", "colorMixer" };
 
-	private IIcon[] icons = new IIcon[names.length];
+	private IIcon[] icons = new IIcon[this.names.length];
 
 	public PCla_ItemLaserUpgrade() {
 		this.hasSubtypes = true;
 		setCreativeTab(CreativeTabs.tabRedstone);
 	}
 
-	public PC_Vec4I getColorModifier() {
+	public static PC_Vec4I getColorModifier() {
 		return new PC_Vec4I(255, 255, 255, 255);
 	}
 
-	public int getAddedNumUpgrades(int meta) {
+	public static int getAddedNumUpgrades(int meta) {
 		switch (meta) {
 		case 3:
 			return 1;
@@ -43,7 +43,7 @@ public class PCla_ItemLaserUpgrade extends PC_Item {
 		}
 	}
 
-	public int getAddedNumLaserThings(int meta) {
+	public static int getAddedNumLaserThings(int meta) {
 		switch (meta) {
 		case 0:
 			return 1;
@@ -67,8 +67,8 @@ public class PCla_ItemLaserUpgrade extends PC_Item {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(PC_IconRegistry iconRegistry) {
-		for (int i = 0; i < names.length; i++) {
-			icons[i] = iconRegistry.registerIcon(names[i]);
+		for (int i = 0; i < this.names.length; i++) {
+			this.icons[i] = iconRegistry.registerIcon(this.names[i]);
 		}
 	}
 
@@ -76,20 +76,20 @@ public class PCla_ItemLaserUpgrade extends PC_Item {
 	@SideOnly(Side.CLIENT)
 	public String getUnlocalizedName(ItemStack itemStack) {
 		int i = itemStack.getItemDamage();
-		return super.getUnlocalizedName() + "." + names[i];
+		return super.getUnlocalizedName() + "." + this.names[i];
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIconFromDamage(int meta) {
-		return icons[meta];
+		return this.icons[meta];
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void getSubItems(Item item, CreativeTabs creaTab, List itemList) {
-		for (int i = 0; i < names.length; i++) {
+		for (int i = 0; i < this.names.length; i++) {
 			itemList.add(new ItemStack(this, 1, i));
 		}
 	}

@@ -1,4 +1,4 @@
-package powercraft.laser.tileEntity;
+package powercraft.oldlaser.tileentity;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -11,11 +11,9 @@ import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.PC_IGresGuiOpenHandler;
 import powercraft.api.inventory.PC_InventoryUtils;
 import powercraft.api.redstone.PC_RedstoneWorkType;
-import powercraft.laser.PCla_Laser;
-import powercraft.laser.PCla_LaserTypeCalculator;
-import powercraft.laser.container.PCla_ContainerLaser;
-import powercraft.laser.gui.PCla_GuiLaser;
-import powercraft.laser.item.PCla_ItemLaserUpgrade;
+import powercraft.oldlaser.PCla_LaserTypeCalculator;
+import powercraft.oldlaser.container.PCla_ContainerLaser;
+import powercraft.oldlaser.gui.PCla_GuiLaser;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -31,7 +29,7 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 		super("Laser", 21, new Group(true, PC_InventoryUtils.makeIndexList(0, 4)), new Group(true,
 				PC_InventoryUtils.makeIndexList(4, 12)), new Group(true, PC_InventoryUtils.makeIndexList(12, 16)),
 				new Group(true, PC_InventoryUtils.makeIndexList(16, 21)));
-		orientation = PC_Direction.NORTH;
+		this.orientation = PC_Direction.NORTH;
 		this.workWhen = PC_RedstoneWorkType.ALWAYS;
 		markDirty();
 	}
@@ -44,20 +42,20 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 
 	@Override
 	public void onTick() {
-		if (counterForTick >= 20) {
-			counterForTick = 0;
-			calculator.performBlockUpdate(orientation);
-			calculator.performUpdateTick();
+		if (this.counterForTick >= 20) {
+			this.counterForTick = 0;
+			this.calculator.performBlockUpdate(this.orientation);
+			this.calculator.performUpdateTick();
 			updateDisabledSlots();
 			renderUpdate();
 		}
-		counterForTick++;
+		this.counterForTick++;
 	}
 
 	@Override
 	public void markDirty() {
 		super.markDirty();
-		calculator.performItemUpdate();
+		this.calculator.performItemUpdate();
 		updateDisabledSlots();
 		renderUpdate();
 	}
@@ -81,13 +79,13 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		//enabled?
-		if (i < 16 && !laserSlotsEnabled[i % 4])
+		if (i < 16 && !this.laserSlotsEnabled[i % 4])
 			return false;
-		if (i >= 16 && i < 21 && !upgradeSlotsEnabled[i - 16])
+		if (i >= 16 && i < 21 && !this.upgradeSlotsEnabled[i - 16])
 			return false;
 
 		//correct Item?
-		if (itemstack.getItem() == PCla_Laser.lens) {
+		/*if (itemstack.getItem() == PCla_Laser.lens) {
 			if (i >= 0 && i < 4)
 				return true;
 		}
@@ -102,25 +100,25 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 		if (itemstack.getItem() == PCla_Laser.laserUpgrade) {
 			if (i >= 16 && i < 21)
 				return true;
-		}
+		}*/
 		return false;
 	}
 
 	public void updateDisabledSlots() {
 		ItemStack[] upgrades = new ItemStack[5];
 		for (int i = 0; i < 5; i++) {
-			upgrades[i] = inventoryContents[i + 16];
+			upgrades[i] = this.inventoryContents[i + 16];
 		}
 		int newNumUp = 1;
 		int newNumLas = 1;
-		for (ItemStack currUp : upgrades) {
-			if (currUp != null)
-				if (currUp.getItem() == PCla_Laser.laserUpgrade) {
+		//for (ItemStack currUp : upgrades) {
+			//if (currUp != null)
+				/*if (currUp.getItem() == PCla_Laser.laserUpgrade) {
 					newNumLas += ((PCla_ItemLaserUpgrade) currUp.getItem()).getAddedNumLaserThings(currUp
 							.getItemDamage());
 					newNumUp += ((PCla_ItemLaserUpgrade) currUp.getItem()).getAddedNumUpgrades(currUp.getItemDamage());
-				}
-		}
+				}*/
+		//}
 		if (newNumUp > 5) {
 			newNumUp = 5;
 		}
@@ -129,16 +127,16 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 		}
 		for (int i = 0; i < 5; i++) {
 			if (newNumUp - 1 >= i) {
-				upgradeSlotsEnabled[i] = true;
+				this.upgradeSlotsEnabled[i] = true;
 			} else {
-				upgradeSlotsEnabled[i] = false;
+				this.upgradeSlotsEnabled[i] = false;
 			}
 		}
 		for (int i = 0; i < 4; i++) {
 			if (newNumLas - 1 >= i) {
-				laserSlotsEnabled[i] = true;
+				this.laserSlotsEnabled[i] = true;
 			} else {
-				laserSlotsEnabled[i] = false;
+				this.laserSlotsEnabled[i] = false;
 			}
 		}
 	}
@@ -151,7 +149,7 @@ public class PCla_TileEntityLaser extends PC_TileEntityWithInventory implements 
 	}
 
 	public ItemStack[] getInvContents() {
-		return inventoryContents;
+		return this.inventoryContents;
 	}
 
 	@Override

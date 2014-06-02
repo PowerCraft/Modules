@@ -1,4 +1,4 @@
-package powercraft.laser;
+package powercraft.oldlaser;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -10,10 +10,10 @@ import powercraft.api.PC_Direction;
 import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3I;
 import powercraft.api.PC_Vec4I;
-import powercraft.laser.item.PCla_ItemCatalysator;
-import powercraft.laser.item.PCla_ItemLaserEmitter;
-import powercraft.laser.item.PCla_ItemLens;
-import powercraft.laser.tileEntity.PCla_TileEntityLaser;
+import powercraft.oldlaser.item.PCla_ItemCatalysator;
+import powercraft.oldlaser.item.PCla_ItemLaserEmitter;
+import powercraft.oldlaser.item.PCla_ItemLens;
+import powercraft.oldlaser.tileentity.PCla_TileEntityLaser;
 
 public class PCla_LaserTypeCalculator {
 
@@ -29,15 +29,15 @@ public class PCla_LaserTypeCalculator {
 	private PC_Vec4I currColor = new PC_Vec4I(255, 255, 255, 255);
 	private int percentMined = 0;
 	private int percentMiningPerTick = 20;
-	private IInventory chestBehind;
+	//private IInventory chestBehind;
 
 	public PCla_LaserTypeCalculator(PCla_TileEntityLaser laser) {
-		laserObj = laser;
-		beamCalc = new PCla_LaserBeamCalculator(laserObj, this);
+		this.laserObj = laser;
+		this.beamCalc = new PCla_LaserBeamCalculator(this.laserObj, this);
 	}
 
 	public boolean hasEffect(PCla_EnumLaserEffects effect) {
-		for (PCla_EnumLaserEffects ef : effects) {
+		for (PCla_EnumLaserEffects ef : this.effects) {
 			if (ef.equals(effect))
 				return true;
 		}
@@ -64,7 +64,7 @@ public class PCla_LaserTypeCalculator {
 	}
 
 	public boolean hasTarget(PCla_EnumLaserTargets target) {
-		for (PCla_EnumLaserTargets tg : targets) {
+		for (PCla_EnumLaserTargets tg : this.targets) {
 			if (tg.equals(target))
 				return true;
 		}
@@ -91,16 +91,16 @@ public class PCla_LaserTypeCalculator {
 	}
 
 	public void performItemUpdate() {
-		ItemStack[] contents = laserObj.getInvContents();
-		PC_Utils.setArrayContentsToNull(lens);
-		PC_Utils.setArrayContentsToNull(laserEmitter);
-		PC_Utils.setArrayContentsToNull(catalysator1);
-		PC_Utils.setArrayContentsToNull(catalysator2);
-		PC_Utils.setArrayContentsToNull(upgrades);
+		ItemStack[] contents = this.laserObj.getInvContents();
+		PC_Utils.setArrayContentsToNull(this.lens);
+		PC_Utils.setArrayContentsToNull(this.laserEmitter);
+		PC_Utils.setArrayContentsToNull(this.catalysator1);
+		PC_Utils.setArrayContentsToNull(this.catalysator2);
+		PC_Utils.setArrayContentsToNull(this.upgrades);
 		for (int i = 0; i < contents.length; i++) {
-			int resIndex = i % 4;
+			//int resIndex = i % 4;
 			if (contents[i] != null) {
-				switch ((int) Math.floor(i / 4)) {
+				/*switch ((int) Math.floor(i / 4)) {
 				case 0:
 					if (contents[i].getItem() == PCla_Laser.lens) {
 						lens[resIndex] = contents[i];
@@ -126,63 +126,64 @@ public class PCla_LaserTypeCalculator {
 						upgrades[i - 4 * 4] = contents[i];
 					}
 					break;
-				}
+				}*/
 			}
 		}
 		//Color
 		PC_Vec4I[] colors = new PC_Vec4I[4];
-		for (int i = 0; i < lens.length; i++) {
-			if (lens[i] == null) {
+		for (int i = 0; i < this.lens.length; i++) {
+			if (this.lens[i] == null) {
 				colors[i] = null;
 			} else {
-				ItemStack is = lens[i];
-				colors[i] = ((PCla_ItemLens) is.getItem()).getColorFromMeta(is.getItemDamage());
+				ItemStack is = this.lens[i];
+				colors[i] = PCla_ItemLens.getColorFromMeta(is.getItemDamage());
 			}
 		}
-		currColor = null;
-		currColor = PC_Utils.averageVec4I(colors);
+		this.currColor = null;
+		this.currColor = PC_Utils.averageVec4I(colors);
 		//Effects
-		for (int i = 0; i < laserEmitter.length; i++) {
-			if (laserEmitter[i] != null) {
-				ItemStack is = laserEmitter[i];
-				if (((PCla_ItemLaserEmitter) is.getItem()).getEffect(is.getItemDamage()) != PCla_EnumLaserEffects.NOTHING) {
-					effects[i] = ((PCla_ItemLaserEmitter) is.getItem()).getEffect(is.getItemDamage());
+		for (int i = 0; i < this.laserEmitter.length; i++) {
+			if (this.laserEmitter[i] != null) {
+				ItemStack is = this.laserEmitter[i];
+				if (PCla_ItemLaserEmitter.getEffect(is.getItemDamage()) != PCla_EnumLaserEffects.NOTHING) {
+					this.effects[i] = PCla_ItemLaserEmitter.getEffect(is.getItemDamage());
 				}
 			}
-			if (effects[i] == null) {
-				effects[i] = PCla_EnumLaserEffects.NOTHING;
+			if (this.effects[i] == null) {
+				this.effects[i] = PCla_EnumLaserEffects.NOTHING;
 			}
 		}
 		//Targets
-		for (int i = 0; i < catalysator1.length; i++) {
-			if (catalysator1[i] != null) {
-				ItemStack is = catalysator1[i];
-				if (((PCla_ItemCatalysator) is.getItem()).getTaget(is.getItemDamage()) != PCla_EnumLaserTargets.NOTHING) {
-					targets[i] = ((PCla_ItemCatalysator) is.getItem()).getTaget(is.getItemDamage());
+		for (int i = 0; i < this.catalysator1.length; i++) {
+			if (this.catalysator1[i] != null) {
+				ItemStack is = this.catalysator1[i];
+				if (PCla_ItemCatalysator.getTaget(is.getItemDamage()) != PCla_EnumLaserTargets.NOTHING) {
+					this.targets[i] = PCla_ItemCatalysator.getTaget(is.getItemDamage());
 				}
 			}
-			if (targets[i] == null) {
-				targets[i] = PCla_EnumLaserTargets.NOTHING;
+			if (this.targets[i] == null) {
+				this.targets[i] = PCla_EnumLaserTargets.NOTHING;
 			}
 		}
-		for (int i = 0; i < catalysator2.length; i++) {
-			if (catalysator1[i] != null) {
-				ItemStack is = catalysator1[i];
-				if (((PCla_ItemCatalysator) is.getItem()).getTaget(is.getItemDamage()) != PCla_EnumLaserTargets.NOTHING) {
-					targets[i + 4] = ((PCla_ItemCatalysator) is.getItem()).getTaget(is.getItemDamage());
+		for (int i = 0; i < this.catalysator2.length; i++) {
+			if (this.catalysator1[i] != null) {
+				ItemStack is = this.catalysator1[i];
+				if (PCla_ItemCatalysator.getTaget(is.getItemDamage()) != PCla_EnumLaserTargets.NOTHING) {
+					this.targets[i + 4] = PCla_ItemCatalysator.getTaget(is.getItemDamage());
 				}
 			}
-			if (targets[i + 4] == null) {
-				targets[i + 4] = PCla_EnumLaserTargets.NOTHING;
+			if (this.targets[i + 4] == null) {
+				this.targets[i + 4] = PCla_EnumLaserTargets.NOTHING;
 			}
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public void performBlockUpdate(PC_Direction orientation) {
-		beamCalc.calculate();
-		switch (laserObj.orientation) {
+		this.beamCalc.calculate();
+		switch (this.laserObj.orientation) {
 		case EAST:
-			Block candidate = laserObj.getWorldObj().getBlock(laserObj.xCoord - 1, laserObj.yCoord, laserObj.zCoord);
+			Block candidate = this.laserObj.getWorldObj().getBlock(this.laserObj.xCoord - 1, this.laserObj.yCoord, this.laserObj.zCoord);
 			if (candidate instanceof IInventory) {
 				System.out.println("valid");
 			}
@@ -199,10 +200,10 @@ public class PCla_LaserTypeCalculator {
 	}
 
 	public PC_Vec4I getCurrColor() {
-		return currColor;
+		return this.currColor;
 	}
 
-	public boolean canLaserThrough(IBlockAccess world, int x, int y, int z, Block block) {
+	public static boolean canLaserThrough(IBlockAccess world, int x, int y, int z, Block block) {
 		if (block.isAir(world, x, y, z))
 			return true;
 		if (block.getMaterial().equals(Material.carpet) || block.getMaterial().equals(Material.circuits)
@@ -215,7 +216,7 @@ public class PCla_LaserTypeCalculator {
 	}
 
 	public void performUpdateTick() {
-		if (!laserObj.getWorldObj().isRemote) {
+		if (!this.laserObj.getWorldObj().isRemote) {
 			if (hasEffect(PCla_EnumLaserEffects.BREAK)) {
 				if (hasTarget(PCla_EnumLaserTargets.PLANT)) {
 					doHarvesting();
@@ -236,28 +237,29 @@ public class PCla_LaserTypeCalculator {
 	}
 
 	private void doHarvesting() {
+		//
 	}
 
 	private void doReplanting() {
-
+		//
 	}
 
 	private void mineLastBlock() {
-		if (percentMined < 100) {
-			percentMined += percentMiningPerTick;
+		if (this.percentMined < 100) {
+			this.percentMined += this.percentMiningPerTick;
 		} else {
-			beamCalc.calculate();
-			PC_Vec3I vecToDestroy = beamCalc.targetingBlock;
+			this.beamCalc.calculate();
+			PC_Vec3I vecToDestroy = this.beamCalc.targetingBlock;
 			if (vecToDestroy == null) {
 				vecToDestroy = new PC_Vec3I(0, 0, 0);
 			}
-			laserObj.getWorldObj().setBlock(vecToDestroy.x, vecToDestroy.y, vecToDestroy.z, Blocks.air, 0, 3);
-			percentMined = 0;
+			this.laserObj.getWorldObj().setBlock(vecToDestroy.x, vecToDestroy.y, vecToDestroy.z, Blocks.air, 0, 3);
+			this.percentMined = 0;
 		}
 	}
 
 	private void doBlockPlacing() {
-
+		//
 	}
 
 }

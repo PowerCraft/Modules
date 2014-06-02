@@ -35,13 +35,11 @@ public class PCtr_BlockBeltBidirectional extends PCtr_BlockBeltNormal {
 			return;
 		}
 		NBTTagCompound compound = PC_Utils.getWritableNBTTagOf(entity);
-		int prevDir = -1;
 		if(compound.hasKey("dir")){
 			int xx = compound.getInteger("lastX");
 			int yy = compound.getInteger("lastY");
 			int zz = compound.getInteger("lastZ");
 			int lastTick = compound.getInteger("lastTick");
-			prevDir = compound.getInteger("dir");
 			if(lastTick==entity.ticksExisted)
 				return;
 			if(x==xx && y==yy && z==zz && (lastTick==entity.ticksExisted-diff || lastTick==entity.ticksExisted-1 || entity.ticksExisted==0)){
@@ -50,11 +48,10 @@ public class PCtr_BlockBeltBidirectional extends PCtr_BlockBeltNormal {
 					return;
 				}
 			}
-		}else{
-			prevDir=PC_Utils.getEntityMovement2D(entity).ordinal();
-			compound.setInteger("dir", prevDir);
-			PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity), world, x, y, z, 16);
 		}
+		int prevDir=PC_Utils.getEntityMovement2D(entity).ordinal();
+		compound.setInteger("dir", prevDir);
+		PC_PacketHandler.sendToAllAround(new PCtr_PacketSetEntitySpeed(compound, entity), world, x, y, z, 16);
 		compound.setInteger("lastX", x);
 		compound.setInteger("lastY", y);
 		compound.setInteger("lastZ", z);
