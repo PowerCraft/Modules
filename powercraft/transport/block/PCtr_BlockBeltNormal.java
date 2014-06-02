@@ -63,7 +63,9 @@ public class PCtr_BlockBeltNormal extends PC_Block {
 		this.icons[0] = iconRegistry.registerIcon("top");
 		this.icons[1] = iconRegistry.registerIcon("down");
 		this.icons[2] = iconRegistry.registerIcon("side");
-		this.icons[3] = iconRegistry.registerIcon("top2");
+		if(!(this instanceof PCtr_BlockBeltBidirectional)){
+			this.icons[3] = iconRegistry.registerIcon("top2");
+		}
 	}
 
 	@Override
@@ -129,7 +131,8 @@ public class PCtr_BlockBeltNormal extends PC_Block {
 		return PCtr_BeltHelper.isConveyorAt(world, x, y, z)||PC_InventoryUtils.getBlockInventoryAt(world, x, y, z)!=null;
 	}
 	
-	private static int calcHill(World world, int x, int y, int z, int metadata){
+	@SuppressWarnings("static-method")
+	protected int calcHill(World world, int x, int y, int z, int metadata){
 		PC_3DRotation rot = new PC_3DRotationY((metadata>>>2)&3);
 		int hill = metadata&3;
 		if(hill==0){

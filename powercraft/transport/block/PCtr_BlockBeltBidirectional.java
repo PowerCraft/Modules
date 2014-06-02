@@ -59,4 +59,9 @@ public class PCtr_BlockBeltBidirectional extends PCtr_BlockBeltNormal {
 		PCtr_BeltHelper.handleEntity(entity, world, x, y, z, false, true, false);
 	}
 	
+	@Override
+	protected int calcHill(World world, int x, int y, int z, int metadata){
+		return 0;
+	}
+	
 }
