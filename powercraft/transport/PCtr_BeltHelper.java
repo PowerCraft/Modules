@@ -15,6 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import powercraft.api.PC_Direction;
+import powercraft.api.PC_MathHelper;
 import powercraft.api.PC_Sound;
 import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3I;
@@ -165,16 +166,16 @@ public final class PCtr_BeltHelper {
 		}
 		entity.motionZ = dir.offsetZ!=0?dir.offsetZ*speed:(z+0.5-entity.posZ)*FAC;
 		entity.velocityChanged = true;
-		/*if(canPass) FIXME Not working for some directions
+		if(canPass)
 			return;
 		double diff, tmp;
 		if(dir.isVertical() && (diff=PC_MathHelper.abs_double((y+0.5+dir.offsetY*0.5)-entity.posY))<2*speed){
-			entity.motionY = getSpeedForDiff(diff);
+			entity.motionY = getSpeedForDiff(diff)*dir.offsetY;
 		}else if(dir.isHorizontalX() && (diff=PC_MathHelper.abs_double((x+0.5+dir.offsetX*0.5)-entity.posX))<2*speed){
-			entity.motionX = getSpeedForDiff(diff);
+			entity.motionX = getSpeedForDiff(diff)*dir.offsetX;
 		}else if(dir.isHorizontalZ() && (diff=PC_MathHelper.abs_double((z+0.5+dir.offsetZ*0.5)-entity.posZ))<2*speed){
-			entity.motionZ = getSpeedForDiff(diff);
-		}*/
+			entity.motionZ = getSpeedForDiff(diff)*dir.offsetZ;
+		}
 	}
 	
 	private static double getSpeedForDiff(double diff){
