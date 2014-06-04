@@ -25,6 +25,8 @@ public class PCla_TileEntityLaserTractor extends PC_TileEntityRotateable impleme
 	@Override
 	public void onTick() {
 		super.onTick();
+		if(get3DRotation()==null)
+			return;
 		PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.NORTH);
 		PC_Vec3 vec = new PC_Vec3(dir.offsetX, dir.offsetY, dir.offsetZ);
 		new PCla_Beam(this.worldObj, this, 20, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5).add(vec.mul(0.1)), vec, new PC_LightValue(650*PC_LightValue.THz, 1));
@@ -66,6 +68,8 @@ public class PCla_TileEntityLaserTractor extends PC_TileEntityRotateable impleme
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean renderWorldBlock(int modelId, RenderBlocks renderer) {
+		if(get3DRotation()==null)
+			return true;
 		
 		PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.NORTH);
 		

@@ -6,6 +6,8 @@ import powercraft.api.PC_Build;
 import powercraft.api.PC_Module;
 import powercraft.api.multiblock.PC_BlockMultiblock;
 import powercraft.api.multiblock.PC_Multiblocks;
+import powercraft.api.network.PC_PacketHandler;
+import powercraft.core.item.PCco_ItemCraftingTool;
 import powercraft.core.item.PCco_ItemNanobots;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.InstanceFactory;
@@ -24,13 +26,15 @@ public class PCco_Core extends PC_Module {
 	
 	public static final PCco_ItemNanobots NANOBOTS = new PCco_ItemNanobots();
 	
+	public static final PCco_ItemCraftingTool CRAFTING_TOOL = new PCco_ItemCraftingTool();
+	
 	@InstanceFactory
 	public static PCco_Core factory() {
 		return INSTANCE;
 	}
 	
 	private PCco_Core() {
-		
+		PC_PacketHandler.registerPacket(PCco_PacketCrafting.class);
 	}
 	
 	@Override
