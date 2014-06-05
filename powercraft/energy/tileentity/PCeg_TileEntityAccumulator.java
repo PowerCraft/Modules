@@ -90,12 +90,12 @@ public class PCeg_TileEntityAccumulator extends PC_TileEntity implements PC_IEne
 	}
 
 	@Override
-	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
+	public PC_GresBaseWithInventory openServerGui(EntityPlayer player, Object[] params) {
 		return null;
 	}
 
 	@Override
-	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
+	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player, Object[] params) {
 		return null;
 	}
 	

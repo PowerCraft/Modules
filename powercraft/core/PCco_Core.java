@@ -9,6 +9,7 @@ import powercraft.api.multiblock.PC_Multiblocks;
 import powercraft.api.network.PC_PacketHandler;
 import powercraft.core.item.PCco_ItemCraftingTool;
 import powercraft.core.item.PCco_ItemNanobots;
+import powercraft.core.item.PCco_ItemOreSniffer;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.InstanceFactory;
 
@@ -27,6 +28,8 @@ public class PCco_Core extends PC_Module {
 	public static final PCco_ItemNanobots NANOBOTS = new PCco_ItemNanobots();
 	
 	public static final PCco_ItemCraftingTool CRAFTING_TOOL = new PCco_ItemCraftingTool();
+	
+	public static final PCco_ItemOreSniffer ORE_SNIFFER = new PCco_ItemOreSniffer();
 	
 	@InstanceFactory
 	public static PCco_Core factory() {

@@ -170,12 +170,12 @@ public class PCis_TileEntityChannelChest extends PC_TileEntityRotateable impleme
 	}
 
 	@Override
-	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
+	public PC_GresBaseWithInventory openServerGui(EntityPlayer player, Object[] params) {
 		return new PCis_ContainerChannelChest(player, this);
 	}
 
 	@Override
-	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
+	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player, Object[] params) {
 		return null;
 	}
 

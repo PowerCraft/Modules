@@ -221,12 +221,12 @@ public class PCma_TileEntityAutomaticWorkbench extends PC_TileEntityWithInventor
 	}
 
 	@Override
-	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
+	public PC_GresBaseWithInventory openServerGui(EntityPlayer player, Object[] params) {
 		return new PCma_ContainerAutomaticWorkbench(player, this);
 	}
 
 	@Override
-	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
+	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player, Object[] params) {
 		return null;
 	}
 

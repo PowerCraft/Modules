@@ -15,6 +15,10 @@ public class PCco_ItemNanobots extends PC_Item {
 	
 	public PCco_ItemNanobots(){
 		setCreativeTab(CreativeTabs.tabTools);
+	}
+	
+	@Override
+	public void initRecipes() {
 		PC_Recipes.addShapedRecipe(new ItemStack(this), " I ", "IWI", " I ", Character.valueOf('I'), Items.iron_ingot, Character.valueOf('W'), Blocks.crafting_table);
 	}
 

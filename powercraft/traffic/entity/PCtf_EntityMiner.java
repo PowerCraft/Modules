@@ -677,12 +677,12 @@ public class PCtf_EntityMiner extends PC_Entity implements PC_IGresGuiOpenHandle
 	}
 
 	@Override
-	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
+	public PC_GresBaseWithInventory openServerGui(EntityPlayer player, Object[] params) {
 		return new PCtf_ContainerMiner(player, this);
 	}
 
 	@Override
-	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
+	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player, Object[] params) {
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		PC_NBTTagHandler.saveMapToNBT(nbtTagCompound, "sources", this.minerController.getSources(), Flag.SYNC);
 		nbtTagCompound.setTag("diagnostics", this.minerController.getDiagnostics());

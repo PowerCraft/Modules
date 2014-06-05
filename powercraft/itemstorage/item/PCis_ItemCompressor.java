@@ -370,7 +370,7 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 	}
 
 	@Override
-	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
+	public PC_GresBaseWithInventory openServerGui(EntityPlayer player, Object[] params) {
 		IInventory inv = getInventoryFor(player.worldObj, player, -1);
 		if(inv==null)
 			return null;
@@ -378,7 +378,7 @@ public class PCis_ItemCompressor extends PC_Item implements PC_IGresGuiOpenHandl
 	}
 
 	@Override
-	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
+	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player, Object[] params) {
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setInteger("slot", player.inventory.currentItem);
 		nbt.setBoolean("linked", getInventoryFor(player.worldObj, player, -1)!=null);

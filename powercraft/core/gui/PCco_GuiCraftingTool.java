@@ -10,6 +10,7 @@ import org.lwjgl.input.Keyboard;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import powercraft.api.PC_Lang;
 import powercraft.api.PC_Vec2I;
 import powercraft.api.gres.PC_Gres;
 import powercraft.api.gres.PC_GresAlign.Fill;
@@ -85,7 +86,7 @@ public class PCco_GuiCraftingTool extends PC_GresBaseWithInventory implements PC
 	public void initGui(PC_GresGuiHandler gui) {
 		this.gui = gui;
 		this.ctinv.updateAvailability();
-		this.window = new PC_GresWindow("pc.gui.craftingTool.title");
+		this.window = new PC_GresWindow(PC_Lang.translate("PCco.gui.craftingTool.title"));
 		this.window.setLayout(new PC_GresLayoutVertical());
 		this.searchView = new PC_GresGroupContainer().setLayout(new PC_GresLayoutVertical());
 		this.searchView.add(this.search = new PC_GresTextEdit("", 20));

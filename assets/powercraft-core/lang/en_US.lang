@@ -1,3 +1,8 @@
 desk.PowerCraft-Core=Core things
 itemGroup.PowerCraft-Core=PowerCraft-Core
 item.PCco_ItemNanobots.name=Nanobots
+item.PCco_ItemCraftingTool.name=Crafting Tool
+item.PCco_ItemOreSniffer.name=Ore Sniffer
+item.PCco_ItemOreSniffer.desc=Click on Block to see Blocks behind them
+PCco.gui.craftingTool.title=Crafting Tool
+PCco.gui.sniffer.distance=Distance

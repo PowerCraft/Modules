@@ -119,12 +119,12 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 	}
 
 	@Override
-	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
+	public PC_GresBaseWithInventory openServerGui(EntityPlayer player, Object[] params) {
 		return null;
 	}
 
 	@Override
-	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
+	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player, Object[] params) {
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		NBTTagList list = new NBTTagList();
 		HashMap<String, ? extends PC_WeaselSourceClass> hm = this.container.getSources();

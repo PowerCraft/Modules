@@ -195,12 +195,12 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 	}
 
 	@Override
-	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
+	public PC_GresBaseWithInventory openServerGui(EntityPlayer player, Object[] params) {
 		return new PCla_ContainerLaserBuilder(player, this);
 	}
 
 	@Override
-	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
+	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player, Object[] params) {
 		return null;
 	}
 	

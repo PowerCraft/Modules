@@ -318,12 +318,12 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 	}
 
 	@Override
-	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
+	public PC_GresBaseWithInventory openServerGui(EntityPlayer player, Object[] params) {
 		return null;
 	}
 	
 	@Override
-	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
+	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player, Object[] params) {
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		if(getSource()!=null)
 			nbtTagCompound.setString("source", getSource());

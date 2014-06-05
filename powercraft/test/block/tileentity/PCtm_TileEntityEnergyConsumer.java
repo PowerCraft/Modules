@@ -63,13 +63,13 @@ public class PCtm_TileEntityEnergyConsumer extends PC_TileEntity implements PC_I
 	}
 
 	@Override
-	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
+	public PC_GresBaseWithInventory openServerGui(EntityPlayer player, Object[] params) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
+	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player, Object[] params) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -205,12 +205,12 @@ public class PCtr_TileEntityEjector extends PC_TileEntityWithInventory implement
 	}
 
 	@Override
-	public PC_GresBaseWithInventory openServerGui(EntityPlayer player) {
+	public PC_GresBaseWithInventory openServerGui(EntityPlayer player, Object[] params) {
 		return null;
 	}
 
 	@Override
-	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player) {
+	public NBTTagCompound sendOnGuiOpenToClient(EntityPlayer player, Object[] params) {
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		nbtTagCompound.setInteger("type", this.type);
 		nbtTagCompound.setInteger("numStacks", this.numStacks);
