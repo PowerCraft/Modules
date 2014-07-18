@@ -51,17 +51,13 @@ public class PCtr_PacketSetEntitySpeed extends PC_PacketServerToClient {
 
 	@Override
 	protected void fromByteBuffer(ByteBuf buf) {
-		try {
-			this.entity = buf.readInt();
-			byte[] bytes = new byte[buf.readUnsignedShort()];
-			buf.readBytes(bytes);
-			this.compound = CompressedStreamTools.decompress(bytes);
-			this.posX = buf.readDouble();
-			this.posY = buf.readDouble();
-			this.posZ = buf.readDouble();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		this.entity = buf.readInt();
+		byte[] bytes = new byte[buf.readUnsignedShort()];
+		buf.readBytes(bytes);
+		this.compound = readNBTFromBuf(buf);
+		this.posX = buf.readDouble();
+		this.posY = buf.readDouble();
+		this.posZ = buf.readDouble();
 	}
 
 	@Override

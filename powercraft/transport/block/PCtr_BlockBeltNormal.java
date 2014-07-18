@@ -220,9 +220,9 @@ public class PCtr_BlockBeltNormal extends PC_Block {
 		int metadata = PC_Utils.getMetadata(world, x, y, z);
 		int hill = metadata&3;
 		if(hill==3){
-			return AxisAlignedBB.getAABBPool().getAABB(0, 0, 0, 0, 0, 0);
+			return AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0);
 		}else if(hill!=0){
-			return AxisAlignedBB.getAABBPool().getAABB(0, 0, 0, 1, 1, 1);
+			return AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1);
 		}
 		return super.getSelectedBoundingBox(world, x, y, z);
 	}
@@ -237,11 +237,11 @@ public class PCtr_BlockBeltNormal extends PC_Block {
 			List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
 			if(hill==1){
 				for(int i=0; i<16; i++){
-					list.add(AxisAlignedBB.getAABBPool().getAABB(0, 0, i/16.0, 1, (i+2)/16.0, (i+1)/16.0));
+					list.add(AxisAlignedBB.getBoundingBox(0, 0, i/16.0, 1, (i+2)/16.0, (i+1)/16.0));
 				}
 			}else{  
 				for(int i=0; i<16; i++){
-					list.add(AxisAlignedBB.getAABBPool().getAABB(0, 0, i/16.0, 1, (17-i)/16.0, (i+1)/16.0));
+					list.add(AxisAlignedBB.getBoundingBox(0, 0, i/16.0, 1, (17-i)/16.0, (i+1)/16.0));
 				}
 			}
 			return list;
