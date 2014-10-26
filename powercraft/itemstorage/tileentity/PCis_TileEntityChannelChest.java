@@ -67,7 +67,6 @@ public class PCis_TileEntityChannelChest extends PC_TileEntityRotateable impleme
 		set3DRotation(new PC_3DRotationY(player));
 	}
 	
-	@SuppressWarnings("hiding")
 	public void changeID(int id){
 		if(!isClient()){
 			PCis_ChannelChestSave.remove(this.id);

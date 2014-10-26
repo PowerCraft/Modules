@@ -67,7 +67,6 @@ public final class PCla_Beams implements PC_ITickHandler {
 		return PC_BeamHitResult.STANDARD;
 	}
 
-	@SuppressWarnings("unused")
 	public static PC_BeamHitResult onHitEntity(World world, Entity entity, PCla_Beam beam) {
 		return PC_BeamHitResult.STANDARD;
 	}

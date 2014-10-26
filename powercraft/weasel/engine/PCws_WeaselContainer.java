@@ -67,8 +67,7 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 			this.sourceFiles.put("Main", sc);
 		}
 	}
-	
-	@SuppressWarnings("unused")
+
 	public PCws_WeaselContainer(NBTTagCompound tagCompound, Flag flag){
 		this.memSize = tagCompound.getInteger("memSize");
 		NBTTagList list = (NBTTagList)tagCompound.getTag("list");
@@ -400,8 +399,7 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 	public void setErrorOutput(PrintStream errorStream) {
 		this.errorStream = errorStream;
 	}
-	
-	@SuppressWarnings("hiding")
+
 	@Override
 	public void onThreadErrored(XVirtualMachine virtualMachine, XThread thread) {
 		if(this.errorStream==null)
@@ -420,7 +418,6 @@ public class PCws_WeaselContainer implements XSourceProvider, XClassLoader, PC_W
 		interrupt.setUserData(new byte[]{1});
 	}
 
-	@SuppressWarnings("hiding")
 	@Override
 	public void onInterruptTerminated(XVirtualMachine virtualMachine, XThread thread) {
 		byte[] userData = thread.getUserData();

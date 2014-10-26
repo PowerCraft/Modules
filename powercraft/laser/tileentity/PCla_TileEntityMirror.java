@@ -1,4 +1,4 @@
-package powercraft.laser.tileEntity;
+package powercraft.laser.tileentity;
 
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;

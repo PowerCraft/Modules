@@ -199,8 +199,7 @@ public class PCrs_MultiblockObjectRedstoneBundleCable extends PC_MultiblockObjec
 	protected IIcon getCableSideIcon() {
 		return PCrs_MultiblockItemRedstoneBundleCable.icons[0];
 	}
-	
-	@SuppressWarnings("hiding")
+
 	@Override
 	protected IIcon getCableLineIcon(int index) {
 		return PCrs_MultiblockItemRedstoneBundleCable.icons[index+1];
@@ -233,8 +232,7 @@ public class PCrs_MultiblockObjectRedstoneBundleCable extends PC_MultiblockObjec
 		}
 		return super.canConnectToBlock(world, x, y, z, block, dir, dir2);
 	}
-	
-	@SuppressWarnings("hiding")
+
 	@Override
 	protected int canConnectToMultiblock(PC_MultiblockObject multiblock, PC_Direction dir, PC_Direction dir2) {
 		if(multiblock instanceof PCrs_MultiblockObjectRedstoneCable){

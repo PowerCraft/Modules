@@ -81,7 +81,6 @@ public class PCco_GuiCraftingTool extends PC_GresBaseWithInventory implements PC
 		return null;
 	}
 
-	@SuppressWarnings("hiding")
 	@Override
 	public void initGui(PC_GresGuiHandler gui) {
 		this.gui = gui;

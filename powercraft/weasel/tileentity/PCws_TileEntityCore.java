@@ -221,20 +221,17 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 		this.container.onEvent(event);
 	}
 
-	@SuppressWarnings("hiding")
 	@Override
 	public int getTypeUnsafe(int address) {
 		PC_IWeaselGridTileAddressable tile = this.grid.getTileByAddress(this, address);
 		return tile==null?0:tile.getType();
 	}
 
-	@SuppressWarnings("hiding")
 	@Override
 	public boolean isDevicePresent(int address) {
 		return this.grid.getTileByAddress(this, address)!=null;
 	}
 
-	@SuppressWarnings("hiding")
 	@Override
 	public int getRedstoneValueUnsafe(int address, int side) {
 		PC_IWeaselGridTileAddressable tile = this.grid.getTileByAddress(this, address);
@@ -277,22 +274,15 @@ public class PCws_TileEntityCore extends PC_TileEntity implements PC_IGresGuiOpe
 		return false;
 	}
 
-	@SuppressWarnings("hiding")
 	@Override
 	public PC_IWeaselGridTileAddressable getTileByAddress(int address) {
 		return this.grid.getTileByAddress(this, address);
 	}
 
 	@Override
-	public void print(String out) {
-		//
-	}
+	public void print(String out) {}
 
 	@Override
-	public void cls() {
-		//
-	}
-	
-	
+	public void cls() {}
 	
 }

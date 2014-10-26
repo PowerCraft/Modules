@@ -130,8 +130,7 @@ public class PCtr_TileEntityBeltScriptable extends PC_TileEntityScriptable imple
 				}
 			}
 		}
-		
-		@SuppressWarnings("unused")
+
 		REPLACEMENT(String name, Void unused){
 			this.name = name;
 			this.value = IO_SIZE.ioSize;

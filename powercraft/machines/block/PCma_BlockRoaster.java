@@ -37,7 +37,6 @@ public class PCma_BlockRoaster extends PC_BlockTileEntity {
 		return PCma_TileEntityRoaster.class;
 	}
 
-	@SuppressWarnings("hiding")
 	@Override
 	public IIcon getIcon(PC_Direction side, int metadata) {
 		if(side==PC_Direction.UP){

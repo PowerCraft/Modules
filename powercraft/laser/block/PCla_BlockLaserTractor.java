@@ -9,7 +9,7 @@ import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_BlockType;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.laser.PCla_LaserRenderer;
-import powercraft.laser.tileEntity.PCla_TileEntityLaserTractor;
+import powercraft.laser.tileentity.PCla_TileEntityLaserTractor;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -31,8 +31,7 @@ public class PCla_BlockLaserTractor extends PC_BlockTileEntity {
 	public Class<? extends PC_TileEntity> getTileEntityClass() {
 		return PCla_TileEntityLaserTractor.class;
 	}
-	
-	@SuppressWarnings("hiding")
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(PC_Direction side, int metadata) {

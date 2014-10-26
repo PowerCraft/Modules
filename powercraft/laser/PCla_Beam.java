@@ -84,7 +84,6 @@ public class PCla_Beam implements PC_IBeam {
 		return this.startPos.distanceTo(this.pos)+this.startLength;
 	}
 
-	@SuppressWarnings("hiding")
 	@Override
 	public PC_IBeam getNewBeam(double maxLength, PC_Vec3 startPos, PC_Vec3 newDirection, PC_LightFilter filter) {
 		PC_LightValue lv = this.lightValue.filterBy(filter);

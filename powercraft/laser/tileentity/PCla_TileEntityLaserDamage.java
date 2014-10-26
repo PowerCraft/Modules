@@ -1,10 +1,16 @@
-package powercraft.laser.tileEntity;
+package powercraft.laser.tileentity;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 import powercraft.api.PC_3DRotationY;
 import powercraft.api.PC_Direction;
@@ -12,24 +18,42 @@ import powercraft.api.PC_Utils;
 import powercraft.api.PC_Vec3;
 import powercraft.api.beam.PC_LightValue;
 import powercraft.api.block.PC_TileEntityRotateable;
+import powercraft.api.reflect.PC_Fields;
 import powercraft.laser.PCla_Beam;
 import powercraft.laser.PCla_IBeamHandler;
 import powercraft.laser.PCla_LaserRenderer;
-import powercraft.laser.block.PCla_BlockLaserTractor;
+import powercraft.laser.block.PCla_BlockLaserDamage;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PCla_TileEntityLaserPusher extends PC_TileEntityRotateable implements PCla_IBeamHandler {
+public class PCla_TileEntityLaserDamage extends PC_TileEntityRotateable implements PCla_IBeamHandler {
 	
-	@SuppressWarnings("unused")
+	private static DamageSource LASER_DAMAGE = new PC_DamageSourceLaser();
+	
+	private static class PC_DamageSourceLaser extends DamageSource{
+
+		PC_DamageSourceLaser() {
+			super("Laser");
+		}
+
+		@Override
+		public IChatComponent func_151519_b(EntityLivingBase living) {
+	        return new ChatComponentTranslation("laser.kill.entity", living.func_145748_c_());
+		}
+
+		@Override
+		public boolean isDifficultyScaled() {
+			return false;
+		}
+		
+	}
+
 	@Override
 	public void onTick() {
 		super.onTick();
-		if(get3DRotation()==null)
-			return;
 		PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.NORTH);
 		PC_Vec3 vec = new PC_Vec3(dir.offsetX, dir.offsetY, dir.offsetZ);
-		new PCla_Beam(this.worldObj, this, 20, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5).add(vec.mul(0.1)), vec, new PC_LightValue(650*PC_LightValue.THz, 1));
+		new PCla_Beam(this.worldObj, this, 20, new PC_Vec3(this.xCoord+0.5, this.yCoord+0.5, this.zCoord+0.5).add(vec.mul(0.1)), vec, new PC_LightValue(450*PC_LightValue.THz, 1));
 	}
 
 	@Override
@@ -40,11 +64,12 @@ public class PCla_TileEntityLaserPusher extends PC_TileEntityRotateable implemen
 
 	@Override
 	public boolean onHitEntity(World world, Entity entity, PCla_Beam beam) {
-		PC_Vec3 dir = beam.getDirection();
-		double strength = beam.getLightValue().getIntensity()/10;
-		entity.motionX += dir.x*strength;
-		entity.motionY += dir.y*strength;
-		entity.motionZ += dir.z*strength;
+		if(entity instanceof EntityItem || entity instanceof EntityXPOrb)
+			return true;
+		if(!world.isRemote){
+			PC_Fields.EntityLivingBase_recentlyHit.setValue(entity, Integer.valueOf(60));
+			entity.attackEntityFrom(LASER_DAMAGE, (float) (10*beam.getLightValue().getIntensity()));
+		}
 		return true;
 	}
 
@@ -64,16 +89,14 @@ public class PCla_TileEntityLaserPusher extends PC_TileEntityRotateable implemen
 		if(this.rotation==null)
 			set3DRotation(new PC_3DRotationY(player));
 	}
-
+	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean renderWorldBlock(int modelId, RenderBlocks renderer) {
-		if(get3DRotation()==null)
-			return true;
 		
 		PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.NORTH);
 		
-		PCla_LaserRenderer.renderLaser(this.worldObj, this.xCoord, this.yCoord, this.zCoord, dir, renderer, PCla_BlockLaserTractor.side, PCla_BlockLaserTractor.inside, PCla_BlockLaserTractor.black, PCla_BlockLaserTractor.white);
+		PCla_LaserRenderer.renderLaser(this.worldObj, this.xCoord, this.yCoord, this.zCoord, dir, renderer, PCla_BlockLaserDamage.side, PCla_BlockLaserDamage.inside, PCla_BlockLaserDamage.black, PCla_BlockLaserDamage.white);
 		
 		return true;
 	}

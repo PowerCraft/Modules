@@ -34,8 +34,7 @@ public class PCtr_PacketSetEntitySpeed extends PC_PacketServerToClient {
 	public PCtr_PacketSetEntitySpeed(){
 		
 	}
-	
-	@SuppressWarnings("hiding")
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	protected PC_Packet doAndReply(NetHandlerPlayClient iNetHandler, World world, EntityPlayer player) {

@@ -37,7 +37,6 @@ public class PCis_GuiCompressor extends PCis_ContainerCompressor implements PC_I
 		super(player, itemStack, slot, inv);
 	}
 	
-	@SuppressWarnings("hiding")
 	@Override
 	public void initGui(PC_GresGuiHandler gui) {
 		PC_GresWindow w = new PC_GresWindow(PC_Lang.translate(this.inventory.getInventoryName()+".name"));
@@ -54,7 +53,7 @@ public class PCis_GuiCompressor extends PCis_ContainerCompressor implements PC_I
 		this.takeStacks.addEventListener(this);
 		this.takeStacks.check(PCis_ItemCompressor.isTakeStacks(this.itemStack));
 		tab.add(new PC_GresLabel(PC_Lang.translate("PCis.gui.compressor.putStacks")));
-		tab.add(this.putStacks = new PC_GresTextEdit(""+PCis_ItemCompressor.getPutStacks(this.itemStack), 3, PC_GresInputType.UNSIGNED_INT));
+		tab.add(this.putStacks = new PC_GresTextEdit("" + PCis_ItemCompressor.getPutStacks(this.itemStack), 3, PC_GresInputType.UNSIGNED_INT));
 		this.putStacks.addEventListener(this);
 		w.addSideTab(tab);
 		
