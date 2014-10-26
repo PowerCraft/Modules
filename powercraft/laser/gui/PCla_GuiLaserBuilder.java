@@ -9,7 +9,7 @@ import powercraft.api.gres.PC_GresWindowSideTab;
 import powercraft.api.gres.PC_IGresGui;
 import powercraft.api.gres.layout.PC_GresLayoutVertical;
 import powercraft.laser.container.PCla_ContainerLaserBuilder;
-import powercraft.laser.tileEntity.PCla_TileEntityLaserBuilder;
+import powercraft.laser.tileentity.PCla_TileEntityLaserBuilder;
 
 
 public class PCla_GuiLaserBuilder extends PCla_ContainerLaserBuilder implements PC_IGresGui {

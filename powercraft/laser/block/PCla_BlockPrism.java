@@ -11,7 +11,7 @@ import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_BlockType;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.api.renderer.PC_Renderer;
-import powercraft.laser.tileEntity.PCla_TileEntityPrism;
+import powercraft.laser.tileentity.PCla_TileEntityPrism;
 
 
 public class PCla_BlockPrism extends PC_BlockTileEntity {

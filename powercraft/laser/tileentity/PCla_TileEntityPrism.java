@@ -1,4 +1,4 @@
-package powercraft.laser.tileEntity;
+package powercraft.laser.tileentity;
 
 import java.util.ArrayList;
 import java.util.Arrays;

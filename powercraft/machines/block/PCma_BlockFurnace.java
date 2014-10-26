@@ -25,10 +25,9 @@ public class PCma_BlockFurnace extends PC_BlockTileEntity {
 		return PCma_TileEntityFurnace.class;
 	}
 
-	@SuppressWarnings("hiding")
 	@Override
 	public IIcon getIcon(PC_Direction side, int metadata) {
-		if(side==PC_Direction.EAST){
+		if(side == PC_Direction.EAST){
 			return front;
 		}
 		return PCma_BlockFurnace.side;

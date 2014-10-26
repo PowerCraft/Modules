@@ -153,8 +153,7 @@ public final class PCtr_BeltHelper {
 		}
 		return 0;
 	}
-	
-	@SuppressWarnings("unused")
+
 	public static void moveEntity(Entity entity, World world, int x, int y, int z, boolean elevator, PC_Direction dir, double speed, boolean upwards){
 		final double FAC = 0.5;
 		int passing = canPassTo(world, new PC_Vec3I(x, y+(upwards?1:0), z), dir);

@@ -45,8 +45,7 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 		this.address = nbtTagCompound.getInteger("address");
 		registerNativeClasses();
 	}
-	
-	@SuppressWarnings("resource")
+
 	private void registerNativeClasses(){
 		ConsoleOut consoleOut = new ConsoleOut();
 		PrintStream ps = new PrintStream(consoleOut, true);
@@ -106,14 +105,12 @@ public class PCtf_MinerController implements PC_INBT, PC_IWeaselGridTileAddressa
 			e.printStackTrace();
 		}
 	}
-	
-	@SuppressWarnings("hiding")
+
 	public PCtf_EntityMiner getMiner(int address){
 		PC_IWeaselGridTileAddressable tile = getTileByAddress(address);
 		return tile instanceof PCtf_EntityMiner?(PCtf_EntityMiner)tile:null;
 	}
-	
-	@SuppressWarnings("hiding")
+
 	@Override
 	public PC_IWeaselGridTileAddressable getTileByAddress(int address) {
 		return this.grid.getTileByAddress(this, address);

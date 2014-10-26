@@ -35,10 +35,9 @@ public class PCeg_BlockSolarPanel extends PC_BlockTileEntity {
 		return PCeg_TileEntitySolarPanel.class;
 	}
 
-	@SuppressWarnings("hiding")
 	@Override
 	public IIcon getIcon(PC_Direction side, int metadata) {
-		if(side==PC_Direction.UP){
+		if(side == PC_Direction.UP){
 			return this.top;
 		}
 		return this.side;

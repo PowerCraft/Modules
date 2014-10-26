@@ -303,17 +303,16 @@ public class PCtr_BlockBeltNormal extends PC_Block {
 		super.breakBlock(world, x, y, z, block, metadata);
 	}
 
-	@SuppressWarnings("hiding")
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, int modelId, RenderBlocks renderer) {
 		int metadata = PC_Utils.getMetadata(world, x, y, z);
-		int hill = metadata&3;
+		int hill = metadata & 3;
 		if(hill==0){
 			super.renderWorldBlock(world, x, y, z, modelId, renderer);
 		}else if(hill!=3){
 			IIcon[] icons = new IIcon[6];
-			for(int i=0; i<6; i++){
+			for(int i = 0; i < 6; i++){
 				icons[i] = getIcon(i, metadata);
 			}
 			icons[0] = null;

@@ -11,7 +11,7 @@ import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_BlockType;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.api.renderer.PC_Renderer;
-import powercraft.laser.tileEntity.PCla_TileEntityMirror;
+import powercraft.laser.tileentity.PCla_TileEntityMirror;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

@@ -34,7 +34,6 @@ public class PCws_WeaselSourceClass implements PC_WeaselSourceClass {
 		return this.source;
 	}
 
-	@SuppressWarnings("hiding")
 	public void save(byte[] data) {
 		this.data = data;
 		this.dirty = false;

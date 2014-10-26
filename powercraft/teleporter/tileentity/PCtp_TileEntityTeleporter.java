@@ -34,7 +34,7 @@ public class PCtp_TileEntityTeleporter extends PC_TileEntity implements PC_IGres
 			try{
 				this.endpoint = (PCtp_TeleporterEndpoint) PCtp_TeleporterGlobalNetwork.instance().getEntry(new PC_Vec4I(this.xCoord, this.yCoord, this.zCoord, PC_Utils.getDimensionID(this.worldObj)));
 			}catch(Throwable e){
-				//
+				;
 			}
 		}
 	}
@@ -52,8 +52,7 @@ public class PCtp_TileEntityTeleporter extends PC_TileEntity implements PC_IGres
 			}
 		}
 	}
-	
-	@SuppressWarnings("hiding")
+
 	private void teleport(Entity entity, String target){
 		PCtp_TeleporterNetworkEntry entry = PCtp_TeleporterGlobalNetwork.instance().getEntryByPath(target);
 		if(entry instanceof PCtp_TeleporterEndpoint){

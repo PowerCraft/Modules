@@ -178,7 +178,6 @@ public class PCla_LaserTypeCalculator {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	public void performBlockUpdate(PC_Direction orientation) {
 		this.beamCalc.calculate();
 		switch (this.laserObj.orientation) {

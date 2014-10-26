@@ -9,16 +9,13 @@ import powercraft.api.inventory.PC_InventoryUtils;
 
 public class PCis_HightCompressorInventory extends PCis_NormalCompressorInventory implements PC_IInventorySizeOverrider {
 	
-	@SuppressWarnings("hiding")
 	public PCis_HightCompressorInventory(IInventory inventory, int slot, String name){
 		super(inventory, slot, new PC_Vec2I(3, 3), name);
 		NBTTagCompound tag = getItemStack().getTagCompound();
 		if(tag.hasKey("size")){
 			int[] size = tag.getIntArray("size");
 			for(int i=0; i<this.is.length; i++){
-				if(this.is[i]!=null){
-					this.is[i].stackSize = size[i];
-				}
+				if(this.is[i] != null) this.is[i].stackSize = size[i];	
 			}
 		}
 	}
@@ -33,7 +30,6 @@ public class PCis_HightCompressorInventory extends PCis_NormalCompressorInventor
 		this.is[var1]=var2;
 	}
 	
-	@SuppressWarnings("hiding")
 	@Override
 	public ItemStack decrStackSize(int var1, int var2) {
 		int size = var2;
@@ -51,8 +47,7 @@ public class PCis_HightCompressorInventory extends PCis_NormalCompressorInventor
 	public int getSlotStackLimit(int slotIndex) {
 		return 512;
 	}
-	
-	@SuppressWarnings("hiding")
+
 	@Override
 	public void closeInventory() {
 		if(getItemStack()!=null){
@@ -68,7 +63,6 @@ public class PCis_HightCompressorInventory extends PCis_NormalCompressorInventor
 		}
 	}
 
-	@SuppressWarnings("hiding")
 	@Override
 	public int getMaxStackSize(ItemStack itemStack, int slot) {
 		int maxStack = itemStack.getMaxStackSize()*8;

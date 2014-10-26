@@ -95,7 +95,6 @@ public class PCws_MultiblockObjectWeaselCable extends PC_MultiblockObjectCable i
 		return PCws_Weasel.WEASEL_CABLE.side;
 	}
 
-	@SuppressWarnings("hiding")
 	@Override
 	protected IIcon getCableLineIcon(int index) {
 		return null;

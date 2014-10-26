@@ -2,7 +2,7 @@ package powercraft.laser.container;
 
 import net.minecraft.entity.player.EntityPlayer;
 import powercraft.api.gres.PC_GresBaseWithInventory;
-import powercraft.laser.tileEntity.PCla_TileEntityLaserBuilder;
+import powercraft.laser.tileentity.PCla_TileEntityLaserBuilder;
 
 
 public class PCla_ContainerLaserBuilder extends PC_GresBaseWithInventory {

@@ -1,4 +1,4 @@
-package powercraft.laser.tileEntity;
+package powercraft.laser.tileentity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,7 +82,6 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 		}
 	}
 	
-	@SuppressWarnings("unused")
 	@Override
 	public void onTick() {
 		super.onTick();
@@ -181,7 +180,6 @@ public class PCla_TileEntityLaserBuilder extends PC_TileEntityWithInventory impl
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean renderWorldBlock(int modelId, RenderBlocks renderer) {
-		
 		PC_Direction dir = get3DRotation().getSidePosition(PC_Direction.NORTH);
 		
 		PCla_LaserRenderer.renderLaser(this.worldObj, this.xCoord, this.yCoord, this.zCoord, dir, renderer, PCla_BlockLaserBuilder.side, PCla_BlockLaserBuilder.inside, PCla_BlockLaserBuilder.black, PCla_BlockLaserBuilder.white);

@@ -9,7 +9,7 @@ import powercraft.api.block.PC_BlockTileEntity;
 import powercraft.api.block.PC_BlockType;
 import powercraft.api.block.PC_TileEntity;
 import powercraft.laser.PCla_LaserRenderer;
-import powercraft.laser.tileEntity.PCla_TileEntityLaserHarvester;
+import powercraft.laser.tileentity.PCla_TileEntityLaserHarvester;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -31,7 +31,6 @@ public class PCla_BlockLaserHarvester extends PC_BlockTileEntity {
 		return PCla_TileEntityLaserHarvester.class;
 	}
 
-	@SuppressWarnings("hiding")
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(PC_Direction side, int metadata) {
